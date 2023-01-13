@@ -18,6 +18,8 @@ public class OpenAIService {
     ); 
   }
 
+  int totalTokens = 0;
+
   public async Task<string[]> EditAsync(
     string? input, 
     string? instruction,
@@ -32,10 +34,11 @@ public class OpenAIService {
 
     var endpoint = api.EditsEndpoint;
     var result = await endpoint.CreateEditAsync(request);
+
+    totalTokens += result.Usage.TotalTokens;
+    Console.WriteLine($"+{result.Usage.TotalTokens} | {totalTokens}");
+
     return result.Choices.Select(x => x.Text).ToArray<string>();
-    
-    // Console.WriteLine($"result: {result.ToString().TrimStart()}");
-    // return result.ToString();
   }
 
   public async IAsyncEnumerable<string> CompletionStream(string? prompt) {

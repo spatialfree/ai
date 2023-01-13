@@ -1,0 +1,102 @@
+﻿@page "/"
+@using ai.Data
+@inject OpenAIService Service
+
+@*
+<PageTitle>Index</PageTitle>
+<h1>Index</h1>
+<h3>Todo (@todos.Count(todo => !todo.IsDone))</h3>
+
+
+<input @bind="prompt"/> 
+<p>@completion</p>
+*@
+
+@foreach (var scroll in scrolls) {
+	<div class="scroll">
+		<input @bind="scroll.Label"/>
+		<textarea @bind="scroll.Text"></textarea>
+		@* <input type="checkbox" @bind="scroll.IsDone" /> *@
+	</div>
+}
+<br>
+
+<div style="display: flex; max-width: 600px; margin: 0 auto;">
+	<button @onclick="Back"><span class="oi oi-arrow-left"  aria-hidden="true"></span></button>
+	<button @onclick="Swap"><span class="oi oi-collapse-up" aria-hidden="true"></span></button>
+	<button @onclick="Next"><span class="oi oi-arrow-right" aria-hidden="true"></span></button>
+</div>
+<br>
+
+<div class="scroll">
+	<input @bind="options[optionIndex].Label" style="background-color: @options[optionIndex].Color"/>
+	<textarea @bind="options[optionIndex].Text"></textarea>
+</div>
+<br>
+
+@* <div style="display: flex;">
+@foreach (var option in options) {
+	<div class="scroll">
+		<input @bind="option.Label"/>
+		<textarea @bind="option.Text"></textarea>
+	</div>
+}
+</div>
+<br> *@
+
+<button @onclick="Edit">
+	<span id="" class="oi oi-loop-square @(loading ? "spin" : "")" aria-hidden="true"></span>
+</button>
+<br>
+<br>
+<br>
+
+
+@code {
+	List<Scroll> scrolls = new() {
+		new Scroll {
+			Label = "Instruction",
+			Text = "Augment the instruction with a variety of descriptive language tools and elaborate phrasing that will help to improve and enhance it.",
+		},
+		new Scroll {
+			Label = "Input",
+			Text = "Get good.",
+		},
+	};
+
+	int optionIndex = 0;
+	void Back() { optionIndex = optionIndex == 0 ? options.Count - 1 : optionIndex - 1; }
+	void Next() { optionIndex = optionIndex == options.Count - 1 ? 0 : optionIndex + 1; }
+	List<Scroll> options = new() {
+		new Scroll { Label = "Option #1", Color = "red", },
+		new Scroll { Label = "Option #2", Color = "blue", },
+		new Scroll { Label = "Option #3", Color = "green", },
+	};
+
+	void Swap() {
+		var temp = scrolls[1].Text;
+		scrolls[1].Text = options[optionIndex].Text;
+		options[optionIndex].Text = temp;
+	}
+
+	bool loading = false;
+
+	async Task Edit() {
+		loading = true;
+		var result = await Service.EditAsync(scrolls[1].Text, scrolls[0].Text, 3);
+		for (int i = 0; i < result.Length; i++) {
+			options[i].Text = result[i];
+		}
+		loading = false;
+	}
+
+	@* async Task Complete() {
+		scrolls[2].Text = "";
+		string input = scrolls[0].Full + scrolls[1].Full + scrolls[2].Full;
+		await foreach (var item in Service.CompletionStream(input)) {
+			scrolls[2].Text += item;
+			scrolls[2].Text = scrolls[2].Text.TrimStart('\n');
+			StateHasChanged();
+		}
+	} *@
+}

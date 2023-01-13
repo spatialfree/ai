@@ -22,9 +22,9 @@
 <br>
 
 <div style="display: flex; max-width: 600px; margin: 0 auto;">
-	<button @onclick="Back"><span class="oi oi-arrow-left"  aria-hidden="true"></span></button>
-	<button @onclick="Swap"><span class="oi oi-collapse-up" aria-hidden="true"></span></button>
-	<button @onclick="Next"><span class="oi oi-arrow-right" aria-hidden="true"></span></button>
+	<button @onclick="Back"><span class="oi oi-arrow-left "></span></button>
+	<button @onclick="Swap"><span class="oi oi-collapse-up"></span></button>
+	<button @onclick="Next"><span class="oi oi-arrow-right"></span></button>
 </div>
 <br>
 
@@ -44,9 +44,19 @@
 </div>
 <br> *@
 
+<br>
+<div style="text-align:center"><span class="oi oi-pulse" style="font-size:32px; color:red;"></span></div>
+<br>
+<input @bind="temp" type="range" min="0" max="1" step="0.01" value="0.5" />
+<br>
+<br>
+
 <button @onclick="Edit">
-	<span id="" class="oi oi-loop-square @(loading ? "spin" : "")" aria-hidden="true"></span>
+	<span class="oi oi-loop-square @(loading ? "spin" : "")"></span>
 </button>
+<br>
+
+
 <br>
 <br>
 <br>
@@ -81,9 +91,10 @@
 
 	bool loading = false;
 
+	double temp = 0.5d;
 	async Task Edit() {
 		loading = true;
-		var result = await Service.EditAsync(scrolls[1].Text, scrolls[0].Text, 3);
+		var result = await Service.EditAsync(scrolls[1].Text, scrolls[0].Text, 3, temp);
 		for (int i = 0; i < result.Length; i++) {
 			options[i].Text = result[i];
 		}

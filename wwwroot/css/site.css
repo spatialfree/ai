@@ -101,10 +101,23 @@ button:active {
 	60% {transform: rotate(90deg);}
 }
 
+input[type=range] {
+	-webkit-appearance: none;
+	width: 33%;
+	margin: 0 auto;
+	height: 25px;
+	background: white;
+	outline: none;
+}
 
-
-
-
+input[type=range]::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 25px;
+	height: 25px;
+	background: #000;
+	cursor: pointer;
+}
 
 .valid.modified:not([type=checkbox]) {
 	outline: 1px solid #26b050;

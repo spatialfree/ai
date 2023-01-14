@@ -1,23 +1,15 @@
 ﻿@page "/"
-@using ai.Data
-@inject OpenAIService Service
-
-@*
-<PageTitle>Index</PageTitle>
-<h1>Index</h1>
-<h3>Todo (@todos.Count(todo => !todo.IsDone))</h3>
+@* @using ai.Data *@
+@inject ILocalStorageService localStorage
 
 
-<input @bind="prompt"/> 
-<p>@completion</p>
-*@
-
-@foreach (var scroll in scrolls) {
+@foreach (var scroll in Scrolls) {
 	<div class="scroll">
-		<input @bind="scroll.Label"/>
+		<input @bind="scroll.Label" />
 		<textarea @bind="scroll.Text"></textarea>
 		@* <input type="checkbox" @bind="scroll.IsDone" /> *@
 	</div>
+	<br>
 }
 <br>
 
@@ -29,44 +21,48 @@
 <br>
 
 <div class="scroll">
-	<input @bind="options[optionIndex].Label" style="background-color: @options[optionIndex].Color"/>
-	<textarea @bind="options[optionIndex].Text"></textarea>
+	<input @bind="Choices[ChoiceIndex].Label" />
+	<textarea @bind="Choices[ChoiceIndex].Text"></textarea>
 </div>
 <br>
-
-@* <div style="display: flex;">
-@foreach (var option in options) {
-	<div class="scroll">
-		<input @bind="option.Label"/>
-		<textarea @bind="option.Text"></textarea>
-	</div>
-}
-</div>
-<br> *@
-
-<br>
-<div style="text-align:center"><span class="oi oi-pulse" style="font-size:32px; color:red;"></span></div>
-<br>
-<input @bind="temp" type="range" min="0" max="1" step="0.01" value="0.5" />
-<br>
 <br>
 
-<button @onclick="Edit">
-	<span class="oi oi-loop-square @(loading ? "spin" : "")"></span>
+<button @onclick="Complete" class="@(Loading ? "disabled" : "")">
+	<span class="oi oi-loop-square @(Loading ? "spin" : "")"></span>
 </button>
+<br><br><br>
+
+<h2 style="text-align: center;">local storage</h2>
 <br>
 
+<div class="scroll" style="text-align: center;">
+	@* show token usage *@
+	<span class="oi oi-key" style="color: @(Authorized ? "#00cc00" : "#800000"); font-size: 32px;"></span>
+	<br><br>
+	<a href="https://beta.openai.com/account/api-keys">get api key</a>
+	<br>
+	<input @bind="ApiKey" placeholder="sk-XXXXX..." class="key" spellCheck=false />
+	<br>
+	@*  *@
+</div>
 
+@* <div style="text-align:center"><span class="oi oi-pulse" style="font-size:32px; color:white;"></span></div>
 <br>
-<br>
-<br>
+<input @bind="Temperature" type="range" min="0" max="1" step="0.01" value="1" /> *@
+
+
+
+<br><br><br>
+<br><br><br>
+<br><br><br>
+
 
 
 @code {
-	List<Scroll> scrolls = new() {
+	List<Scroll> Scrolls = new() {
 		new Scroll {
 			Label = "Instruction",
-			Text = "Augment the instruction with a variety of descriptive language tools and elaborate phrasing that will help to improve and enhance it.",
+			Text = "Augment the input with a variety of descriptive language tools and elaborate phrasing that will help to improve and enhance it.",
 		},
 		new Scroll {
 			Label = "Input",
@@ -74,40 +70,150 @@
 		},
 	};
 
-	int optionIndex = 0;
-	void Back() { optionIndex = optionIndex == 0 ? options.Count - 1 : optionIndex - 1; }
-	void Next() { optionIndex = optionIndex == options.Count - 1 ? 0 : optionIndex + 1; }
-	List<Scroll> options = new() {
-		new Scroll { Label = "Option #1", Color = "red", },
-		new Scroll { Label = "Option #2", Color = "blue", },
-		new Scroll { Label = "Option #3", Color = "green", },
+	int ChoiceIndex = 0;
+	void Back() { ChoiceIndex = ChoiceIndex == 0 ? Choices.Count - 1 : ChoiceIndex - 1; }
+	void Next() { ChoiceIndex = ChoiceIndex == Choices.Count - 1 ? 0 : ChoiceIndex + 1; }
+	List<Scroll> Choices = new() {
+		new Scroll { Label = "Choice #1", Color = "#ff8080", },
+		new Scroll { Label = "Choice #2", Color = "#80ff80", },
+		new Scroll { Label = "Choice #3", Color = "#8080ff", },
 	};
 
 	void Swap() {
-		var temp = scrolls[1].Text;
-		scrolls[1].Text = options[optionIndex].Text;
-		options[optionIndex].Text = temp;
+		var txt = Scrolls[1].Text;
+		Scrolls[1].Text = Choices[ChoiceIndex].Text;
+		Choices[ChoiceIndex].Text = txt;
 	}
 
-	bool loading = false;
+	bool Loading = false;
 
-	double temp = 0.5d;
+
+	double Temperature = 1.0d;
 	async Task Edit() {
-		loading = true;
-		var result = await Service.EditAsync(scrolls[1].Text, scrolls[0].Text, 3, temp);
-		for (int i = 0; i < result.Length; i++) {
-			options[i].Text = result[i];
+		if (Authorized && !Loading) {
+			Loading = true;
+
+			EditRequest request = new EditRequest(
+				Scrolls[1].Text, Scrolls[0].Text, 
+				editCount: 3, 
+				temperature: Temperature
+			);
+			var endpoint = API.EditsEndpoint;
+			var result = await endpoint.CreateEditAsync(request);
+			var choices = result.Choices.Select(x => x.Text).ToArray<string>();
+			for (int i = 0; i < choices.Length; i++) {
+				Choices[i].Text = choices[i];
+			}
+
+			Loading = false;
 		}
-		loading = false;
 	}
 
-	@* async Task Complete() {
-		scrolls[2].Text = "";
-		string input = scrolls[0].Full + scrolls[1].Full + scrolls[2].Full;
-		await foreach (var item in Service.CompletionStream(input)) {
-			scrolls[2].Text += item;
-			scrolls[2].Text = scrolls[2].Text.TrimStart('\n');
+	async Task Complete() {
+		if (Authorized && !Loading) {
+			Loading = true;
+
+			Choices = Choices.Select(x => { x.Text = ""; return x; }).ToList();
+
+			CompletionRequest request = new CompletionRequest();
+			request.Prompt = Scrolls[1].Full + Scrolls[0].Full + "Input (Augmented):\n";
+			request.NumChoicesPerPrompt = 3;
+
+			var endpoint = API.CompletionsEndpoint;
+			await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
+				var index = token.Completions[0].Index;
+				Choices[index].Text += token.Completions[0].Text;
+				Choices[index].Text = Choices[index].Text.TrimStart('\n');
+				
+				StateHasChanged();
+			}
+
+			Loading = false;
+		}
+	}
+
+	string ApiKey = "";
+	OpenAIClient? API;
+	bool Authorized = false;
+
+	IEnumerable<string> Keys { get; set; } = new List<string>();
+	protected override async Task OnAfterRenderAsync(bool firstRender) {
+		Keys = await localStorage.KeysAsync();
+		if (firstRender) {
+			await LoadKey();
 			StateHasChanged();
 		}
-	} *@
+
+		await SaveKey();
+	}
+
+	async Task LoadKey() {
+		ApiKey = await localStorage.GetItemAsync<string>("apikey");
+		if (string.IsNullOrEmpty(ApiKey)) { ApiKey = ""; }
+	}
+
+	string lastTry = "";
+	async Task SaveKey() {
+		if (ApiKey == lastTry)
+			return;
+		lastTry = ApiKey;
+
+		string storageKey = await localStorage.GetItemAsync<string>("apikey");
+		if (ApiKey == storageKey && Authorized)
+			return;
+
+		try {
+			API = new OpenAIClient(new OpenAIAuthentication(ApiKey));
+			var model = await API.ModelsEndpoint.GetModelDetailsAsync("text-davinci-003");
+			Authorized = true;
+
+			CompletionRequest.DefaultCompletionRequestArgs = defaultCompletion; // wrong place
+		}
+		catch {
+			API = null; // not memory safe
+			Authorized = false;
+		}
+
+		await localStorage.SetItemAsync("apikey", ApiKey);
+		Keys = await localStorage.KeysAsync();
+		StateHasChanged();
+	}
+
+	CompletionRequest defaultCompletion = new CompletionRequest(
+		OpenAI.Models.Model.Davinci,
+		"",
+		max_tokens: 256, 
+		temperature: 1,
+		frequencyPenalty: 0,
+		presencePenalty: 0,
+		stopSequences: new string [] {"\n\n"}
+	);
+
+
+/*
+
+NOTES
+	max_tokens  slider
+	temperature slider
+	Rewrite the token system to be persistent and time mapped
+	totalTokens += result.Usage.TotalTokens;
+	Console.WriteLine($"+{result.Usage.TotalTokens} | {totalTokens}");
+
+
+GRAVEYARD
+	<PageTitle>Index</PageTitle>
+	<h1>Index</h1>
+	<h3>Todo (@todos.Count(todo => !todo.IsDone))</h3>
+
+	<p>@completion</p>
+	color: @Choices[ChoiceIndex].Color
+	@bind:event="oninput" style="height: @(Rows(scroll.Text, 89))pc"
+	localStorage.Changed += (_, e) => {
+		Console.WriteLine($"  key: {e.Key} \n from: {e.OldValue} \n   to: {e.NewValue}");
+	};
+	async Task oninput(ChangeEventArgs e) {
+		StateHasChanged();
+	}
+
+*/
 }

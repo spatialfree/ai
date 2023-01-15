@@ -42,7 +42,7 @@
 <div class="scroll" style="text-align: center;">
 	<span class="oi oi-key" style="color: @(Authorized ? "#00cc00" : "#800000"); font-size: 24px;"></span>
 	<br><br>
-	<input @bind="ApiKey" type="password" placeholder="sk-XXXXX..." class="key" spellCheck=false />
+	<input @bind="ApiKey" type="password" placeholder="sk-XXXXX..." class="key" style="width: 256px; margin: 0 auto;" spellCheck=false />
 	<br>
 	<a href="https://beta.openai.com/account/api-keys" target="_blank">
 		<span class="oi oi-link-intact" style=""></span>&nbsp;
@@ -55,23 +55,39 @@
 <div style="display: @(Authorized ? "block": "none"); text-align: center;">
 	<span class="oi oi-text" style="font-size:24px; color:white;"></span>
 	<br><br>
-	<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
+	<div class="row">
+		<div class="limit">&nbsp;&nbsp;16</div>
+		<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
+		<div class="limit">2048</div>
+	</div>
 																									@* <input type="checkbox" /> 2x boost *@
 	<br><br><br>
 
 	<span class="oi oi-pulse" style="font-size:24px; color:white;"></span>
 	<br><br>
-	<input @bind="Temperature" type="range" min="0" max="1" step="0.01" />
+	<div class="row">
+		<div class="limit">0</div>
+		<input @bind="Temperature" type="range" min="0" max="1" step="0.01" />
+		<div class="limit">1</div>
+	</div>
 	<br><br><br>
 
 	<span class="oi oi-contrast" style="font-size:24px; color:white;"></span>
 	<br><br>
-	<input @bind="Contrast" type="range" min="-1.9" max="1.9" step="0.1" />
+	<div class="row">
+		<div class="limit">- 2</div>
+		<input @bind="Contrast" type="range" min="-1.9" max="1.9" step="0.1" />
+		<div class="limit">2</div>
+	</div>
 	<br><br><br>
 
 	<span class="oi oi-loop-circular" style="font-size:24px; color:white;"></span>
 	<br><br>
-	<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
+	<div class="row">
+		<div class="limit">- 2</div>
+		<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
+		<div class="limit">2</div>
+	</div>
 	<br><br><br>
 </div>
 

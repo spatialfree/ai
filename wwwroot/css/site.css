@@ -140,6 +140,18 @@ button.disabled {
 	fill: red !important;
 }
 
+.row { 
+	display: flex; 
+	width: fit-content; 
+	margin: 0 auto; 
+	align-items: center;
+}
+
+.limit {
+	width: 64px;
+	text-align: center;
+}
+
 input[type=range] {
 	-webkit-appearance: none;
 	width: 256px;

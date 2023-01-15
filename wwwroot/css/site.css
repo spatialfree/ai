@@ -142,9 +142,9 @@ button.disabled {
 
 .row { 
 	display: flex; 
-	width: fit-content; 
 	margin: 0 auto; 
 	align-items: center;
+	justify-content: center;
 }
 
 .limit {
@@ -154,8 +154,9 @@ button.disabled {
 
 input[type=range] {
 	-webkit-appearance: none;
-	width: 256px;
-	margin: 0 auto;
+	flex-grow: 1;
+	max-width: 256px;
+	/* margin: 0 auto; */
 	height: 6px;
 	background: white;
 	outline: none;

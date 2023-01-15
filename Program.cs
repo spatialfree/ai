@@ -1,3 +1,4 @@
+global using System;
 global using Blazored.LocalStorage;
 global using Blazored.LocalStorage.Serialization;
 global using OpenAI;

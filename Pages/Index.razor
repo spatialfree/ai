@@ -3,6 +3,9 @@
 @inject ILocalStorageService localStorage
 
 
+<input @bind="Prompter" placeholder="Prompter" style="text-align: center; max-width: 256; margin: 0 auto;" />
+<br>
+
 @foreach (var scroll in Scrolls) {
 	<div class="scroll">
 		<input @bind="scroll.Label" />
@@ -99,6 +102,7 @@
 
 
 @code {
+	string Prompter = "";
 	List<Scroll> Scrolls = new() {
 		new Scroll {
 			Label = "",
@@ -138,7 +142,7 @@
 
 				CompletionRequest request = new CompletionRequest();
 				request.Model = OpenAI.Models.Model.Davinci;
-				request.Prompt = Scrolls[0].Full + Scrolls[1].Full + ChoiceLabel + "\n";
+				request.Prompt = Scrolls[0].Full + Scrolls[1].Full + Tools.Formatted(ChoiceLabel,"\n");
 				request.MaxTokens = MaxTokens;
 				request.Temperature = Temperature;
 				request.PresencePenalty = Contrast;
@@ -153,12 +157,16 @@
 					
 					StateHasChanged();
 				}
+
+				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
 			}
 			catch {
 				// openai btn flash red
 				Error = true;
 				await Task.Delay(2000);
 				Error = false;
+
+				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter}");
 			}
 
 			Loading = false;

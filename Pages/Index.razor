@@ -21,8 +21,8 @@
 <br>
 
 <div class="scroll">
-	<input @bind="Choices[ChoiceIndex].Label" />
-	<textarea @bind="Choices[ChoiceIndex].Text"></textarea>
+	<input @bind="ChoiceLabel" />
+	<textarea @bind="Choices[ChoiceIndex]"></textarea>
 </div>
 <br>
 <br>
@@ -101,28 +101,25 @@
 @code {
 	List<Scroll> Scrolls = new() {
 		new Scroll {
-			Label = "Instruction",
-			Text = "Augment the input with a variety of descriptive language tools and elaborate phrasing that will help to improve and enhance it.",
+			Label = "",
+			Text = "",
 		},
 		new Scroll {
-			Label = "Input",
-			Text = "Get good.",
+			Label = "",
+			Text = "",
 		},
 	};
 
+	string ChoiceLabel = "";
 	int ChoiceIndex = 0;
+	List<string> Choices = new() { "", "", "", };
 	void Back() { ChoiceIndex = ChoiceIndex == 0 ? Choices.Count - 1 : ChoiceIndex - 1; }
 	void Next() { ChoiceIndex = ChoiceIndex == Choices.Count - 1 ? 0 : ChoiceIndex + 1; }
-	List<Scroll> Choices = new() {
-		new Scroll { Label = "Choice #1", Color = "#ff8080", },
-		new Scroll { Label = "Choice #2", Color = "#80ff80", },
-		new Scroll { Label = "Choice #3", Color = "#8080ff", },
-	};
 
 	void Swap() {
 		var txt = Scrolls[1].Text;
-		Scrolls[1].Text = Choices[ChoiceIndex].Text;
-		Choices[ChoiceIndex].Text = txt;
+		Scrolls[1].Text = Choices[ChoiceIndex];
+		Choices[ChoiceIndex] = txt;
 	}
 
 	int   MaxTokens   = 256;
@@ -137,11 +134,11 @@
 			Loading = true;
 
 			try {
-				Choices = Choices.Select(x => { x.Text = ""; return x; }).ToList();
+				Choices = Choices.Select(x => { x = ""; return x; }).ToList();
 
 				CompletionRequest request = new CompletionRequest();
 				request.Model = OpenAI.Models.Model.Davinci;
-				request.Prompt = Scrolls[1].Full + Scrolls[0].Full + "Input (Augmented):\n";
+				request.Prompt = Scrolls[0].Full + Scrolls[1].Full + ChoiceLabel + "\n";
 				request.MaxTokens = MaxTokens;
 				request.Temperature = Temperature;
 				request.PresencePenalty = Contrast;
@@ -151,8 +148,8 @@
 				var endpoint = API.CompletionsEndpoint;
 				await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
 					var index = token.Completions[0].Index;
-					Choices[index].Text += token.Completions[0].Text;
-					Choices[index].Text = Choices[index].Text.TrimStart('\n');
+					Choices[index] += token.Completions[0].Text;
+					Choices[index] = Choices[index].TrimStart('\n');
 					
 					StateHasChanged();
 				}

@@ -9,6 +9,7 @@
 * {
 	font-family: 'Atkinson Hyperlegible', Helvetica, Arial, sans-serif;
 	-webkit-tap-highlight-color: transparent;
+	border-radius: 0;
 	border: none;
 	outline: none;
 	font-size: 14px;
@@ -45,6 +46,7 @@ h2 {
 a {
 	color: blue;
 	text-underline-offset: 5px;
+	letter-spacing: 0.5px;
 }
 
 input::placeholder {
@@ -61,7 +63,7 @@ button {
 	padding: 12px 16px;
 	border-top: 1px solid rgba(255, 255, 255, 0.6);
 	background-color: var(--interact);
-	color: #fff;
+	color: #000;
 	font-size: 16px;
 	font-weight: 700;
 	text-decoration: none;
@@ -76,7 +78,8 @@ button:active {
 }
 
 button.disabled {
-	background-color: #808080 !important;
+	background-color: #707070 !important;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .content {
@@ -93,9 +96,9 @@ button.disabled {
 	padding: 0.5pc;
 	border-top: 1px solid rgba(255, 255, 255, 0.6);
 	background-color: var(--interact);
-	color: white;
+	/* color: white; */
+	/* font-weight: 700; */
 	line-height: 1pc;
-	font-weight: 700;
 	text-align: center;
 }
 
@@ -114,16 +117,17 @@ button.disabled {
 .key {
 	background-color: white !important;
 	color: rgb(64, 64, 64) !important;
-	font-weight: 400 !important;
+	/* font-weight: 400 !important; */
 
 	/* color: grey !important; */
 	/* font-family: monospace; */
-	-webkit-text-security: square;
+	/* -webkit-text-security: square; */
 }
 
 .spin {
 	/* transform: rotate(45deg); */
   animation: spin 3s infinite;
+	fill: white;
 }
 
 @keyframes spin {
@@ -136,7 +140,7 @@ input[type=range] {
 	-webkit-appearance: none;
 	width: 256px;
 	margin: 0 auto;
-	height: 8px;
+	height: 6px;
 	background: white;
 	outline: none;
 }

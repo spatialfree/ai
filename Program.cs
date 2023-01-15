@@ -1,7 +1,6 @@
 global using Blazored.LocalStorage;
 global using Blazored.LocalStorage.Serialization;
 global using OpenAI;
-global using OpenAI.Edits;
 
 var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddRazorPages();

@@ -4,7 +4,7 @@
 @inherits ai.IndexBase
 
 
-<input @bind="Prompter" placeholder="Prompter" style="text-align: center; max-width: 256; margin: 0 auto;" />
+<input @bind="Prompter" type="username" autocomplete="username" placeholder="Prompter" style="text-align: center; max-width: 256; margin: 0 auto;" />
 <br>
 
 @foreach (var scroll in Scrolls) {
@@ -48,7 +48,7 @@
 <div class="scroll" style="text-align: center;">
 	<span class="oi oi-key" style="color: @(Authorized ? "#00cc00" : "#800000"); font-size: 24px;"></span>
 	<br><br>
-	<input @bind="ApiKey" type="password" placeholder="sk-XXXXX..." class="key" style="max-width: 256px; margin: 0 auto;" spellCheck=false />
+	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="sk-XXXXX..." class="key" style="max-width: 256px; margin: 0 auto;" spellCheck=false />
 	<br>
 	<a href="https://beta.openai.com/account/api-keys" target="_blank">
 		<span class="oi oi-link-intact" style=""></span>

@@ -1,21 +1,3 @@
-using System.Net.Http;
-
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.Web.Virtualization;
-
-using Microsoft.JSInterop;
-
-using ai;
-using ai.Shared;
-
-using Blazored.LocalStorage;
-using Blazored.LocalStorage.Serialization;
-
 namespace ai;
 
 public class IndexBase : ComponentBase {
@@ -27,20 +9,20 @@ public class IndexBase : ComponentBase {
 		},
 		new Scroll {
 			Label = "",
-			Text = "",
+			Text = "Say this is a test",
 		},
 	};
 
-	protected string ChoiceLabel = "";
-	protected int ChoiceIndex = 0;
-	protected List<string> Choices = new() { "", "", "", };
-	protected void Back() { ChoiceIndex = ChoiceIndex == 0 ? Choices.Count - 1 : ChoiceIndex - 1; }
-	protected void Next() { ChoiceIndex = ChoiceIndex == Choices.Count - 1 ? 0 : ChoiceIndex + 1; }
+	protected string OutputLabel = "";
+	protected int OutputIndex = 0;
+	protected List<string> Outputs = new() { "" };
+	protected void Back() { OutputIndex--; }
+	protected void Next() { OutputIndex++; }
 
 	protected void Swap() {
 		var txt = Scrolls[1].Text;
-		Scrolls[1].Text = Choices[ChoiceIndex];
-		Choices[ChoiceIndex] = txt;
+		Scrolls[1].Text = Outputs[OutputIndex];
+		Outputs[OutputIndex] = txt;
 	}
 
 	protected int   MaxTokens   = 256;
@@ -55,22 +37,36 @@ public class IndexBase : ComponentBase {
 			Loading = true;
 
 			try {
-				Choices = Choices.Select(x => { x = ""; return x; }).ToList();
+				// 0 [1] 2 3
+				// 0 [1] 
+				// 0 [1] 2
+				// 0  1 [2]
+				if (Outputs[OutputIndex].Length > 0) {
+					if (OutputIndex < Outputs.Count - 1)
+						Outputs.RemoveRange(OutputIndex + 1, Outputs.Count - (OutputIndex + 1));
+					
+					Outputs.Add("");
+					OutputIndex++;
+				}
+
+					// OutputIndex == Outputs.Count - 1
+
+				// Outputs = Outputs.Select(x => { x = ""; return x; }).ToList();
 
 				CompletionRequest request = new CompletionRequest();
 				request.Model = OpenAI.Models.Model.Davinci;
-				request.Prompt = Scrolls[0].Full + Scrolls[1].Full + Tools.Formatted(ChoiceLabel,"\n");
+				request.Prompt = Scrolls[0].Full + Scrolls[1].Full + Tools.Formatted(OutputLabel,"\n");
 				request.MaxTokens = MaxTokens;
 				request.Temperature = Temperature;
 				request.PresencePenalty = Contrast;
 				request.FrequencyPenalty = -Repeat;
-				request.NumChoicesPerPrompt = 3;
 
 				var endpoint = API.CompletionsEndpoint;
 				await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
-					var index = token.Completions[0].Index;
-					Choices[index] += token.Completions[0].Text;
-					Choices[index] = Choices[index].TrimStart('\n');
+					// var index = token.Completions[0].Index;
+					// var output = ;
+					Outputs[OutputIndex] += token.Completions[0].Text;
+					Outputs[OutputIndex] = Outputs[OutputIndex].TrimStart('\n');
 					
 					StateHasChanged();
 				}
@@ -91,7 +87,7 @@ public class IndexBase : ComponentBase {
 	}
 
 	protected string ApiKey = "";
-	OpenAIClient? API;
+	OpenAIClient API = default!;
 	protected bool Authorized = false;
 
 	[Inject]
@@ -130,7 +126,7 @@ public class IndexBase : ComponentBase {
 			Authorized = true;
 		}
 		catch {
-			API = null; // not memory safe
+			API = default!;
 			Authorized = false;
 		}
 
@@ -156,7 +152,7 @@ GRAVEYARD
 	<h3>Todo (@todos.Count(todo => !todo.IsDone))</h3>
 
 	<p>@completion</p>
-	color: @Choices[ChoiceIndex].Color
+	color: @Outputs[OutputIndex].Color
 	@bind:event="oninput" style="height: @(Rows(scroll.Text, 89))pc"
 	localStorage.Changed += (_, e) => {
 		Console.WriteLine($"  key: {e.Key} \n from: {e.OldValue} \n   to: {e.NewValue}");
@@ -166,4 +162,12 @@ GRAVEYARD
 	}
 
 */
+}
+
+public class Scroll {
+	public string Label { get; set; } = default!;
+	public string Text  { get; set; } = default!;
+	public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
+	public string Color { get; set; } = default!;
+	// public bool IsDone { get; set; }
 }

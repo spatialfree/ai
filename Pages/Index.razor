@@ -27,17 +27,17 @@
 <br>
 
 <div class="scroll">
-	<input @bind="ChoiceLabel" />
-	<textarea @bind="Choices[ChoiceIndex]"></textarea>
+	<input @bind="OutputLabel" />
+	<textarea @bind="Outputs[OutputIndex]"></textarea>
 </div>
 <br>
 
 <div style="display: flex; max-width: 600px; margin: 0 auto; gap: 16px; justify-content: center;">
-	<button @onclick="Back" style="margin: 0; padding: 0.5rem 1rem; height: fit-content;">
+	<button @onclick="Back" disabled="@(Loading || OutputIndex == 0)" style="margin: 0; padding: 0.5rem 1rem; height: fit-content;">
 		<span class="oi oi-arrow-left"></span>
 	</button>
-	<button @onclick="Swap" style="margin: 0;"><span class="oi oi-collapse-up"></span></button>
-	<button @onclick="Next" style="margin: 0; padding: 0.5rem 1rem; height: fit-content;">
+	<button @onclick="Swap" disabled="@Loading" style="margin: 0;"><span class="oi oi-collapse-up"></span></button>
+	<button @onclick="Next" disabled="@(Loading || OutputIndex == Outputs.Count - 1)"style="margin: 0; padding: 0.5rem 1rem; height: fit-content;">
 		<span class="oi oi-arrow-right"></span>
 	</button>
 </div>
@@ -51,8 +51,13 @@
 	<input @bind="ApiKey" type="password" placeholder="sk-XXXXX..." class="key" style="max-width: 256px; margin: 0 auto;" spellCheck=false />
 	<br>
 	<a href="https://beta.openai.com/account/api-keys" target="_blank">
-		<span class="oi oi-link-intact" style=""></span>&nbsp;
+		<span class="oi oi-link-intact" style=""></span>
+		<br><br>
 		Get API Key
+	</a>
+	<br>
+	<a href="https://beta.openai.com/docs/api-reference/completions/create" target="_blank">
+		Documentation
 	</a>
 	<br>
 </div>
@@ -94,9 +99,7 @@
 		<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
 		<div class="limit">2</div>
 	</div>
-	<br><br><br>
 </div>
-
 
 <br><br><br>
 <br><br><br>

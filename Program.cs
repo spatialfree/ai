@@ -1,6 +1,6 @@
 global using System;
+global using Microsoft.AspNetCore.Components;
 global using Blazored.LocalStorage;
-global using Blazored.LocalStorage.Serialization;
 global using OpenAI;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -49,10 +49,6 @@ public class IndexBase : ComponentBase {
 					OutputIndex++;
 				}
 
-					// OutputIndex == Outputs.Count - 1
-
-				// Outputs = Outputs.Select(x => { x = ""; return x; }).ToList();
-
 				CompletionRequest request = new CompletionRequest();
 				request.Model = OpenAI.Models.Model.Davinci;
 				request.Prompt = Scrolls[0].Full + Scrolls[1].Full + Tools.Formatted(OutputLabel,"\n");
@@ -63,8 +59,6 @@ public class IndexBase : ComponentBase {
 
 				var endpoint = API.CompletionsEndpoint;
 				await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
-					// var index = token.Completions[0].Index;
-					// var output = ;
 					Outputs[OutputIndex] += token.Completions[0].Text;
 					Outputs[OutputIndex] = Outputs[OutputIndex].TrimStart('\n');
 					
@@ -74,7 +68,6 @@ public class IndexBase : ComponentBase {
 				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
 			}
 			catch {
-				// openai btn flash red
 				Error = true;
 				await Task.Delay(2000);
 				Error = false;

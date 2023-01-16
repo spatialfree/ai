@@ -82,9 +82,10 @@ button:active {
 	transition-timing-function: cubic-bezier(.51,.12,0,-0.27);
 }
 
-button.disabled {
+button[disabled] {
 	background-color: #707070 !important;
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .content {

@@ -34,11 +34,13 @@
 
 <div style="display: flex; max-width: 600px; margin: 0 auto; gap: 16px; justify-content: center;">
 	<button @onclick="Back" disabled="@(Loading || OutputIndex == 0)" style="margin: 0; padding: 0.5rem 1rem; height: fit-content;">
-		<span class="oi oi-arrow-left"></span>
+		<img class="icon" src="svg-icons/arrow-left.svg" />
 	</button>
-	<button @onclick="Swap" disabled="@Loading" style="margin: 0;"><span class="oi oi-collapse-up"></span></button>
+	<button @onclick="Swap" disabled="@Loading" style="margin: 0;">
+		<img class="icon" src="svg-icons/collapse-up.svg" />
+	</button>
 	<button @onclick="Next" disabled="@(Loading || OutputIndex == Outputs.Count - 1)"style="margin: 0; padding: 0.5rem 1rem; height: fit-content;">
-		<span class="oi oi-arrow-right"></span>
+		<img class="icon" src="svg-icons/arrow-right.svg" />
 	</button>
 </div>
 <br><br><br>
@@ -46,14 +48,13 @@
 <br><br><br>
 
 <div class="scroll" style="text-align: center;">
-	<span class="oi oi-key" style="color: @(Authorized ? "#00cc00" : "#800000"); font-size: 24px;"></span>
-	<br><br>
+	@* @(Authorized ? "#00cc00" : "#800000"); *@
+	<img class="icon" src="svg-icons/key.svg" style="filter: contrast(0%) sepia(30%) saturate(10000%) hue-rotate(@(Authorized ? "110": "-30")deg);" />
+	<br>
 	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="sk-XXXXX..." class="key" style="max-width: 256px; margin: 0 auto;" spellCheck=false />
 	<br>
 	<a href="https://beta.openai.com/account/api-keys" target="_blank">
-		<span class="oi oi-link-intact" style=""></span>
-		<br><br>
-		Get API Key
+		Get OpenAI API Key
 	</a>
 	<br>
 	<a href="https://beta.openai.com/docs/api-reference/completions/create" target="_blank">
@@ -64,8 +65,8 @@
 <br><br><br>
 
 <div style="display: @(Authorized ? "block": "none"); text-align: center;">
-	<span class="oi oi-text" style="font-size:24px; color:white;"></span>
-	<br><br>
+	<img class="icon" src="svg-icons/text.svg" />
+	<br>
 	<div class="row">
 		<div class="limit">&nbsp;&nbsp;16</div>
 		<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
@@ -74,8 +75,8 @@
 																									@* <input type="checkbox" /> 2x boost *@
 	<br><br><br>
 
-	<span class="oi oi-pulse" style="font-size:24px; color:white;"></span>
-	<br><br>
+	<img class="icon" src="svg-icons/pulse.svg" />
+	<br>
 	<div class="row">
 		<div class="limit">0</div>
 		<input @bind="Temperature" type="range" min="0" max="1" step="0.01" />
@@ -83,8 +84,8 @@
 	</div>
 	<br><br><br>
 
-	<span class="oi oi-contrast" style="font-size:24px; color:white;"></span>
-	<br><br>
+	<img class="icon" src="svg-icons/contrast.svg" />
+	<br>
 	<div class="row">
 		<div class="limit">- 2</div>
 		<input @bind="Contrast" type="range" min="-1.9" max="1.9" step="0.1" />
@@ -92,8 +93,8 @@
 	</div>
 	<br><br><br>
 
-	<span class="oi oi-loop-circular" style="font-size:24px; color:white;"></span>
-	<br><br>
+	<img class="icon" src="svg-icons/loop-circular.svg" />
+	<br>
 	<div class="row">
 		<div class="limit">- 2</div>
 		<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />

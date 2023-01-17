@@ -1,7 +1,9 @@
 global using System;
+global using System.Net;
 global using Microsoft.AspNetCore.Components;
 global using Blazored.LocalStorage;
 global using OpenAI;
+global using OpenAI.Embeddings;
 
 var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddRazorPages();

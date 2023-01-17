@@ -3,14 +3,8 @@ namespace ai;
 public class IndexBase : ComponentBase {
 	protected string Prompter = "";
 	protected List<Scroll> Scrolls = new() {
-		new Scroll {
-			Label = "",
-			Text = "",
-		},
-		new Scroll {
-			Label = "",
-			Text = "Say this is a test",
-		},
+		new Scroll { Label = "", Text = "", },
+		new Scroll { Label = "", Text = "Say this is a test", },
 	};
 
 	protected string OutputLabel = "";
@@ -37,10 +31,6 @@ public class IndexBase : ComponentBase {
 			Loading = true;
 
 			try {
-				// 0 [1] 2 3
-				// 0 [1] 
-				// 0 [1] 2
-				// 0  1 [2]
 				if (Outputs[OutputIndex].Length > 0) {
 					if (OutputIndex < Outputs.Count - 1)
 						Outputs.RemoveRange(OutputIndex + 1, Outputs.Count - (OutputIndex + 1));
@@ -67,17 +57,42 @@ public class IndexBase : ComponentBase {
 
 				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
 			}
-			catch (Exception e) {
+			catch (Exception ex) {
 				Error = true;
+				StateHasChanged();
 				await Task.Delay(2000);
 				Error = false;
 
-				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} ({e.Message})");
+				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} : {ex.Message}");
 			}
 
 			Loading = false;
 		}
 	}
+
+	protected async Task Embed() {
+		var endpoint = API.EmbeddingsEndpoint;
+		// (+), 0, (-)
+		EmbeddingsResponse white = await endpoint.CreateEmbeddingAsync("north");
+		EmbeddingsResponse grey = await endpoint.CreateEmbeddingAsync("south");
+		EmbeddingsResponse black = await endpoint.CreateEmbeddingAsync("west");
+		double[] vWhite = GetVector(white);
+		double[] vGrey  = GetVector(grey);
+		double[] vBlack = GetVector(black);
+
+
+		// double w2g = Similarity(vWhite, vGrey);
+		// double g2b = Similarity(vGrey, vBlack);
+		// Console.WriteLine($"{w2g} : {g2b}");
+
+		double[] w2g = Tools.Direction(vWhite, vGrey);
+		double[] g2b = Tools.Direction(vGrey, vBlack);
+		Console.WriteLine($"{Tools.DotProduct(w2g, g2b)}");
+	}
+
+	double[] GetVector(EmbeddingsResponse er) { return er.Data[0].Embedding.ToArray(); }
+
+
 
 	protected string ApiKey = "";
 	OpenAIClient API = default!;

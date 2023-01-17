@@ -67,12 +67,12 @@ public class IndexBase : ComponentBase {
 
 				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
 			}
-			catch {
+			catch (Exception e) {
 				Error = true;
 				await Task.Delay(2000);
 				Error = false;
 
-				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter}");
+				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} ({e.Message})");
 			}
 
 			Loading = false;

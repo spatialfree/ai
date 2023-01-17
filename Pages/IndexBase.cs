@@ -130,7 +130,9 @@ public class IndexBase : ComponentBase {
 
 		try {
 			API = new OpenAIClient(new OpenAIAuthentication(ApiKey));
-			var model = await API.ModelsEndpoint.GetModelDetailsAsync("text-davinci-003");
+			var endpoint = API.EmbeddingsEndpoint;
+			await endpoint.CreateEmbeddingAsync("key");
+
 			Authorized = true;
 		}
 		catch {

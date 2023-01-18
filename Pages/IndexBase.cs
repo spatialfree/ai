@@ -98,8 +98,8 @@ public class IndexBase : ComponentBase {
 	OpenAIClient API = default!;
 	protected bool Authorized = false;
 
-	[Inject]
-	ILocalStorageService localStorage { get; set; } = default!;
+	[Inject] ILocalStorageService localStorage { get; set; } = default!;
+	[Inject] Mono mono { get; set; } = default!;
 	// private IExampleService ExampleService { get; set; } = default!;
 
 	IEnumerable<string> Keys { get; set; } = new List<string>();
@@ -145,15 +145,24 @@ public class IndexBase : ComponentBase {
 		StateHasChanged();
 	}
 
+	protected void SetData() {
+		int value = 1;
+		mono.Add(ApiKey, value);
+		Console.WriteLine($"SET: {value}");
+	}
+
+	protected void GetData() {
+		int value = mono.Get(ApiKey);
+		Console.WriteLine($"GET: {value}");
+	}
 /*
 
 NOTES
-	max_tokens  slider
-	temperature slider
+	HASH FUNCTION *dont store peoples keys directly*
+
 	Rewrite the token system to be persistent and time mapped
 	totalTokens += result.Usage.TotalTokens;
 	Console.WriteLine($"+{result.Usage.TotalTokens} | {totalTokens}");
-	extensible localStorage based on key system
 
 
 GRAVEYARD

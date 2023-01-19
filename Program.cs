@@ -1,15 +1,19 @@
 global using System;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Components;
-global using Blazored.LocalStorage;
+global using Microsoft.AspNetCore.Components.Web;
+
+global using Microsoft.JSInterop;
+
 global using OpenAI;
 global using OpenAI.Embeddings;
 
 var builder = WebApplication.CreateBuilder(args);
 	builder.Services.AddRazorPages();
 	builder.Services.AddServerSideBlazor();
-	builder.Services.AddBlazoredLocalStorage();
+	// builder.Services.AddBlazoredLocalStorage();
 	builder.Services.AddSingleton<Mono>();
+	// builder.Services.AddScoped<IJSRuntime, JSRuntime>();
 
 	// var apiKey = builder.Configuration["OpenAI:ApiKey"];
 	// builder.Services.AddSingleton<OpenAIService>(sp => new OpenAIService(apiKey));

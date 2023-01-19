@@ -1,10 +1,13 @@
 namespace ai;
+// using Blazored.LocalStorage;
+// using ChangeEventArgs = Microsoft.AspNetCore.Components.ChangeEventArgs;
 
 public class IndexBase : ComponentBase {
 	protected string Prompter = "";
 	protected List<Scroll> Scrolls = new() {
-		new Scroll { Label = "", Text = "", },
-		new Scroll { Label = "", Text = "Say this is a test", },
+		new Scroll { Pos = new Vec(64, 128), Label = "", Text = "", },
+		new Scroll { Pos = new Vec(64, 256), Label = "", Text = "Say this is a test", },
+		new Scroll { Pos = new Vec(64, 384), Label = "", Text = "my way", },
 	};
 
 	protected string OutputLabel = "";
@@ -98,23 +101,28 @@ public class IndexBase : ComponentBase {
 	OpenAIClient API = default!;
 	protected bool Authorized = false;
 
-	[Inject] ILocalStorageService localStorage { get; set; } = default!;
+	// [Inject] ILocalStorageService localStorage { get; set; } = default!;
+	[Inject] IJSRuntime ijsruntime { get; set; } = default!;
 	[Inject] Mono mono { get; set; } = default!;
 	// private IExampleService ExampleService { get; set; } = default!;
 
 	IEnumerable<string> Keys { get; set; } = new List<string>();
 	protected override async Task OnAfterRenderAsync(bool firstRender) {
-		Keys = await localStorage.KeysAsync();
+		// Keys = await localStorage.KeysAsync();
 		if (firstRender) {
-			await LoadKey();
+			
+			await JSRuntimeExtensions.InvokeVoidAsync(ijsruntime, "setText");
+
+
+			// await LoadKey();
 			StateHasChanged();
 		}
 
-		await SaveKey();
+		// await SaveKey();
 	}
 
 	protected async Task LoadKey() {
-		ApiKey = await localStorage.GetItemAsync<string>("apikey");
+		// ApiKey = await localStorage.GetItemAsync<string>("apikey");
 		if (string.IsNullOrEmpty(ApiKey)) { ApiKey = ""; }
 	}
 
@@ -124,9 +132,9 @@ public class IndexBase : ComponentBase {
 			return;
 		lastTry = ApiKey;
 
-		string storageKey = await localStorage.GetItemAsync<string>("apikey");
-		if (ApiKey == storageKey && Authorized)
-			return;
+		// string storageKey = await localStorage.GetItemAsync<string>("apikey");
+		// if (ApiKey == storageKey && Authorized)
+		// 	return;
 
 		try {
 			API = new OpenAIClient(new OpenAIAuthentication(ApiKey));
@@ -140,8 +148,8 @@ public class IndexBase : ComponentBase {
 			Authorized = false;
 		}
 
-		await localStorage.SetItemAsync("apikey", ApiKey);
-		Keys = await localStorage.KeysAsync();
+		// await localStorage.SetItemAsync("apikey", ApiKey);
+		// Keys = await localStorage.KeysAsync();
 		StateHasChanged();
 	}
 
@@ -155,9 +163,78 @@ public class IndexBase : ComponentBase {
 		int value = mono.Get(ApiKey);
 		Console.WriteLine($"GET: {value}");
 	}
+
+
+
+	
+	protected void MouseMove(MouseEventArgs e) {
+		cursor = new Vec(e.ClientX, e.ClientY); 
+		Move();
+	}
+
+	protected void MouseDown(MouseEventArgs e) {
+		cursor = new Vec(e.ClientX, e.ClientY);
+		Grab();
+	}
+
+	protected void MouseUp(MouseEventArgs e) {
+		held = false;
+		StateHasChanged();
+	}
+
+
+	protected void TouchMove(TouchEventArgs e) {
+		cursor = new Vec(e.Touches[0].ClientX, e.Touches[0].ClientY);
+		Move();
+	}
+
+	protected void TouchStart(TouchEventArgs e) {
+		cursor = new Vec(e.Touches[0].ClientX, e.Touches[0].ClientY);
+		Grab();
+	}
+
+	protected void TouchEnd(TouchEventArgs e) {
+		held = false;
+		StateHasChanged();
+	}
+
+
+	protected void Grab() {
+		for (int i = 0; i < Scrolls.Count; i++) {
+			Vec pos = Scrolls[i].Pos;
+			Vec localPos = (cursor - pos);
+			bool inX = localPos.x <  0 && localPos.x > -40;
+			bool inY = localPos.y < 20 && localPos.y >   0;
+			if (inX && inY) {
+				offset = pos - cursor;
+				heldIndex = i;
+				held = true;
+			}
+		}
+		
+		StateHasChanged();
+	}
+
+	void Move() {
+		if (held) { 
+			Vec newPos = cursor + offset;
+			Scrolls[heldIndex].Pos = newPos;
+		}
+		StateHasChanged();
+	}
+
+	Vec offset;
+	protected bool held = false;
+	protected int heldIndex = 0;
+	protected Vec cursor = new Vec(200, 300);
+
 /*
 
 NOTES
+	do everything with pixels and slap a scalar on top
+	also turn this off?
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 	HASH FUNCTION *dont store peoples keys directly*
 
 	Rewrite the token system to be persistent and time mapped
@@ -173,7 +250,7 @@ GRAVEYARD
 	<p>@completion</p>
 	color: @Outputs[OutputIndex].Color
 	@bind:event="oninput" style="height: @(Rows(scroll.Text, 89))pc"
-	localStorage.Changed += (_, e) => {
+	// localStorage.Changed += (_, e) => {
 		Console.WriteLine($"  key: {e.Key} \n from: {e.OldValue} \n   to: {e.NewValue}");
 	};
 	async Task oninput(ChangeEventArgs e) {
@@ -188,5 +265,33 @@ public class Scroll {
 	public string Text  { get; set; } = default!;
 	public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
 	public string Color { get; set; } = default!;
+	public Vec Pos;
 	// public bool IsDone { get; set; }
+}
+
+
+public struct Vec {
+	public double x { get; set; }
+	public double y { get; set; }
+
+	public Vec(double x, double y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	public static Vec operator +(Vec a, Vec b) 
+		=> new Vec(a.x + b.x, a.y + b.y);
+
+	public static Vec operator -(Vec a, Vec b) 
+		=> new Vec(a.x - b.x, a.y - b.y);
+
+
+  public double Mag
+		=> Math.Sqrt(x * x + y * y);
+
+	
+
+
+  public override string ToString()
+    => string.Format("[{0:0.##}, {1:0.##}]", x, y);
 }

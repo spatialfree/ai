@@ -8,7 +8,7 @@
 * {
 	font-family: 'Atkinson Hyperlegible', Helvetica, Arial, sans-serif;
 	-webkit-tap-highlight-color: transparent;
-	border-radius: 0;
+	/* border-radius: 1px; */
 	border: none;
 	outline: none;
 	font-size: 14px;
@@ -20,6 +20,7 @@
 
 html, body {
 	background-color: #808080;
+	overscroll-behavior: contain; 
 }
 
 *::-webkit-scrollbar {
@@ -56,6 +57,17 @@ input::placeholder {
 	color: #ccc;
   opacity: 1;
 }
+
+[contenteditable] {
+	background-color: white; 
+	border-bottom: 1px solid #666; 
+	margin-bottom: -1px;
+	border-top: 1px solid #ccc;
+	margin-top: -1px;
+	padding: 0 4px; 
+	font-size: 14px;
+	line-height: 20px;
+} 
 
 img {
 	margin: 0 auto;

@@ -5,9 +5,9 @@ namespace ai;
 public class IndexBase : ComponentBase {
 	protected string Prompter = "";
 	protected List<Scroll> Scrolls = new() {
-		new Scroll { Pos = new Vec(64, 128), Label = "", Text = "", },
-		new Scroll { Pos = new Vec(64, 256), Label = "", Text = "Say this is a test", },
-		new Scroll { Pos = new Vec(64, 384), Label = "", Text = "my way", },
+		new Scroll { Init = "true", Pos = new Vec(64, 128), Label = "0", Text = "", },
+		new Scroll { Init = "true", Pos = new Vec(64, 256), Label = "1", Text = "Say this is a test", },
+		new Scroll { Init = "true", Pos = new Vec(64, 384), Label = "2", Text = "my way", },
 	};
 
 	protected string OutputLabel = "";
@@ -107,15 +107,19 @@ public class IndexBase : ComponentBase {
 	// private IExampleService ExampleService { get; set; } = default!;
 
 	IEnumerable<string> Keys { get; set; } = new List<string>();
+
 	protected override async Task OnAfterRenderAsync(bool firstRender) {
 		// Keys = await localStorage.KeysAsync();
 		if (firstRender) {
 			
-			await JSRuntimeExtensions.InvokeVoidAsync(ijsruntime, "setText");
 
 
 			// await LoadKey();
-			StateHasChanged();
+			// StateHasChanged();
+		}
+		await JSRuntimeExtensions.InvokeVoidAsync(ijsruntime, "setText");
+		for (int j = 0; j < Scrolls.Count; j++) {
+			Scrolls[j].Init = "";
 		}
 
 		// await SaveKey();
@@ -207,26 +211,61 @@ public class IndexBase : ComponentBase {
 			bool inY = localPos.y < 20 && localPos.y >   0;
 			if (inX && inY) {
 				offset = pos - cursor;
-				heldIndex = i;
+
+				Console.WriteLine(i);
+				Scroll item = Scrolls[i];
+				Scrolls.RemoveAt(i);
+				Scrolls.Add(item);
+
 				held = true;
+
+				for (int j = 0; j < Scrolls.Count; j++) {
+					Scrolls[j].Init = "true";
+				}
+
+				StateHasChanged();
+
+				// SetText();
+
+				return;
 			}
 		}
-		
-		StateHasChanged();
+	}
+	async Task SetText() {
+		// await Task.Delay(10); // magic grace time
+		// StateHasChanged();
+		await JSRuntimeExtensions.InvokeVoidAsync(ijsruntime, "setText");
+		for (int j = 0; j < Scrolls.Count; j++) {
+			Scrolls[j].Init = "";
+		}
 	}
 
 	void Move() {
 		if (held) { 
 			Vec newPos = cursor + offset;
-			Scrolls[heldIndex].Pos = newPos;
+			Scrolls[Scrolls.Count - 1].Pos = newPos;
 		}
 		StateHasChanged();
 	}
 
-	Vec offset;
+	Vec offset = new Vec(0, 0);
 	protected bool held = false;
-	protected int heldIndex = 0;
 	protected Vec cursor = new Vec(200, 300);
+
+	protected void HandleKeyDown(KeyboardEventArgs e) {
+		Console.WriteLine($"Key pressed: {e.Key}");
+	}
+
+	protected string myText = "";
+
+	protected string[,] Keyboard = new string[,] {
+		{ "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" },
+		{ "q", "w", "e", "r", "t", "y", "u", "i", "o", "p" },
+		{ "a", "s", "d", "f", "g", "h", "j", "k", "l", "'" },
+		{ "^", "z", "x", "c", "v", "b", "n", "m", ",", "<" },
+		{ "?", "_", "_", "_", "_", "_", "_", "_", "_", ">" }
+	};
+
 
 /*
 
@@ -261,16 +300,17 @@ GRAVEYARD
 }
 
 public class Scroll {
+	public string Init  { get; set; } = default!;
 	public string Label { get; set; } = default!;
 	public string Text  { get; set; } = default!;
 	public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
 	public string Color { get; set; } = default!;
-	public Vec Pos;
+	public Vec Pos { get; set; } = default!;
 	// public bool IsDone { get; set; }
 }
 
 
-public struct Vec {
+public class Vec {
 	public double x { get; set; }
 	public double y { get; set; }
 

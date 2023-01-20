@@ -59,7 +59,7 @@
 	@* @(Authorized ? "#00cc00" : "#800000"); *@
 	<img class="icon" src="svg-icons/key.svg" style="filter: contrast(0%) sepia(30%) saturate(10000%) hue-rotate(@(Authorized ? "110": "-30")deg);" />
 	<br>
-	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="sk-XXXXX..." class="key" style="max-width: 256px; margin: 0 auto;" spellCheck=false />
+	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="sk-XXXXX..." class="apikey" style="max-width: 256px; margin: 0 auto;" spellCheck=false />
 	<br>
 	<a href="https://beta.openai.com/account/api-keys" target="_blank">
 		Get OpenAI API Key
@@ -137,11 +137,28 @@
 	
 	@foreach (var scroll in Scrolls) {
 		<div style="position: fixed; transform: translate(@(scroll.Pos.x)px, @(scroll.Pos.y)px); width: fit-content;">
-			<div contenteditable init-value="@scroll.Label" @oninput="@((ChangeEventArgs __e) => scroll.Label = __e?.Value?.ToString())" style="min-width: 32px; max-width: 320px; position: fixed; bottom: calc(100% + 4px);"></div>
+			<div contenteditable init="@scroll.Init" init-value="@scroll.Label" @oninput="@((ChangeEventArgs __e) => scroll.Label = __e?.Value?.ToString())" style="min-width: 32px; max-width: 320px; position: fixed; bottom: calc(100% + 4px);"></div>
 			<div style="background-color: #57b373; color: white; height: 20px; width: 100%; position: fixed; left: -40px; top: -4px; z-index: -100;"></div>
-			<div contenteditable init-value="@scroll.Text" @oninput="@((ChangeEventArgs __e) => scroll.Text = __e?.Value?.ToString())" style="min-width: 128px; max-width: 320px;"></div>
+			<div contenteditable init="@scroll.Init" init-value="@scroll.Text" @oninput="@((ChangeEventArgs __e) => scroll.Text = __e?.Value?.ToString())" style="min-width: 128px; max-width: 320px;"></div>
+			<div>what's going on with @scroll.Label</div>
 		</div>
 	}
+
+	<div style="position: fixed; transform: translate(200px, 200px);">@myText</div>
+	<input type="text" style="position: fixed; transform: translate(200px, 300px);" @onkeydown="HandleKeyDown" />
+
+
+	<div style="background-color: #ccc; max-width: 500px; display: flex; flex-flow: column; gap: 6px; height: fit-content; position: fixed; bottom: 0; left: 0; right: 0;">
+		<br>
+		@for (int y = 0; y < Keyboard.GetLength(0); y++) {
+			<div style="display: flex; justify-content: space-evenly; gap: 6px; margin: 0 6px">
+			@for (int x = 0; x < Keyboard.GetLength(1); x++) {
+				<div class="key">@Keyboard[y, x]</div>
+			}
+			</div>
+		}
+		<br>
+	</div>
 
 </div>
 

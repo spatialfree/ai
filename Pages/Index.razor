@@ -1,7 +1,7 @@
 ﻿@page "/"
 @* @using ai.Data *@
 @* @inject ILocalStorageService localStorage *@
-@inject IJSRuntime JSRuntime
+@* @inject IJSRuntime JSRuntime *@
 
 @* @using ChangeEventArgs = Microsoft.AspNetCore.Components.ChangeEventArgs *@
 
@@ -137,28 +137,12 @@
 	
 	@foreach (var scroll in Scrolls) {
 		<div style="position: fixed; transform: translate(@(scroll.Pos.x)px, @(scroll.Pos.y)px); width: fit-content;">
-			<div contenteditable init="@scroll.Init" init-value="@scroll.Label" @oninput="@((ChangeEventArgs __e) => scroll.Label = __e?.Value?.ToString())" style="min-width: 32px; max-width: 320px; position: fixed; bottom: calc(100% + 4px);"></div>
-			<div style="background-color: #57b373; color: white; height: 20px; width: 100%; position: fixed; left: -40px; top: -4px; z-index: -100;"></div>
-			<div contenteditable init="@scroll.Init" init-value="@scroll.Text" @oninput="@((ChangeEventArgs __e) => scroll.Text = __e?.Value?.ToString())" style="min-width: 128px; max-width: 320px;"></div>
-			<div>what's going on with @scroll.Label</div>
+			<input @bind="scroll.Label" style="position: fixed; bottom: calc(100% + 4px); padding: 0 4px; background-color: transparent; border-bottom: 1px solid #ffffff33;" />
+			<div style="background-color: #57b373; height: 20px; width: 100%; position: fixed; left: -40px; top: -4px; z-index: -100;"></div>
+			<textarea @bind="scroll.Text" style="border: 2px solid #ddd; resize: none; width: @(scroll.Area.x)px; height: @(scroll.Area.y)px; padding: 0 4px"></textarea>
+			<div style="background-color: var(--interact); border-right: 1px solid #ffffff80; height: 20px; width: 40px; position: fixed; right: -20px; bottom: -10px; z-index: -100; transform: rotate(45deg);"></div>
 		</div>
 	}
-
-	<div style="position: fixed; transform: translate(200px, 200px);">@myText</div>
-	<input type="text" style="position: fixed; transform: translate(200px, 300px);" @onkeydown="HandleKeyDown" />
-
-
-	<div style="background-color: #ccc; max-width: 500px; display: flex; flex-flow: column; gap: 6px; height: fit-content; position: fixed; bottom: 0; left: 0; right: 0;">
-		<br>
-		@for (int y = 0; y < Keyboard.GetLength(0); y++) {
-			<div style="display: flex; justify-content: space-evenly; gap: 6px; margin: 0 6px">
-			@for (int x = 0; x < Keyboard.GetLength(1); x++) {
-				<div class="key">@Keyboard[y, x]</div>
-			}
-			</div>
-		}
-		<br>
-	</div>
 
 </div>
 

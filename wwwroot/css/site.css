@@ -226,36 +226,6 @@ input[type=range]::-webkit-slider-thumb:active {
 
 
 
-
-.key {
-	flex-grow: 1; 
-	width: 30px; 
-	height: 44px; 
-	border-radius: 6px; 
-	text-align: center;
-	font-size: 24px; 
-	line-height: 44px;
-	user-select: none;
-	cursor: pointer;
-	background-color: #eee; 
-	border-top: 1px solid #fff; 
-	border-bottom: 1px solid #00000080;
-}
-
-.key:active {
-	background-color: #aaa;
-	border-top: 1px solid #00000080; 
-	border-bottom: 1px solid #fff;
-	color: #fff;
-	transform: translate(0, -52px);
-}
-
-
-
-
-
-
-
 #blazor-error-ui {
 	background: lightyellow;
 	bottom: 0;

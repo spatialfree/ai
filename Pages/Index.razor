@@ -135,28 +135,53 @@
 	style="position: fixed; top: 0; bottom: 0; left: 0; right: 0;"
 >
 
-	<div style="transform: translate(@(canvas.x)px, @(canvas.y)px);">
+	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
 	
 	@foreach (var scroll in Scrolls) {
 		<div style="position: fixed; transform: translate(@(scroll.Pos.x)px, @(scroll.Pos.y)px); width: fit-content;">
-			<input @bind="scroll.Label" style="position: fixed; bottom: calc(100% + 5px); width: calc(100% - 10px); padding: 0 4px; background-color: #333; color: #fff; border: 1px solid #00000033; border-radius: 2px 2px 0 0;" />
+			<input @bind="scroll.Label" style="
+				position: fixed; 
+				bottom: calc(100% + 5px); 
+				width: calc(100% - 10px); 
+				padding: 0 4px; 
+				background-color: #333; 
+				color: #fff; 
+				border: 1px solid #00000033; 
+				border-radius: 2px 2px 0 0;
+			"/>
 			<div style="
-				background-color: @(scroll.Color); 
-				user-select: none; 
-				height: 30px; 
+				background-color: @(scroll.Color); color: #ffffff80; 
+				user-select: none; cursor: pointer; 
 				width: calc(100% + 40px - 12px); 
+				height: 30px; 
 				position: fixed; 
 				left: -40px; 
 				top: -4px; 
 				z-index: -100; 
-				color: #ffffff80; 
-				line-height: 28px; 
-				font-size: 20px; 
+				font-size: 20px; line-height: 28px; 
 				padding-left: 12px; 
 				border-radius: 16px 0 0 16px;
-				">:&nbsp;:</div>
-			<textarea @bind="scroll.Text" style="  user-select: none; border: 1px solid #ddd; resize: none; width: @(scroll.Area.x)px; height: @(scroll.Area.y)px; padding: 0 4px; border-radius: 0 0 2px 2px;"></textarea>
-			<div style="background-color: var(--interact); height: 20px; width: @(scroll.Area.y + 20)px; position: fixed; right: -22px; bottom: 2px; transform: rotate(90deg); z-index: -100; text-align: right; color: #ffffff80; border-radius: 2px 8px 8px 0;">))&nbsp;</div>
+			">:&nbsp;:</div>
+			<textarea @bind="scroll.Text" style="
+				border: 1px solid #ddd; 
+				resize: none; 
+				width: @(scroll.Area.x)px; 
+				height: @(scroll.Area.y)px; 
+				padding: 0 4px; 
+				border-radius: 0 0 2px 2px;
+			"></textarea>
+			<div style="
+				background-color: var(--interact); color: #ffffff80; 
+				user-select: none; cursor: pointer; 
+				width: 20px; 
+				height: @(scroll.Area.y + 21)px; 
+				position: fixed; 
+				right: -2px; 
+				bottom: -20px; 
+				z-index: -100; 
+				text-align: right; 
+				border-radius: 2px 2px 2px 2px;
+			"><img src="svg-icons/fullscreen-enter.svg" width="12px" style="pointer-events: none; filter: invert(1); opacity: 0.5; mix-blend-mode: invert; position: fixed; bottom: -16px; right: 2px;" /></div>
 		</div>
 	}
 
@@ -165,7 +190,6 @@
 </div>
 
 @* <div style="transform: translate(@(cursor.x - 3)px, @(cursor.y - 3)px); width: 6px; height: 6px; background-color: black; border: 1px solid white; user-select: none; pointer-events: none;"></div> *@
-
 
 @* <svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg" style="background-color: darkgray;">
 	<text contenteditable x="20" y="40" textLength="32px">@Con</text>

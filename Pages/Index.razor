@@ -137,8 +137,8 @@
 
 	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
 	
-	@foreach (var scroll in Scrolls) {
-		<div style="position: fixed; transform: translate(@(scroll.Pos.x)px, @(scroll.Pos.y)px); width: fit-content;">
+	@foreach (var (scroll, index) in Scrolls.Select((scroll, index) => (scroll, index))) {
+		<div style="position: fixed; transform: translate(@(scroll.Pos.x)px, @(scroll.Pos.y)px); width: fit-content; filter: @(index == Scrolls.Count - 1 && (held || pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");">
 			<input @bind="scroll.Label" style="
 				position: fixed; 
 				bottom: calc(100% + 5px); 

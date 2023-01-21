@@ -5,9 +5,9 @@ namespace ai;
 public class IndexBase : ComponentBase {
 	protected string Prompter = "";
 	protected List<Scroll> Scrolls = new() {
-		new Scroll { Pos = new Vec(64, 128), Area = new Vec(200, 40), Label = "0", Text = "", },
-		new Scroll { Pos = new Vec(64, 256), Area = new Vec(200, 40), Label = "1", Text = "Say this is a test", },
-		new Scroll { Pos = new Vec(64, 384), Area = new Vec(200, 40), Label = "2", Text = "my way", },
+		new Scroll { Pos = new Vec(64, 128), Area = new Vec(200, 40), Color = "#57b373", Label = "0", Text = "", },
+		new Scroll { Pos = new Vec(64, 256), Area = new Vec(200, 40), Color = "#b35773", Label = "1", Text = "Say this is a test", },
+		new Scroll { Pos = new Vec(64, 384), Area = new Vec(200, 40), Color = "#5773b3", Label = "2", Text = "my way", },
 	};
 
 	protected string OutputLabel = "";
@@ -164,47 +164,56 @@ public class IndexBase : ComponentBase {
 
 
 
+
 	
 	protected void MouseMove(MouseEventArgs e) {
-		cursor = new Vec(e.ClientX, e.ClientY); 
+		SetCursor(e.ClientX, e.ClientY);
 		Move();
 	}
 
 	protected void MouseDown(MouseEventArgs e) {
-		cursor = new Vec(e.ClientX, e.ClientY);
+		SetCursor(e.ClientX, e.ClientY);
+		down = true;
 		Grab();
 	}
 
 	protected void MouseUp(MouseEventArgs e) {
+		down = false;
 		held = false;
 		StateHasChanged();
 	}
 
 
 	protected void TouchMove(TouchEventArgs e) {
-		cursor = new Vec(e.Touches[0].ClientX, e.Touches[0].ClientY);
+		SetCursor(e.Touches[0].ClientX, e.Touches[0].ClientY);
 		Move();
 	}
 
 	protected void TouchStart(TouchEventArgs e) {
-		cursor = new Vec(e.Touches[0].ClientX, e.Touches[0].ClientY);
+		SetCursor(e.Touches[0].ClientX, e.Touches[0].ClientY);
+		down = true;
 		Grab();
 	}
 
 	protected void TouchEnd(TouchEventArgs e) {
 		held = false;
+		down = false;
 		StateHasChanged();
+	}
+
+	void SetCursor(double x, double y) {
+		cursor = new Vec(x, y); // +/- canvas
 	}
 
 
 	protected void Grab() {
 		for (int i = 0; i < Scrolls.Count; i++) {
 			Vec pos = Scrolls[i].Pos;
-			Vec localPos = (cursor - pos);
+			Vec localPos = (localCursor - pos);
 			bool inX = localPos.x <  0 && localPos.x > -40;
-			bool inY = localPos.y < 20 && localPos.y >   0;
+			bool inY = localPos.y < 30 && localPos.y >   0;
 			if (inX && inY) {
-				offset = pos - cursor;
+				offset = pos - localCursor;
 
 				Console.WriteLine(i);
 				Scroll item = Scrolls[i];
@@ -217,12 +226,16 @@ public class IndexBase : ComponentBase {
 				return;
 			}
 		}
+
+		canvasOffset = canvas - cursor;
 	}
 
 	void Move() {
 		if (held) { 
-			Vec newPos = cursor + offset;
+			Vec newPos = localCursor + offset;
 			Scrolls[Scrolls.Count - 1].Pos = newPos;
+		} else if (down) {
+			canvas = cursor + canvasOffset;
 		}
 		StateHasChanged();
 	}
@@ -230,6 +243,12 @@ public class IndexBase : ComponentBase {
 	Vec offset = new Vec(0, 0);
 	protected bool held = false;
 	protected Vec cursor = new Vec(200, 300);
+	protected Vec localCursor { get { return cursor - canvas; } }
+
+
+	Vec canvasOffset = new Vec(0, 0);
+	protected bool down = false;
+	protected Vec canvas = new Vec(0, 0);
 
 /*
 

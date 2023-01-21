@@ -132,17 +132,35 @@
 <div 
 	@ontouchmove="TouchMove" @ontouchstart="TouchStart" @ontouchend="TouchEnd" 
 	@onmousemove="MouseMove" @onmousedown="MouseDown" @onmouseup="MouseUp" 
-	style="position: fixed; top: 0; bottom: 0; left: 0; right: 0; transform: translate(0px, 0px);"
+	style="position: fixed; top: 0; bottom: 0; left: 0; right: 0;"
 >
+
+	<div style="transform: translate(@(canvas.x)px, @(canvas.y)px);">
 	
 	@foreach (var scroll in Scrolls) {
 		<div style="position: fixed; transform: translate(@(scroll.Pos.x)px, @(scroll.Pos.y)px); width: fit-content;">
-			<input @bind="scroll.Label" style="position: fixed; bottom: calc(100% + 4px); padding: 0 4px; background-color: transparent; border-bottom: 1px solid #ffffff33;" />
-			<div style="background-color: #57b373; user-select: none; height: 20px; width: 100%; position: fixed; left: -40px; top: -4px; z-index: -100;"></div>
-			<textarea @bind="scroll.Text" style="border: 2px solid #ddd; resize: none; width: @(scroll.Area.x)px; height: @(scroll.Area.y)px; padding: 0 4px"></textarea>
-			<div style="background-color: var(--interact); border-right: 1px solid #ffffff80; height: 20px; width: 40px; position: fixed; right: -20px; bottom: -10px; z-index: -100; transform: rotate(45deg);"></div>
+			<input @bind="scroll.Label" style="position: fixed; bottom: calc(100% + 5px); width: calc(100% - 10px); padding: 0 4px; background-color: #333; color: #fff; border: 1px solid #00000033; border-radius: 2px 2px 0 0;" />
+			<div style="
+				background-color: @(scroll.Color); 
+				user-select: none; 
+				height: 30px; 
+				width: calc(100% + 40px - 12px); 
+				position: fixed; 
+				left: -40px; 
+				top: -4px; 
+				z-index: -100; 
+				color: #ffffff80; 
+				line-height: 28px; 
+				font-size: 20px; 
+				padding-left: 12px; 
+				border-radius: 16px 0 0 16px;
+				">:&nbsp;:</div>
+			<textarea @bind="scroll.Text" style="  user-select: none; border: 1px solid #ddd; resize: none; width: @(scroll.Area.x)px; height: @(scroll.Area.y)px; padding: 0 4px; border-radius: 0 0 2px 2px;"></textarea>
+			<div style="background-color: var(--interact); height: 20px; width: @(scroll.Area.y + 20)px; position: fixed; right: -22px; bottom: 2px; transform: rotate(90deg); z-index: -100; text-align: right; color: #ffffff80; border-radius: 2px 8px 8px 0;">))&nbsp;</div>
 		</div>
 	}
+
+	</div>
 
 </div>
 

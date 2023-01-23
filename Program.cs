@@ -8,6 +8,13 @@ global using Microsoft.JSInterop;
 global using OpenAI;
 global using OpenAI.Embeddings;
 
+
+
+using ai;
+using System.IO;
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 	builder.Services.AddRazorPages();
 	builder.Services.AddServerSideBlazor();
@@ -32,8 +39,12 @@ var app = builder.Build();
 app.Run();
 
 
+
 public class Mono {
 	private Dictionary<string, int> data = new Dictionary<string, int>();
+
+	public Vec Shared = new Vec(20, 20);
+	public string SharedText = "text";
 
 	public void Add(string key, int value) {
 		data.Add(key, value);
@@ -41,6 +52,83 @@ public class Mono {
 
 	public int Get(string key) {
 		return data.GetValueOrDefault(key);
+	}
+
+	// Manual Setup
+	public void InitRecords() {
+		string cd    = Directory.GetCurrentDirectory();
+		string dir   = $"{cd}/Records/";
+
+		Directory.CreateDirectory(dir);
+		for (int i = 0; i < 10; i++) {
+			File.CreateText($"{dir}{i}");
+		}
+		File.Move($"{dir}0", $"{dir}0)");
+	}
+
+	public void Record() {
+		string cd  = Directory.GetCurrentDirectory();
+		string dir = $"{cd}/Records/";
+
+		if (!Directory.Exists(dir))
+			InitRecords();
+
+		string[] files = Directory.GetFiles(dir);
+		for (int i = 0; i < files.Length; i++) {
+			string path = files[i];
+			string name = Path.GetFileName(path);
+			if (name.Contains(')')) {
+				int index = int.Parse(name.Remove(1));
+				File.Move(path, $"{dir}{index}");
+				
+				index = Tools.RollOver(index, 1, files.Length);
+				path = $"{dir}{index}";
+		
+				string contents = $"{TimeStamp}\n_\n";
+				contents += SharedText;
+				File.WriteAllText(path, contents);
+				// File.WriteAllTextAsync()
+
+				File.Move(path, $"{path})");
+			}
+		}
+	}
+
+	public string TimeStamp { get {
+		string date = DateTime.Now.ToShortDateString();
+		string time = DateTime.Now.ToShortTimeString();
+		return $"{date}\n{time}";
+	}}
+
+	public void Restore() {
+		string cd  = Directory.GetCurrentDirectory();
+		string dir = $"{cd}/Records/";
+
+		if (!Directory.Exists(dir))
+			InitRecords();
+
+		string[] files = Directory.GetFiles(dir);
+		for (int i = 0; i < files.Length; i++) {
+			string path = files[i];
+			string name = Path.GetFileName(path);
+			if (name.Contains(')')) {
+				string contents = File.ReadAllText(path);
+				Console.WriteLine(contents);
+
+				// int index = int.Parse(name.Remove(1));
+				// File.Move(path, $"{dir}{index}");
+				
+				// index = Tools.RollOver(index, 1, files.Length);
+				// path = $"{dir}{index}";
+		
+				// string contents = $"{TimeStamp}\n_\n";
+				// contents += SharedText;
+				// File.WriteAllText(path, contents);
+				// // File.WriteAllTextAsync()
+
+				// File.Move(path, $"{path})");
+			}
+		}
 	}
 }
 
@@ -64,3 +152,24 @@ public class Post {
 	// color?
 	public string color = "";
 }
+
+
+
+/*
+
+I need to be able to save thing's in a file format that is human readable
+that way I can recover and refactor data as needed
+
+Label
+Prompt
+Color
+Pos
+Area
+
+Label
+Prompt
+Color
+Pos
+Area
+
+*/

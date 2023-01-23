@@ -5,9 +5,9 @@ namespace ai;
 public class IndexBase : ComponentBase {
 	protected string Prompter = "";
 	protected List<Scroll> Scrolls = new() {
-		new Scroll { Pos = new Vec(64, 128), Area = new Vec(100, 20), Color = "#57b373", Label = "0", Text = "", },
-		new Scroll { Pos = new Vec(64, 256), Area = new Vec(200, 40), Color = "#b35773", Label = "1", Text = "Say this is a test", },
-		new Scroll { Pos = new Vec(64, 384), Area = new Vec(200, 60), Color = "#5773b3", Label = "2", Text = "my way", },
+		new Scroll { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Label = "0 | Zed", Text = "Leaf Green", },
+		new Scroll { Pos = new Vec(64, 180), Area = new Vec(150, 40), Color = "#b35773", Label = "1 | One", Text = "Maroon Saloon\nBalloon Blender", },
+		new Scroll { Pos = new Vec(64, 280), Area = new Vec(100, 80), Color = "#5773b3", Label = "2 | Two", Text = "Blueberry\nSandwich\nTester", },
 	};
 
 	protected string OutputLabel = "";
@@ -103,7 +103,7 @@ public class IndexBase : ComponentBase {
 
 	// [Inject] ILocalStorageService localStorage { get; set; } = default!;
 	[Inject] IJSRuntime ijsruntime { get; set; } = default!;
-	[Inject] Mono mono { get; set; } = default!;
+	[Inject] protected Mono mono { get; set; } = default!;
 	// private IExampleService ExampleService { get; set; } = default!;
 
 	IEnumerable<string> Keys { get; set; } = new List<string>();
@@ -151,15 +151,24 @@ public class IndexBase : ComponentBase {
 		StateHasChanged();
 	}
 
+
+
+	// protected Vec localShared = new Vec(0, 0);
+
 	protected void SetData() {
 		int value = 1;
-		mono.Add(ApiKey, value);
-		Console.WriteLine($"SET: {value}");
+		// mono.Add(ApiKey, value);
+
+		// Console.WriteLine($"SET: {value}");
+
+		// if user input:
 	}
 
 	protected void GetData() {
-		int value = mono.Get(ApiKey);
-		Console.WriteLine($"GET: {value}");
+		// int value = mono.Get(ApiKey);
+
+		// Console.WriteLine($"GET: {value}");
+		// localShared = mono.Shared;
 	}
 
 
@@ -274,6 +283,17 @@ public class IndexBase : ComponentBase {
 		Scrolls.Add(scroll);
 	}
 
+
+
+
+
+
+
+
+	protected void Drag() {
+		Console.WriteLine("Drag");
+	}
+
 /*
 
 NOTES
@@ -286,6 +306,14 @@ NOTES
 	Rewrite the token system to be persistent and time mapped
 	totalTokens += result.Usage.TotalTokens;
 	Console.WriteLine($"+{result.Usage.TotalTokens} | {totalTokens}");
+
+	DATA DATA DATA
+	much data so little time
+		in memory
+			what needs to be stored in the abstract?
+			then build out the UI from that angle?
+		auto back up array
+			that can be used to restore debug and refactor
 
 
 GRAVEYARD

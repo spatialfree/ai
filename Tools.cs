@@ -1,4 +1,16 @@
 public static class Tools {
+
+	public static int RollOver(int index, int roll, int length) {
+		int rolled = index + roll;
+		if (rolled < 0)
+			return length - 1;
+		
+		if (rolled > length - 1)
+			return 0;
+
+		return rolled;
+	}
+
   public static string? Formatted(string? str, string? append) {
 		return string.IsNullOrEmpty(str) ? "" : str + append;
 	}

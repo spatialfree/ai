@@ -24,13 +24,17 @@ html, body {
 }
 
 *::-webkit-scrollbar {
-	width: 2px;
-	display: none;
+	width: 3px;
+	/* display: none; */
+	background-color: #eee;
+	border: 1px solid #fff;
+	border-radius: 2px;
 }
 *::-webkit-scrollbar-thumb {
-	background-color: white;
-	border: 1px solid var(--interact);
-	border-left: none;
+	background-color: var(--interact);
+	/* border: 1px solid #ffffff33; */
+	border-radius: 2px;
+	/* border-left: none; */
 }
 
 h1 {

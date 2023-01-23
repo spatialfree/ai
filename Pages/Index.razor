@@ -149,7 +149,7 @@
 				border: 1px solid #00000033; 
 				border-radius: 2px 2px 0 0;
 			"/>
-			<div style="
+			<div @onmousedown="Drag" style="
 				background-color: @(scroll.Color); color: #ffffff80; 
 				user-select: none; cursor: pointer; 
 				width: calc(100% + 40px - 12px); 
@@ -168,22 +168,28 @@
 				width: @(scroll.Area.x)px; 
 				height: @(scroll.Area.y)px; 
 				padding: 0 4px; 
-				border-radius: 0 0 2px 2px;
+				font-size: 14px; line-height: 20px;
+				border-radius: 2px;
 			"></textarea>
 			<div style="
 				background-color: var(--interact); color: #ffffff80; 
 				user-select: none; cursor: pointer; 
 				width: 20px; 
-				height: @(scroll.Area.y + 21)px; 
+				height: calc(2px + 20px); 
 				position: fixed; 
-				right: -2px; 
+				right: 0px; 
 				bottom: -20px; 
 				z-index: -100; 
 				text-align: right; 
-				border-radius: 2px 2px 2px 2px;
-			"><img src="svg-icons/fullscreen-enter.svg" width="12px" style="pointer-events: none; filter: invert(1); opacity: 0.5; mix-blend-mode: invert; position: fixed; bottom: -16px; right: 2px;" /></div>
+				border-radius: 0px 0px 2px 2px;
+			"><img src="svg-icons/fullscreen-enter.svg" width="12px" style="pointer-events: none; filter: invert(1); opacity: 0.5; mix-blend-mode: invert; position: fixed; bottom: -16px; right: 4px;" /></div>
 		</div>
 	}
+
+
+	<input @bind="mono.SharedText" />
+	<button @onclick="mono.Record">Record</button>
+	<button @onclick="mono.Restore">Restore</button>
 
 	</div>
 

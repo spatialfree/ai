@@ -119,12 +119,12 @@ button[disabled] {
 	padding-top: 1.1rem;
 }
 
-.scroll {
+.node {
 	max-width: 600px;
 	margin: 0 auto;
 }
 
-.scroll input {
+.node input {
 	width: -webkit-fill-available;
 	padding: 0.5pc;
 	border-top: 1px solid rgba(255, 255, 255, 0.6);
@@ -135,7 +135,7 @@ button[disabled] {
 	text-align: center;
 }
 
-.scroll textarea {
+.node textarea {
 	width: -webkit-fill-available;
 	padding: 0.5pc;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.6);

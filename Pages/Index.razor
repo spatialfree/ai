@@ -21,7 +21,7 @@
 </button>
 <br>
 
-<div class="scroll">
+<div class="node">
 	<input @bind="OutputLabel" />
 	<textarea @bind="Outputs[OutputIndex]"></textarea>
 </div>
@@ -119,10 +119,10 @@
 
 	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
 	
-	@foreach (var (scroll, index) in Scrolls.Select((scroll, index) => (scroll, index))) {
-		<div style="position: fixed; transform: translate(@(scroll.Pos.x)px, @(scroll.Pos.y)px); width: fit-content; filter: @(index == Scrolls.Count - 1 && (held || pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");">
+	@foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
+		<div style="position: fixed; transform: translate(@(node.Pos.x)px, @(node.Pos.y)px); width: fit-content; filter: @(index == Nodes.Count - 1 && (held || pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");">
 			<div @onmousedown="Drag" style="
-				background-color: @(scroll.Color); color: #ffffff80; 
+				background-color: @(node.Color); color: #ffffff80; 
 				user-select: none; cursor: pointer; 
 				width: calc(100% + 40px - 12px); 
 				height: 30px; 
@@ -134,11 +134,11 @@
 				padding-left: 12px; 
 				border-radius: 16px 0 0 16px;
 			">:&nbsp;:</div>
-			<textarea @bind="scroll.Text" class="scroll-text" style="
+			<textarea @bind="node.Text" class="node-text" style="
 				border: 1px solid #ddd; 
 				resize: none; 
-				width: @(scroll.Area.x)px; 
-				height: @(scroll.Area.y)px; 
+				width: @(node.Area.x)px; 
+				height: @(node.Area.y)px; 
 				padding: 0 4px; 
 				font-size: 14px; line-height: 20px;
 				border-radius: 2px;
@@ -174,7 +174,7 @@
 
 
 <style style="display: none;">
-.scroll-text::first-line {
+.node-text::first-line {
 	font-weight: 700;
 }
 </style>
@@ -184,7 +184,7 @@
 @*  
 
 
-<input @bind="scroll.Label" style="
+<input @bind="node.Label" style="
 	position: fixed; 
 	bottom: calc(100% + 5px); 
 	width: calc(100% - 10px); 

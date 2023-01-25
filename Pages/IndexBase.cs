@@ -4,11 +4,6 @@ namespace ai;
 
 public class IndexBase : ComponentBase {
 	protected string Prompter = "";
-	protected List<Scroll> Scrolls = new() {
-		new Scroll { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed\nLeaf Green", },
-		new Scroll { Pos = new Vec(64, 180), Area = new Vec(150, 40), Color = "#b35773", Text = "1 | One\nMaroon Saloon\nBalloon Blender", },
-		new Scroll { Pos = new Vec(64, 280), Area = new Vec(100, 80), Color = "#5773b3", Text = "2 | Two\nBlueberry\nSandwich\nTester", },
-	};
 
 	protected string OutputLabel = "";
 	protected int OutputIndex = 0;
@@ -16,9 +11,14 @@ public class IndexBase : ComponentBase {
 	protected void Back() { OutputIndex--; }
 	protected void Next() { OutputIndex++; }
 
+	protected List<Node> Nodes {
+		get { return mono.Nodes; }
+		set { mono.Nodes = value; }
+	}
+
 	protected void Swap() {
-		var txt = Scrolls[1].Text;
-		Scrolls[1].Text = Outputs[OutputIndex];
+		var txt = Nodes[1].Text;
+		Nodes[1].Text = Outputs[OutputIndex];
 		Outputs[OutputIndex] = txt;
 	}
 
@@ -44,7 +44,7 @@ public class IndexBase : ComponentBase {
 
 				CompletionRequest request = new CompletionRequest();
 				request.Model = OpenAI.Models.Model.Davinci;
-				// request.Prompt = Scrolls[0].Full + Scrolls[1].Full + Tools.Formatted(OutputLabel,"\n");
+				// request.Prompt = Nodes[0].Full + Nodes[1].Full + Tools.Formatted(OutputLabel,"\n");
 				request.MaxTokens = MaxTokens;
 				request.Temperature = Temperature;
 				request.PresencePenalty = Contrast;
@@ -194,8 +194,8 @@ public class IndexBase : ComponentBase {
 
 
 	protected void Grab() {
-		for (int i = 0; i < Scrolls.Count; i++) {
-			Vec pos = Scrolls[i].Pos;
+		for (int i = 0; i < Nodes.Count; i++) {
+			Vec pos = Nodes[i].Pos;
 
 			Vec localPos = (LocalCursor - pos);
 			bool inX = localPos.x <  0 && localPos.x > -40;
@@ -210,7 +210,7 @@ public class IndexBase : ComponentBase {
 				return;
 			}
 
-			Vec area = Scrolls[i].Area;
+			Vec area = Nodes[i].Area;
 			localPos = (LocalCursor - (pos + area));
 			localPos.x -= 12; // ~padding + border
 			localPos.y += 2; // ~border
@@ -231,15 +231,15 @@ public class IndexBase : ComponentBase {
 	}
 
 	void Move() {
-		Scroll scroll = Scrolls[Scrolls.Count - 1];
+		Node node = Nodes[Nodes.Count - 1];
 		if (held) { 
 			Vec newPos = LocalCursor + offset;
-			scroll.Pos = newPos;
+			node.Pos = newPos;
 		} else if (pull) {
-			Vec newArea = (LocalCursor + offset) - scroll.Pos;
+			Vec newArea = (LocalCursor + offset) - node.Pos;
 			newArea.x = Math.Max(newArea.x, 100);
 			newArea.y = Math.Max(newArea.y, 20);
-			scroll.Area = newArea;
+			node.Area = newArea;
 		} else if (down) {
 			Canvas = Cursor + canvasOffset;
 		}
@@ -258,9 +258,9 @@ public class IndexBase : ComponentBase {
 	protected bool pull = false;
 
 	void Lift(int index) {
-		Scroll scroll = Scrolls[index];
-		Scrolls.RemoveAt(index);
-		Scrolls.Add(scroll);
+		Node node = Nodes[index];
+		Nodes.RemoveAt(index);
+		Nodes.Add(node);
 	}
 
 
@@ -273,28 +273,11 @@ public class IndexBase : ComponentBase {
 	protected void Drag() {
 		Console.WriteLine("Drag");
 	}
-
-
-
-
-
-
-	protected bool Style = false;
-	public void StyleToggle() {
-		Style =!Style;
-		StateHasChanged();
-		// Write Line the Style bool as "yes" or "no"
-		
-	}
-	
-
-
+}
 
 /*
-
-GRAVEYARD
-	<h3>Todo (@todos.Count(todo => !todo.IsDone))</h3>
+	GRAVEYARD
+		<h3>Todo (@todos.Count(todo => !todo.IsDone))</h3>
 
 
 */
-}

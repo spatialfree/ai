@@ -1,12 +1,3 @@
-public class Scroll {
-	public string Text  { get; set; } = default!;
-	// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
-	public string Color { get; set; } = default!;
-	public Vec Pos { get; set; } = default!;
-	public Vec Area { get; set; } = default!;
-	// public bool IsDone { get; set; }
-}
-
 public class Vec {
 	public double x { get; set; }
 	public double y { get; set; }
@@ -28,15 +19,21 @@ public class Vec {
 
 	
 
-
   public override string ToString()
     => string.Format("[{0:0.##}, {1:0.##}]", x, y);
 }
 
+public class Node {
+	public string Text  { get; set; } = default!;
+	// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
+	public string Color { get; set; } = default!;
+	public Vec Pos { get; set; } = default!;
+	public Vec Area { get; set; } = default!;
+}
 
 
-
-public class Pattern {
+// a collection of connected posts ?
+public class Pattern { 
 	public Post[] posts = new Post[6]; // temp length
 }
 
@@ -56,3 +53,27 @@ public class Post {
 	// color?
 	public string color = "";
 }
+
+
+/*
+
+  Blocks
+    physically connecting systems
+    resembles text based code
+    linear
+    snaps together
+    auto expand and shrink
+    strong silhoeuttes
+
+  Nodes
+    physically connecting data
+    branchial
+    
+
+
+
+
+  generic nesting
+    rather than constructs for conditionals functions namespaces etc
+
+*/

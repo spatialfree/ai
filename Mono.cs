@@ -7,6 +7,12 @@ public class Mono {
     Restore();
   }
 
+	public List<Node> Nodes = new() {
+		new Node { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed\nLeaf Green", },
+		new Node { Pos = new Vec(64, 180), Area = new Vec(150, 40), Color = "#b35773", Text = "1 | One\nMaroon Saloon\nBalloon Blender", },
+		new Node { Pos = new Vec(64, 280), Area = new Vec(100, 80), Color = "#5773b3", Text = "2 | Two\nBlueberry\nSandwich\nTester", },
+	};
+
 	public Vec Shared = new Vec(20, 20);
 	public string SharedText = "text";
 
@@ -57,13 +63,28 @@ public class Mono {
 			string name = Path.GetFileName(path);
 			if (name.Contains(')')) {
 				bool meta = true;
+				int index = 0;
 				string[] lines = File.ReadAllLines(path);
 				for (int j = 0; j < lines.Length; j++) {
 					if (meta) {
 						meta = !lines[j].Contains("___");
 					} else {
-						Console.WriteLine(lines[j]);
-						SharedText = lines[j];
+						if (lines[j] == "") {
+							index ++;
+							continue;
+						}
+
+						// SharedText = lines[j];
+						Nodes[index].Text  = lines[j].ReplaceLineEndings();
+						Nodes[index].Color = lines[j+1].Replace("Color", "").Trim();
+						Nodes[index].Pos   = lines[j+2].Replace("Pos",   "").ToVec();
+						Nodes[index].Area  = lines[j+3].Replace("Area",  "").ToVec();
+						j += 3;
+						
+						if (index == Nodes.Count - 1)
+							break;
+
+						// Console.WriteLine(text);
 					}
 				}
 			}
@@ -86,7 +107,9 @@ NOTES
 
 	NOW
 		One shared "board"
-			persistent (1hr)
+			persistent [1hr]
+
+        auto record(ings)
 			secure
 		
 	
@@ -101,39 +124,5 @@ NOTES
 	Rewrite the token system to be persistent and time mapped
 	totalTokens += result.Usage.TotalTokens;
 	Console.WriteLine($"+{result.Usage.TotalTokens} | {totalTokens}");
-
-	DATA DATA DATA
-	much data so little time
-		in memory
-			what needs to be stored in the abstract?
-			then build out the UI from that angle?
-		auto back up array
-			that can be used to restore debug and refactor
-
-
-
-
-
-
-
-
-
-
-
-
-  I need to be able to save thing's in a file format that is human readable
-  that way I can recover and refactor data as needed
-
-  Label
-  Prompt
-  Color
-  Pos
-  Area
-
-  Label
-  Prompt
-  Color
-  Pos
-  Area
 
 */

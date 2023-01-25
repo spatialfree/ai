@@ -31,4 +31,10 @@ public static class Tools {
 
 		return dotProduct / (Math.Sqrt(magnitudeA) * Math.Sqrt(magnitudeB));
 	}
+
+	// string to vec
+	public static Vec ToVec(this string str) {
+		string[] split = str.Split(',');
+		return new Vec(float.Parse(split[0]), float.Parse(split[1]));
+	}
 }

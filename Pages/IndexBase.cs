@@ -88,9 +88,9 @@ public class IndexBase : ComponentBase {
 		// double g2b = Similarity(vGrey, vBlack);
 		// Console.WriteLine($"{w2g} : {g2b}");
 
-		double[] w2g = Tools.Direction(vWhite, vGrey);
-		double[] g2b = Tools.Direction(vGrey, vBlack);
-		Console.WriteLine($"{Tools.DotProduct(w2g, g2b)}");
+		// double[] w2g = Tools.Direction(vWhite, vGrey);
+		// double[] g2b = Tools.Direction(vGrey, vBlack);
+		// Console.WriteLine($"{Tools.DotProduct(w2g, g2b)}");
 	}
 
 	double[] GetVector(EmbeddingsResponse er) { return er.Data[0].Embedding.ToArray(); }
@@ -108,21 +108,21 @@ public class IndexBase : ComponentBase {
 
 	IEnumerable<string> Keys { get; set; } = new List<string>();
 
-	protected override async Task OnAfterRenderAsync(bool firstRender) {
-		// Keys = await localStorage.KeysAsync();
-		if (firstRender) {
+	// protected override async Task OnAfterRenderAsync(bool firstRender) {
+	// 	// Keys = await localStorage.KeysAsync();
+	// 	if (firstRender) {
 			
-			// await LoadKey();
-			// StateHasChanged();
-		}
+	// 		// await LoadKey();
+	// 		// StateHasChanged();
+	// 	}
 
-		// await SaveKey();
-	}
+	// 	// await SaveKey();
+	// }
 
-	protected async Task LoadKey() {
-		// ApiKey = await localStorage.GetItemAsync<string>("apikey");
-		if (string.IsNullOrEmpty(ApiKey)) { ApiKey = ""; }
-	}
+	// protected async Task LoadKey() {
+	// 	// ApiKey = await localStorage.GetItemAsync<string>("apikey");
+	// 	if (string.IsNullOrEmpty(ApiKey)) { ApiKey = ""; }
+	// }
 
 	string lastTry = "";
 	protected async Task SaveKey() {
@@ -292,81 +292,9 @@ public class IndexBase : ComponentBase {
 
 /*
 
-NOTES
-	Library~ (too soon?)
-	Board~
-	
-
-
-	do everything with pixels and slap a scalar on top
-	also turn this off?
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-	HASH FUNCTION *dont store peoples keys directly*
-
-	Rewrite the token system to be persistent and time mapped
-	totalTokens += result.Usage.TotalTokens;
-	Console.WriteLine($"+{result.Usage.TotalTokens} | {totalTokens}");
-
-	DATA DATA DATA
-	much data so little time
-		in memory
-			what needs to be stored in the abstract?
-			then build out the UI from that angle?
-		auto back up array
-			that can be used to restore debug and refactor
-
-
 GRAVEYARD
-	<PageTitle>Index</PageTitle>
-	<h1>Index</h1>
 	<h3>Todo (@todos.Count(todo => !todo.IsDone))</h3>
 
-	<p>@completion</p>
-	color: @Outputs[OutputIndex].Color
-	@bind:event="oninput" style="height: @(Rows(scroll.Text, 89))pc"
-	// localStorage.Changed += (_, e) => {
-		Console.WriteLine($"  key: {e.Key} \n from: {e.OldValue} \n   to: {e.NewValue}");
-	};
-	async Task oninput(ChangeEventArgs e) {
-		StateHasChanged();
-	}
 
 */
-}
-
-public class Scroll {
-	public string Text  { get; set; } = default!;
-	// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
-	public string Color { get; set; } = default!;
-	public Vec Pos { get; set; } = default!;
-	public Vec Area { get; set; } = default!;
-	// public bool IsDone { get; set; }
-}
-
-
-public class Vec {
-	public double x { get; set; }
-	public double y { get; set; }
-
-	public Vec(double x, double y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public static Vec operator +(Vec a, Vec b) 
-		=> new Vec(a.x + b.x, a.y + b.y);
-
-	public static Vec operator -(Vec a, Vec b) 
-		=> new Vec(a.x - b.x, a.y - b.y);
-
-
-  public double Mag
-		=> Math.Sqrt(x * x + y * y);
-
-	
-
-
-  public override string ToString()
-    => string.Format("[{0:0.##}, {1:0.##}]", x, y);
 }

@@ -84,7 +84,7 @@ public class Mono {
 				index = Tools.RollOver(index, 1, files.Length);
 				path = $"{dir}{index}";
 		
-				string contents = $"{TimeStamp}\n_\n";
+				string contents = $"{TimeStamp}\n___\n";
 				contents += SharedText;
 				File.WriteAllText(path, contents);
 				// File.WriteAllTextAsync()
@@ -112,21 +112,16 @@ public class Mono {
 			string path = files[i];
 			string name = Path.GetFileName(path);
 			if (name.Contains(')')) {
-				string contents = File.ReadAllText(path);
-				Console.WriteLine(contents);
-
-				// int index = int.Parse(name.Remove(1));
-				// File.Move(path, $"{dir}{index}");
-				
-				// index = Tools.RollOver(index, 1, files.Length);
-				// path = $"{dir}{index}";
-		
-				// string contents = $"{TimeStamp}\n_\n";
-				// contents += SharedText;
-				// File.WriteAllText(path, contents);
-				// // File.WriteAllTextAsync()
-
-				// File.Move(path, $"{path})");
+				bool meta = true;
+				string[] lines = File.ReadAllLines(path);
+				for (int j = 0; j < lines.Length; j++) {
+					if (meta) {
+						meta = !lines[j].Contains("___");
+					} else {
+						Console.WriteLine(lines[j]);
+						SharedText = lines[j];
+					}
+				}
 			}
 		}
 	}

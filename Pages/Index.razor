@@ -7,19 +7,7 @@
 
 @inherits ai.IndexBase
 
-<div style="display: none;">
-<input @bind="Prompter" type="username" autocomplete="username" placeholder="Prompter" style="text-align: center; max-width: 256; margin: 0 auto;" />
 <br>
-
-@foreach (var scroll in Scrolls) {
-	<div class="scroll">
-		<input @bind="scroll.Label" />
-		<textarea @bind="scroll.Text"></textarea>
-		@* <input type="checkbox" @bind="scroll.IsDone" /> *@
-	</div>
-	<br>
-}
-
 <button @onclick="Complete" disabled="@Loading">
 	<svg class="@(Loading ? "spin" : "") @(Error ? "error" : "")" xmlns="http://www.w3.org/2000/svg" height="36" viewBox="0 0 32 32">
 		@* <circle cx="16" cy="16" r="1" /> *@
@@ -51,15 +39,17 @@
 		next
 	</button>
 </div>
+
 <br><br><br>
 <br><br><br>
 <br><br><br>
 
-<div class="scroll" style="text-align: center;">
-	@* @(Authorized ? "#00cc00" : "#800000"); *@
+<div style="display: flex; flex-flow: column; align-items: center;">
 	<img class="icon" src="svg-icons/key.svg" style="filter: contrast(0%) sepia(30%) saturate(10000%) hue-rotate(@(Authorized ? "110": "-30")deg);" />
 	<br>
-	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="sk-XXXXX..." class="apikey" style="max-width: 256px; margin: 0 auto;" spellCheck=false />
+	<input @bind="Prompter" type="username" autocomplete="username" placeholder="Name" />
+	<br>
+	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="Api Key" class="apikey" spellCheck=false />
 	<br>
 	<a href="https://beta.openai.com/account/api-keys" target="_blank">
 		Get OpenAI API Key
@@ -118,16 +108,6 @@
 <br><br><br>
 <br><br><br>
 
-<button @onclick="SetData">SET</button>
-<br>
-<button @onclick="GetData">GET</button>
-<br>
-
-</div>
-
-
-
-
 
 <div 
 	@ontouchmove="TouchMove" @ontouchstart="TouchStart" @ontouchend="TouchEnd" 
@@ -139,16 +119,6 @@
 	
 	@foreach (var (scroll, index) in Scrolls.Select((scroll, index) => (scroll, index))) {
 		<div style="position: fixed; transform: translate(@(scroll.Pos.x)px, @(scroll.Pos.y)px); width: fit-content; filter: @(index == Scrolls.Count - 1 && (held || pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");">
-			<input @bind="scroll.Label" style="
-				position: fixed; 
-				bottom: calc(100% + 5px); 
-				width: calc(100% - 10px); 
-				padding: 0 4px; 
-				background-color: #333; 
-				color: #fff; 
-				border: 1px solid #00000033; 
-				border-radius: 2px 2px 0 0;
-			"/>
 			<div @onmousedown="Drag" style="
 				background-color: @(scroll.Color); color: #ffffff80; 
 				user-select: none; cursor: pointer; 
@@ -162,7 +132,7 @@
 				padding-left: 12px; 
 				border-radius: 16px 0 0 16px;
 			">:&nbsp;:</div>
-			<textarea @bind="scroll.Text" style="
+			<textarea @bind="scroll.Text" class="scroll-text" style="
 				border: 1px solid #ddd; 
 				resize: none; 
 				width: @(scroll.Area.x)px; 
@@ -191,12 +161,61 @@
 	<button @onclick="mono.Record">Record</button>
 	<button @onclick="mono.Restore">Restore</button>
 
+
+
+	
+
 	</div>
 
 </div>
 
-@* <div style="transform: translate(@(cursor.x - 3)px, @(cursor.y - 3)px); width: 6px; height: 6px; background-color: black; border: 1px solid white; user-select: none; pointer-events: none;"></div> *@
 
-@* <svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg" style="background-color: darkgray;">
+
+<style style="display: none;">
+.scroll-text::first-line {
+	font-weight: 700;
+}
+</style>
+
+
+
+@*  
+
+
+<input @bind="scroll.Label" style="
+	position: fixed; 
+	bottom: calc(100% + 5px); 
+	width: calc(100% - 10px); 
+	padding: 0 4px; 
+	background-color: #333; 
+	color: #fff; 
+	border: 1px solid #00000033; 
+	border-radius: 2px 2px 0 0;
+"/>
+
+
+	<button @onclick="StyleToggle">Style</button>
+	<div id="test">
+	</div>
+	<style contenteditable="@Style" style="display: @(Style ? "block" : "none"); white-space: pre; spellcheck: false;">
+/* 
+Only Shift-Enter 
+* { transition: all 0.2s; }
+*/
+#test {
+  width: 32px;
+  height: 32px;
+  background-color: red;
+  margin: 1px;
+}
+	</style>
+
+
+<div style="transform: translate(@(cursor.x - 3)px, @(cursor.y - 3)px); width: 6px; height: 6px; background-color: black; border: 1px solid white; user-select: none; pointer-events: none;"></div>
+
+
+<svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg" style="background-color: darkgray;">
 	<text contenteditable x="20" y="40" textLength="32px">@Con</text>
-</svg> *@
+</svg>
+
+*@

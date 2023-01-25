@@ -5,9 +5,9 @@ namespace ai;
 public class IndexBase : ComponentBase {
 	protected string Prompter = "";
 	protected List<Scroll> Scrolls = new() {
-		new Scroll { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Label = "0 | Zed", Text = "Leaf Green", },
-		new Scroll { Pos = new Vec(64, 180), Area = new Vec(150, 40), Color = "#b35773", Label = "1 | One", Text = "Maroon Saloon\nBalloon Blender", },
-		new Scroll { Pos = new Vec(64, 280), Area = new Vec(100, 80), Color = "#5773b3", Label = "2 | Two", Text = "Blueberry\nSandwich\nTester", },
+		new Scroll { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed\nLeaf Green", },
+		new Scroll { Pos = new Vec(64, 180), Area = new Vec(150, 40), Color = "#b35773", Text = "1 | One\nMaroon Saloon\nBalloon Blender", },
+		new Scroll { Pos = new Vec(64, 280), Area = new Vec(100, 80), Color = "#5773b3", Text = "2 | Two\nBlueberry\nSandwich\nTester", },
 	};
 
 	protected string OutputLabel = "";
@@ -44,7 +44,7 @@ public class IndexBase : ComponentBase {
 
 				CompletionRequest request = new CompletionRequest();
 				request.Model = OpenAI.Models.Model.Davinci;
-				request.Prompt = Scrolls[0].Full + Scrolls[1].Full + Tools.Formatted(OutputLabel,"\n");
+				// request.Prompt = Scrolls[0].Full + Scrolls[1].Full + Tools.Formatted(OutputLabel,"\n");
 				request.MaxTokens = MaxTokens;
 				request.Temperature = Temperature;
 				request.PresencePenalty = Contrast;
@@ -152,27 +152,7 @@ public class IndexBase : ComponentBase {
 	}
 
 
-
 	// protected Vec localShared = new Vec(0, 0);
-
-	protected void SetData() {
-		int value = 1;
-		// mono.Add(ApiKey, value);
-
-		// Console.WriteLine($"SET: {value}");
-
-		// if user input:
-	}
-
-	protected void GetData() {
-		// int value = mono.Get(ApiKey);
-
-		// Console.WriteLine($"GET: {value}");
-		// localShared = mono.Shared;
-	}
-
-
-
 
 	
 	protected void MouseMove(MouseEventArgs e) {
@@ -294,9 +274,30 @@ public class IndexBase : ComponentBase {
 		Console.WriteLine("Drag");
 	}
 
+
+
+
+
+
+	protected bool Style = false;
+	public void StyleToggle() {
+		Style =!Style;
+		StateHasChanged();
+		// Write Line the Style bool as "yes" or "no"
+		
+	}
+	
+
+
+
 /*
 
 NOTES
+	Library~ (too soon?)
+	Board~
+	
+
+
 	do everything with pixels and slap a scalar on top
 	also turn this off?
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -335,9 +336,8 @@ GRAVEYARD
 }
 
 public class Scroll {
-	public string Label { get; set; } = default!;
 	public string Text  { get; set; } = default!;
-	public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
+	// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
 	public string Color { get; set; } = default!;
 	public Vec Pos { get; set; } = default!;
 	public Vec Area { get; set; } = default!;

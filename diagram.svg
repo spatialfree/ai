@@ -24,9 +24,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1"
-     inkscape:cx="457.5"
-     inkscape:cy="404.5"
+     inkscape:zoom="2"
+     inkscape:cx="403.75"
+     inkscape:cy="268.25"
      inkscape:window-width="1916"
      inkscape:window-height="1076"
      inkscape:window-x="0"
@@ -137,15 +137,14 @@
     <text
        xml:space="preserve"
        style="font-size:4.23333px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-       x="73.916466"
-       y="-124.88148"
-       id="text1266"
-       transform="rotate(90)"><tspan
+       x="133.03447"
+       y="79.102707"
+       id="text1266"><tspan
          sodipodi:role="line"
          id="tspan1264"
-         style="stroke-width:2.64583;stroke:none;stroke-opacity:1;fill:#ffffff;fill-opacity:1"
-         x="73.916466"
-         y="-124.88148">name</tspan></text>
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.64583;stroke-opacity:1"
+         x="133.03447"
+         y="79.102707">name</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:4.23333px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.64583;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"

@@ -1,19 +1,69 @@
 namespace ai;
-// using Blazored.LocalStorage;
-// using ChangeEventArgs = Microsoft.AspNetCore.Components.ChangeEventArgs;
 
 public class IndexBase : ComponentBase {
+	[Inject] protected Mono mono { get; set; } = default!;
+
+	OpenAIClient API = default!;
+	protected bool ValidKey = false;
+	string apikey = "";
+	protected string Prompter = "";
+	protected string ApiKey { 
+		get { return apikey; }
+		set { apikey = value; TryKey(); }
+	}
+
+	string lastTry = "";
+	protected async Task TryKey() {
+		if (ApiKey == lastTry)
+			return;
+		lastTry = ApiKey;
+
+		try {
+			API = new OpenAIClient(new OpenAIAuthentication(ApiKey));
+			var endpoint = API.EmbeddingsEndpoint;
+			await endpoint.CreateEmbeddingAsync("key");
+			ValidKey = true;
+		}
+		catch {
+			API = default!;
+			ValidKey = false;
+		}
+
+		StateHasChanged();
+	}
+
+
+	string pattern = "";
+	protected string Pattern {
+		get { return pattern; }
+		set { 
+			pattern = value;
+			Cloud = pattern == mono.Pattern;
+		}
+	}
+	protected bool Cloud = false;
+
+	ObservableCollection<Node> nodes = new() {
+		new Node { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed\nLeaf Green", }
+	};
+	protected ObservableCollection<Node> Nodes {
+		get { return Cloud ? mono.Nodes : nodes; }
+	}
+
+
+
+
+	protected bool Menu = true;
+	protected void MenuToggle() {
+		Menu = !Menu;
+	}
+
 
 	protected string OutputLabel = "";
 	protected int OutputIndex = 0;
 	protected List<string> Outputs = new() { "" };
 	protected void Back() { OutputIndex--; }
 	protected void Next() { OutputIndex++; }
-
-	protected List<Node> Nodes {
-		get { return mono.Nodes; }
-		set { mono.Nodes = value; }
-	}
 
 	protected void Swap() {
 		var txt = Nodes[1].Text;
@@ -71,101 +121,6 @@ public class IndexBase : ComponentBase {
 			Loading = false;
 		}
 	}
-
-	// protected async Task Embed() {
-	// 	var endpoint = API.EmbeddingsEndpoint;
-	// 	// (+), 0, (-)
-	// 	EmbeddingsResponse white = await endpoint.CreateEmbeddingAsync("north");
-	// 	EmbeddingsResponse grey = await endpoint.CreateEmbeddingAsync("south");
-	// 	EmbeddingsResponse black = await endpoint.CreateEmbeddingAsync("west");
-	// 	double[] vWhite = GetVector(white);
-	// 	double[] vGrey  = GetVector(grey);
-	// 	double[] vBlack = GetVector(black);
-
-
-	// 	// double w2g = Similarity(vWhite, vGrey);
-	// 	// double g2b = Similarity(vGrey, vBlack);
-	// 	// Console.WriteLine($"{w2g} : {g2b}");
-
-	// 	// double[] w2g = Tools.Direction(vWhite, vGrey);
-	// 	// double[] g2b = Tools.Direction(vGrey, vBlack);
-	// 	// Console.WriteLine($"{Tools.DotProduct(w2g, g2b)}");
-	// }
-
-	// double[] GetVector(EmbeddingsResponse er) { return er.Data[0].Embedding.ToArray(); }
-
-
-	[Inject] protected Mono mono { get; set; } = default!;
-
-	OpenAIClient API = default!;
-	protected bool ValidKey = false;
-	string apikey = "";
-	protected string Prompter = "";
-	protected string ApiKey { 
-		get { return apikey; }
-		set { 
-			apikey = value;
-			TryKey();
-		}
-	}
-
-	protected string Pattern = "";
-
-	protected bool Menu = true;
-	protected void MenuToggle() {
-		Menu = !Menu;
-	}
-	// [Inject] ILocalStorageService localStorage { get; set; } = default!;
-	// [Inject] IJSRuntime ijsruntime { get; set; } = default!;
-	// private IExampleService ExampleService { get; set; } = default!;
-
-	// IEnumerable<string> Keys { get; set; } = new List<string>();
-
-	// protected override async Task OnAfterRenderAsync(bool firstRender) {
-	// 	// Keys = await localStorage.KeysAsync();
-	// 	if (firstRender) {
-			
-	// 		// await LoadKey();
-	// 		// StateHasChanged();
-	// 	}
-
-	// 	// await SaveKey();
-	// }
-
-	// protected async Task LoadKey() {
-	// 	// ApiKey = await localStorage.GetItemAsync<string>("apikey");
-	// 	if (string.IsNullOrEmpty(ApiKey)) { ApiKey = ""; }
-	// }
-
-	string lastTry = "";
-	protected async Task TryKey() {
-		if (ApiKey == lastTry)
-			return;
-		lastTry = ApiKey;
-
-		// string storageKey = await localStorage.GetItemAsync<string>("apikey");
-		// if (ApiKey == storageKey && Authorized)
-		// 	return;
-
-		try {
-			API = new OpenAIClient(new OpenAIAuthentication(ApiKey));
-			var endpoint = API.EmbeddingsEndpoint;
-			await endpoint.CreateEmbeddingAsync("key");
-
-			ValidKey = true;
-		}
-		catch {
-			API = default!;
-			ValidKey = false;
-		}
-
-		// await localStorage.SetItemAsync("apikey", ApiKey);
-		// Keys = await localStorage.KeysAsync();
-		StateHasChanged();
-	}
-
-
-	// protected Vec localShared = new Vec(0, 0);
 
 	
 	protected void MouseMove(MouseEventArgs e) {
@@ -244,6 +199,7 @@ public class IndexBase : ComponentBase {
 	}
 
 	void Move() {
+		if (Nodes.Count == 0) return;
 		Node node = Nodes[Nodes.Count - 1];
 		if (held) { 
 			Vec newPos = LocalCursor + offset;
@@ -284,13 +240,56 @@ public class IndexBase : ComponentBase {
 
 
 	protected void Drag() {
-		Console.WriteLine("Drag");
+		// Console.WriteLine("Drag");
 	}
 }
 
 /*
 	GRAVEYARD
 		<h3>Todo (@todos.Count(todo => !todo.IsDone))</h3>
+
+	[Inject] ILocalStorageService localStorage { get; set; } = default!;
+	[Inject] IJSRuntime ijsruntime { get; set; } = default!;
+	private IExampleService ExampleService { get; set; } = default!;
+
+	IEnumerable<string> Keys { get; set; } = new List<string>();
+
+	protected override async Task OnAfterRenderAsync(bool firstRender) {
+		// Keys = await localStorage.KeysAsync();
+		if (firstRender) {
+			
+			// await LoadKey();
+			// StateHasChanged();
+		}
+
+		// await SaveKey();
+	}
+
+	protected async Task LoadKey() {
+		// ApiKey = await localStorage.GetItemAsync<string>("apikey");
+		if (string.IsNullOrEmpty(ApiKey)) { ApiKey = ""; }
+	}
+
+	protected async Task Embed() {
+		var endpoint = API.EmbeddingsEndpoint;
+		// (+), 0, (-)
+		EmbeddingsResponse white = await endpoint.CreateEmbeddingAsync("north");
+		EmbeddingsResponse grey = await endpoint.CreateEmbeddingAsync("south");
+		EmbeddingsResponse black = await endpoint.CreateEmbeddingAsync("west");
+		double[] vWhite = GetVector(white);
+		double[] vGrey  = GetVector(grey);
+		double[] vBlack = GetVector(black);
+
+
+		// double w2g = Similarity(vWhite, vGrey);
+		// double g2b = Similarity(vGrey, vBlack);
+		// Console.WriteLine($"{w2g} : {g2b}");
+
+		// double[] w2g = Tools.Direction(vWhite, vGrey);
+		// double[] g2b = Tools.Direction(vGrey, vBlack);
+		// Console.WriteLine($"{Tools.DotProduct(w2g, g2b)}");
+	}
+	double[] GetVector(EmbeddingsResponse er) { return er.Data[0].Embedding.ToArray(); }
 
 
 */

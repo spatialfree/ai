@@ -1,4 +1,5 @@
 global using System;
+global using System.Collections.ObjectModel;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Web;

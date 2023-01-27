@@ -48,6 +48,7 @@
 			">
 			<div @onmousedown="Drag" class="node-drag" style="
 				background-color: @(node.Color); color: #ffffff80;
+				cursor: @(held ? "grabbing" : "grab");
 			">:&nbsp;:</div>
 			<textarea @bind="node.Text" style="
 				width: @(node.Area.x)px; 
@@ -62,14 +63,14 @@
 </div>
 
 
-@* + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + *@
+@* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *@
 
 <div style="
 	position: fixed;
 	display: @(Menu ? "flex" : "none"); 
 	flex-flow: column; align-items: center; justify-content: center;
 	top: 0; bottom: 0; left: 0; right: 0;
-	background-color: black;
+	background-color: #000000ee;
 	">
 
 	@* Prompter Login *@
@@ -96,11 +97,13 @@
 		<br>
 
 		<div class="btn-row">
-			<div @onclick="mono.Restore" class="btn">
+			<div @onclick="mono.Restore" disabled="@(!Cloud)" class="btn">
 				<img src="svg-icons/cloud-download.svg" width="16px" />
+				@(mono.Restored ? "Restored" : "Restore")
 			</div>
-			<div @onclick="mono.Record" class="btn">
+			<div @onclick="mono.Record" disabled="@(!Cloud)" class="btn">
 				<img src="svg-icons/cloud-upload.svg" width="16px" />
+				@(mono.Recorded ? "Recorded" : "Record")
 			</div>
 		</div>
 	</div>

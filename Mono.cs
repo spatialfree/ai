@@ -4,11 +4,21 @@ using System.IO;
 public class Mono {
   public Mono() {
     Restore();
+		Nodes.CollectionChanged += (sender, e) => {
+			Recorded = Restored = false;
+		};
   }
 
-	public int StateIndex = 0;
 
-	public List<Node> Nodes = new() {
+
+
+	public int StateIndex = 0;
+	public string Pattern = "Pattern";
+
+
+
+
+	public ObservableCollection<Node> Nodes = new() {
 		new Node { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed\nLeaf Green", },
 		new Node { Pos = new Vec(64, 180), Area = new Vec(150, 40), Color = "#b35773", Text = "1 | One\nMaroon Saloon\nBalloon Blender", },
 		new Node { Pos = new Vec(64, 280), Area = new Vec(100, 80), Color = "#5773b3", Text = "2 | Two\nBlueberry\nSandwich\nTester", },
@@ -25,6 +35,7 @@ public class Mono {
 		File.Move($"{dir}0", $"{dir}0)");
 	}
 
+	public bool Recorded = false;
 	public void Record() {
 		if (!Directory.Exists(dir))
 			InitRecords();
@@ -51,12 +62,15 @@ public class Mono {
 
 				File.WriteAllText(path, contents);
 				// File.WriteAllTextAsync()
-
 				File.Move(path, $"{path})");
+
+				Recorded = true;
+				break;
 			}
 		}
 	}
 
+	public bool Restored = false;
 	public void Restore() {
 		if (!Directory.Exists(dir))
 			InitRecords();
@@ -88,6 +102,7 @@ public class Mono {
 							break;
 					}
 				}
+				Restored = true;
 			}
 		}
 	}

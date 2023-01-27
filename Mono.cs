@@ -2,10 +2,11 @@ namespace ai;
 using System.IO;
 
 public class Mono {
-
   public Mono() {
     Restore();
   }
+
+	public int StateIndex = 0;
 
 	public List<Node> Nodes = new() {
 		new Node { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed\nLeaf Green", },
@@ -13,12 +14,8 @@ public class Mono {
 		new Node { Pos = new Vec(64, 280), Area = new Vec(100, 80), Color = "#5773b3", Text = "2 | Two\nBlueberry\nSandwich\nTester", },
 	};
 
-	public Vec Shared = new Vec(20, 20);
-	public string SharedText = "text";
-
   string cd { get { return Directory.GetCurrentDirectory(); } }
   string dir { get { return $"{cd}/Records/"; } }
-
 
 	public void InitRecords() {
 		Directory.CreateDirectory(dir);
@@ -43,8 +40,15 @@ public class Mono {
 				index = Tools.RollOver(index, 1, files.Length);
 				path = $"{dir}{index}";
 		
-				string contents = $"{TimeStamp}\n___\n";
-				contents += SharedText;
+				string contents = $"{TimeStamp}\n___";
+				for (int j = 0; j < Nodes.Count; j++) {
+					contents += $"\nText {Nodes[j].Text.Replace("\n", "\\n")}";
+					contents += $"\nColor {Nodes[j].Color}";
+					contents += $"\nPos {Nodes[j].Pos}";
+					contents += $"\nArea {Nodes[j].Area}";
+					contents += $"\n";
+				}
+
 				File.WriteAllText(path, contents);
 				// File.WriteAllTextAsync()
 
@@ -69,22 +73,19 @@ public class Mono {
 					if (meta) {
 						meta = !lines[j].Contains("___");
 					} else {
-						if (lines[j] == "") {
+						if (lines[j].Trim() == "") {
 							index ++;
 							continue;
 						}
 
-						// SharedText = lines[j];
-						Nodes[index].Text  = lines[j].ReplaceLineEndings();
-						Nodes[index].Color = lines[j+1].Replace("Color", "").Trim();
-						Nodes[index].Pos   = lines[j+2].Replace("Pos",   "").ToVec();
-						Nodes[index].Area  = lines[j+3].Replace("Area",  "").ToVec();
+						Nodes[index].Text  = lines[j].Replace("Text ",    "").Replace("\\n", "\n");
+						Nodes[index].Color = lines[j+1].Replace("Color ", "").Trim();
+						Nodes[index].Pos   = lines[j+2].Replace("Pos ",   "").ToVec();
+						Nodes[index].Area  = lines[j+3].Replace("Area ",  "").ToVec();
 						j += 3;
 						
 						if (index == Nodes.Count - 1)
 							break;
-
-						// Console.WriteLine(text);
 					}
 				}
 			}
@@ -102,15 +103,14 @@ public class Mono {
 /*
 
 NOTES
-	Library~ (too soon?)
-	Board~
+	Libraries~ (too soon?)
+	Boards~
 
 	NOW
 		One shared "board"
-			persistent [1hr]
-
-        auto record(ings)
-			secure
+			secure (10%)
+				input field
+				hash function
 		
 	
 

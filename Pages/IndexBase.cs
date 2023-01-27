@@ -3,6 +3,30 @@ namespace ai;
 // using ChangeEventArgs = Microsoft.AspNetCore.Components.ChangeEventArgs;
 
 public class IndexBase : ComponentBase {
+
+	protected string PassKey = "";
+
+	protected void Authenticate() {
+		Hash(PassKey);
+		// Mono.Hash
+	}
+
+	int Hash(string key) {
+		int hash = 0;
+		for (int i = 0; i < key.Length; i++) {
+			hash += key[i] * (i + 1);
+		}
+		Console.WriteLine(hash);
+		return hash;
+	}
+
+	protected bool Menu = true;
+	protected void MenuToggle() {
+		Menu = !Menu;
+	}
+
+
+
 	protected string Prompter = "";
 
 	protected string OutputLabel = "";

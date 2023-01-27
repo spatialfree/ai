@@ -55,11 +55,13 @@ a {
 }
 
 input {
-	border-bottom: 1px solid rgba(0, 0, 0, 0.6);
-	margin-bottom: -1px;
+	padding: 4px 12px;
+	border-radius: 16px;
+	text-align: center;
+	border: 2px solid #848484;
 }
 input::placeholder {
-	color: #ccc;
+	color: #808080;
   opacity: 1;
 }
 
@@ -73,15 +75,6 @@ input::placeholder {
 	font-size: 14px;
 	line-height: 20px;
 } 
-
-img {
-	margin: 0 auto;
-}
-
-.icon {
-	width: 16px;
-	height: 16px;
-}
 
 button {
 	user-select: none;
@@ -101,18 +94,46 @@ button {
 	font-size: 12px;
 	transition: 0.3s;
 }
-
 button:active {
 	background-color: var(--pressed);
 	border-top: 1px solid rgba(0, 0, 0, 0.3);
 	transition: 0.1s;
 	transition-timing-function: cubic-bezier(.51,.12,0,-0.27);
 }
-
 button[disabled] {
 	background-color: #707070 !important;
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+}
+.btn {
+	user-select: none;
+	cursor: pointer;
+	display: flex; align-items: center;
+	width:  48px;
+	height: 48px;
+	background-color: #80808080;
+	border-radius: 48px;
+}
+.btn img {
+	width:  24px;
+	height: 24px;
+	filter: invert(1);
+}
+
+img {
+	margin: 0 auto;
+}
+
+.icon {
+	width: 16px;
+	height: 16px;
 }
 
 .content {
@@ -123,7 +144,6 @@ button[disabled] {
 	max-width: 600px;
 	margin: 0 auto;
 }
-
 .node input {
 	width: -webkit-fill-available;
 	padding: 0.5pc;
@@ -134,7 +154,6 @@ button[disabled] {
 	line-height: 1pc;
 	text-align: center;
 }
-
 .node textarea {
 	width: -webkit-fill-available;
 	padding: 0.5pc;

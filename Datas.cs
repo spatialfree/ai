@@ -20,7 +20,7 @@ public class Vec {
 	
 
   public override string ToString()
-    => string.Format("[{0:0.##}, {1:0.##}]", x, y);
+    => string.Format("{0:0.##}, {1:0.##}", x, y);
 }
 
 public class Node {

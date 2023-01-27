@@ -4,31 +4,6 @@ namespace ai;
 
 public class IndexBase : ComponentBase {
 
-	protected string PassKey = "";
-
-	protected void Authenticate() {
-		Hash(PassKey);
-		// Mono.Hash
-	}
-
-	int Hash(string key) {
-		int hash = 0;
-		for (int i = 0; i < key.Length; i++) {
-			hash += key[i] * (i + 1);
-		}
-		Console.WriteLine(hash);
-		return hash;
-	}
-
-	protected bool Menu = true;
-	protected void MenuToggle() {
-		Menu = !Menu;
-	}
-
-
-
-	protected string Prompter = "";
-
 	protected string OutputLabel = "";
 	protected int OutputIndex = 0;
 	protected List<string> Outputs = new() { "" };
@@ -97,40 +72,54 @@ public class IndexBase : ComponentBase {
 		}
 	}
 
-	protected async Task Embed() {
-		var endpoint = API.EmbeddingsEndpoint;
-		// (+), 0, (-)
-		EmbeddingsResponse white = await endpoint.CreateEmbeddingAsync("north");
-		EmbeddingsResponse grey = await endpoint.CreateEmbeddingAsync("south");
-		EmbeddingsResponse black = await endpoint.CreateEmbeddingAsync("west");
-		double[] vWhite = GetVector(white);
-		double[] vGrey  = GetVector(grey);
-		double[] vBlack = GetVector(black);
+	// protected async Task Embed() {
+	// 	var endpoint = API.EmbeddingsEndpoint;
+	// 	// (+), 0, (-)
+	// 	EmbeddingsResponse white = await endpoint.CreateEmbeddingAsync("north");
+	// 	EmbeddingsResponse grey = await endpoint.CreateEmbeddingAsync("south");
+	// 	EmbeddingsResponse black = await endpoint.CreateEmbeddingAsync("west");
+	// 	double[] vWhite = GetVector(white);
+	// 	double[] vGrey  = GetVector(grey);
+	// 	double[] vBlack = GetVector(black);
 
 
-		// double w2g = Similarity(vWhite, vGrey);
-		// double g2b = Similarity(vGrey, vBlack);
-		// Console.WriteLine($"{w2g} : {g2b}");
+	// 	// double w2g = Similarity(vWhite, vGrey);
+	// 	// double g2b = Similarity(vGrey, vBlack);
+	// 	// Console.WriteLine($"{w2g} : {g2b}");
 
-		// double[] w2g = Tools.Direction(vWhite, vGrey);
-		// double[] g2b = Tools.Direction(vGrey, vBlack);
-		// Console.WriteLine($"{Tools.DotProduct(w2g, g2b)}");
+	// 	// double[] w2g = Tools.Direction(vWhite, vGrey);
+	// 	// double[] g2b = Tools.Direction(vGrey, vBlack);
+	// 	// Console.WriteLine($"{Tools.DotProduct(w2g, g2b)}");
+	// }
+
+	// double[] GetVector(EmbeddingsResponse er) { return er.Data[0].Embedding.ToArray(); }
+
+
+	[Inject] protected Mono mono { get; set; } = default!;
+
+	OpenAIClient API = default!;
+	protected bool ValidKey = false;
+	string apikey = "";
+	protected string Prompter = "";
+	protected string ApiKey { 
+		get { return apikey; }
+		set { 
+			apikey = value;
+			TryKey();
+		}
 	}
 
-	double[] GetVector(EmbeddingsResponse er) { return er.Data[0].Embedding.ToArray(); }
+	protected string Pattern = "";
 
-
-
-	protected string ApiKey = "";
-	OpenAIClient API = default!;
-	protected bool Authorized = false;
-
+	protected bool Menu = true;
+	protected void MenuToggle() {
+		Menu = !Menu;
+	}
 	// [Inject] ILocalStorageService localStorage { get; set; } = default!;
-	[Inject] IJSRuntime ijsruntime { get; set; } = default!;
-	[Inject] protected Mono mono { get; set; } = default!;
+	// [Inject] IJSRuntime ijsruntime { get; set; } = default!;
 	// private IExampleService ExampleService { get; set; } = default!;
 
-	IEnumerable<string> Keys { get; set; } = new List<string>();
+	// IEnumerable<string> Keys { get; set; } = new List<string>();
 
 	// protected override async Task OnAfterRenderAsync(bool firstRender) {
 	// 	// Keys = await localStorage.KeysAsync();
@@ -149,7 +138,7 @@ public class IndexBase : ComponentBase {
 	// }
 
 	string lastTry = "";
-	protected async Task SaveKey() {
+	protected async Task TryKey() {
 		if (ApiKey == lastTry)
 			return;
 		lastTry = ApiKey;
@@ -163,11 +152,11 @@ public class IndexBase : ComponentBase {
 			var endpoint = API.EmbeddingsEndpoint;
 			await endpoint.CreateEmbeddingAsync("key");
 
-			Authorized = true;
+			ValidKey = true;
 		}
 		catch {
 			API = default!;
-			Authorized = false;
+			ValidKey = false;
 		}
 
 		// await localStorage.SetItemAsync("apikey", ApiKey);

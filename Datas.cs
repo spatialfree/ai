@@ -23,6 +23,10 @@ public class Vec {
     => string.Format("{0:0.##}, {1:0.##}", x, y);
 }
 
+public class Chiral {
+	
+}
+
 public class Node {
 	public string Text  { get; set; } = default!;
 	// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";

@@ -1,11 +1,7 @@
 ﻿@page "/"
+@inherits ai.IndexBase
 @* @using ai.Data *@
 @* @inject ILocalStorageService localStorage *@
-@* @inject IJSRuntime JSRuntime *@
-
-@* @using ChangeEventArgs = Microsoft.AspNetCore.Components.ChangeEventArgs *@
-
-@inherits ai.IndexBase
 
 @* <PageTitle>Index</PageTitle> *@
 
@@ -18,12 +14,6 @@
 	</svg>
 	complete
 </button>
-<br>
-
-<div class="node">
-	<input @bind="OutputLabel" />
-	<textarea @bind="Outputs[OutputIndex]"></textarea>
-</div>
 <br>
 
 <div style="display: flex; max-width: 600px; margin: 0 auto; gap: 16px; justify-content: center;">
@@ -39,127 +29,55 @@
 		<img class="icon" src="svg-icons/arrow-right.svg" />
 		next
 	</button>
-</div> *@
+</div> 
+*@
 
-<br><br><br>
-<br><br><br>
-<br><br><br>
 
-<div style="display: @(Authorized ? "block": "none"); text-align: center;">
-	<img class="icon" src="svg-icons/text.svg" />
-	<br>
-	<div class="row">
-		<div class="limit">&nbsp;&nbsp;16</div>
-		<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
-		<div class="limit">2048</div>
-	</div>
-																									@* <input type="checkbox" /> 2x boost *@
-	<br><br><br>
-
-	<img class="icon" src="svg-icons/pulse.svg" />
-	<br>
-	<div class="row">
-		<div class="limit">0</div>
-		<input @bind="Temperature" type="range" min="0" max="1" step="0.01" />
-		<div class="limit">1</div>
-	</div>
-	<br><br><br>
-
-	<img class="icon" src="svg-icons/contrast.svg" />
-	<br>
-	<div class="row">
-		<div class="limit">- 2</div>
-		<input @bind="Contrast" type="range" min="-1.9" max="1.9" step="0.1" />
-		<div class="limit">2</div>
-	</div>
-	<br><br><br>
-
-	<img class="icon" src="svg-icons/loop-circular.svg" />
-	<br>
-	<div class="row">
-		<div class="limit">- 2</div>
-		<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
-		<div class="limit">2</div>
-	</div>
-</div>
-
-<br><br><br>
-<br><br><br>
-<br><br><br>
-
+@* 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 *@
 
 <div 
 	@ontouchmove="TouchMove" @ontouchstart="TouchStart" @ontouchend="TouchEnd" 
 	@onmousemove="MouseMove" @onmousedown="MouseDown" @onmouseup="MouseUp" 
 	style="position: fixed; top: 0; bottom: 0; left: 0; right: 0;"
 >
-
 	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
-	
 	@foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
-		<div style="position: fixed; transform: translate(@(node.Pos.x)px, @(node.Pos.y)px); width: fit-content; filter: @(index == Nodes.Count - 1 && (held || pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");">
-			<div @onmousedown="Drag" style="
-				background-color: @(node.Color); color: #ffffff80; 
-				user-select: none; cursor: pointer; 
-				width: calc(100% + 40px - 12px); 
-				height: 30px; 
-				position: fixed; 
-				left: -40px; 
-				top: -4px; 
-				z-index: -100; 
-				font-size: 20px; line-height: 28px; 
-				padding-left: 12px; 
-				border-radius: 16px 0 0 16px;
+		<div class="node" style="
+			transform: translate(@(node.Pos.x)px, @(node.Pos.y)px); 
+			filter: @(index == Nodes.Count-1 && (held || pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");
+			">
+			<div @onmousedown="Drag" class="node-drag" style="
+				background-color: @(node.Color); color: #ffffff80;
 			">:&nbsp;:</div>
-			<textarea @bind="node.Text" class="node-text" style="
-				border: 1px solid #ddd; 
-				resize: none; 
+			<textarea @bind="node.Text" style="
 				width: @(node.Area.x)px; 
-				height: @(node.Area.y)px; 
-				padding: 0 4px; 
-				font-size: 14px; line-height: 20px;
-				border-radius: 2px;
+				height: @(node.Area.y)px; 	
 			"></textarea>
-			<div style="
-				background-color: var(--interact); color: #ffffff80; 
-				user-select: none; cursor: pointer; 
-				width: 20px; 
-				height: calc(2px + 20px); 
-				position: fixed; 
-				right: 0px; 
-				bottom: -20px; 
-				z-index: -100; 
-				text-align: right; 
-				border-radius: 0px 0px 2px 2px;
-			"><img src="svg-icons/fullscreen-enter.svg" width="12px" style="pointer-events: none; filter: invert(1); opacity: 0.5; mix-blend-mode: invert; position: fixed; bottom: -16px; right: 4px;" /></div>
+			<div class="node-area">
+				<img src="svg-icons/fullscreen-enter.svg" />
+			</div>
 		</div>
 	}
-
 	</div>
-
 </div>
 
-<style style="display: none;">
-.node-text::first-line {
-	font-weight: 700;
-}
-</style>
 
-
+@* + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + *@
 
 <div style="
 	position: fixed;
 	display: @(Menu ? "flex" : "none"); 
 	flex-flow: column; align-items: center; justify-content: center;
 	top: 0; bottom: 0; left: 0; right: 0;
-	background-color: #808080;
+	background-color: black;
 	">
 
+	@* Prompter Login *@
 	<input @bind="Prompter" type="username" autocomplete="username" placeholder="Name" />
 	<br>
 	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="Api Key" class="apikey" spellCheck=false />
 	<br>
-	<img class="icon" src="svg-icons/key.svg" style="filter: contrast(0%) sepia(30%) saturate(10000%) hue-rotate(@(Authorized ? "110": "-30")deg);" />
+	<img class="icon" src="svg-icons/key.svg" style="filter: contrast(0%) sepia(30%) saturate(10000%) hue-rotate(@(ValidKey ? "110": "-30")deg);" />
 	<br>
 	<a href="https://beta.openai.com/account/api-keys" target="_blank">
 		Get OpenAI API Key
@@ -168,24 +86,77 @@
 	<a href="https://beta.openai.com/docs/api-reference/completions/create" target="_blank">
 		Documentation
 	</a>
-	<br><br><br>
-
-	<input @bind="PassKey" placeholder="Pattern" />
+	<br>
+	<br>
 	<br>
 
-	<div class="btn-row">
-		<div @onclick="mono.Restore" class="btn">
-			<img src="svg-icons/cloud-download.svg" width="16px" />
-		</div>
-		<div @onclick="mono.Record" class="btn">
-			<img src="svg-icons/cloud-upload.svg" width="16px" />
+	@* Pattern Management *@
+	<div hidden="@(!ValidKey)">
+		<input @bind="Pattern" placeholder="Pattern" />
+		<br>
+
+		<div class="btn-row">
+			<div @onclick="mono.Restore" class="btn">
+				<img src="svg-icons/cloud-download.svg" width="16px" />
+			</div>
+			<div @onclick="mono.Record" class="btn">
+				<img src="svg-icons/cloud-upload.svg" width="16px" />
+			</div>
 		</div>
 	</div>
+	<br>
+	<br>
+	<br>
 
+	@* Model Paramaters *@
+	<div hidden="@(!ValidKey)" style="text-align: center; color: white;">
+		<img class="icon" src="svg-icons/text.svg" />
+		<br>
+		<div class="row">
+			<div class="limit">&nbsp;&nbsp;16</div>
+			<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
+			<div class="limit">2048</div>
+		@* <input type="checkbox" /> 2x boost *@
+		</div>
+		<br>
+		<br>
+
+		<img class="icon" src="svg-icons/pulse.svg" />
+		<br>
+		<div class="row">
+			<div class="limit">0</div>
+			<input @bind="Temperature" type="range" min="0" max="1" step="0.01" />
+			<div class="limit">1</div>
+		</div>
+		<br>
+		<br>
+
+		<img class="icon" src="svg-icons/contrast.svg" />
+		<br>
+		<div class="row">
+			<div class="limit">- 2</div>
+			<input @bind="Contrast" type="range" min="-1.9" max="1.9" step="0.1" />
+			<div class="limit">2</div>
+		</div>
+		<br>
+		<br>
+
+		<img class="icon" src="svg-icons/loop-circular.svg" />
+		<br>
+		<div class="row">
+			<div class="limit">- 2</div>
+			<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
+			<div class="limit">2</div>
+		</div>
+		<br>
+		<br>
+	</div>
 </div>
 
 
-<div @onclick="MenuToggle" class="btn" style="
+@* _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ *@
+
+<div @onclick="MenuToggle" hidden="@(!ValidKey)" class="btn" style="
 		position: fixed;
 		top: 12px; left: 12px;
 	">

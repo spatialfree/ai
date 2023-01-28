@@ -10,19 +10,14 @@ public class Mono {
   }
 
 
+	
 
-
-	public int StateIndex = 0;
 	public string Pattern = "Pattern";
 
 
 
 
-	public ObservableCollection<Node> Nodes = new() {
-		new Node { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed\nLeaf Green", },
-		new Node { Pos = new Vec(64, 180), Area = new Vec(150, 40), Color = "#b35773", Text = "1 | One\nMaroon Saloon\nBalloon Blender", },
-		new Node { Pos = new Vec(64, 280), Area = new Vec(100, 80), Color = "#5773b3", Text = "2 | Two\nBlueberry\nSandwich\nTester", },
-	};
+	public ObservableCollection<Node> Nodes = new();
 
   string cd { get { return Directory.GetCurrentDirectory(); } }
   string dir { get { return $"{cd}/Records/"; } }
@@ -81,25 +76,24 @@ public class Mono {
 			string name = Path.GetFileName(path);
 			if (name.Contains(')')) {
 				bool meta = true;
-				int index = 0;
+				Nodes.Clear();
 				string[] lines = File.ReadAllLines(path);
 				for (int j = 0; j < lines.Length; j++) {
 					if (meta) {
 						meta = !lines[j].Contains("___");
 					} else {
 						if (lines[j].Trim() == "") {
-							index ++;
 							continue;
 						}
 
-						Nodes[index].Text  = lines[j].Replace("Text ",    "").Replace("\\n", "\n");
-						Nodes[index].Color = lines[j+1].Replace("Color ", "").Trim();
-						Nodes[index].Pos   = lines[j+2].Replace("Pos ",   "").ToVec();
-						Nodes[index].Area  = lines[j+3].Replace("Area ",  "").ToVec();
+						Node node = new Node {
+							Text  = lines[j].Replace("Text ",    "").Replace("\\n", "\n"),
+							Color = lines[j+1].Replace("Color ", "").Trim(),
+							Pos   = lines[j+2].Replace("Pos ",   "").ToVec(),
+							Area  = lines[j+3].Replace("Area ",  "").ToVec()
+						};
 						j += 3;
-						
-						if (index == Nodes.Count - 1)
-							break;
+						Nodes.Add(node);
 					}
 				}
 				Restored = true;

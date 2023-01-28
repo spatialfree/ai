@@ -166,8 +166,9 @@ public class IndexBase : ComponentBase {
 			Vec pos = Nodes[i].Pos;
 
 			Vec localPos = (LocalCursor - pos);
-			bool inX = localPos.x <  0 && localPos.x > -40;
-			bool inY = localPos.y < 30 && localPos.y >   0;
+			bool inX = localPos.x <= -2 && localPos.x >= -41;
+			bool inY = localPos.y <= 25 && localPos.y >= -5;
+			// Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
 			if (inX && inY) {
 				offset = pos - LocalCursor;
 
@@ -182,8 +183,9 @@ public class IndexBase : ComponentBase {
 			localPos = (LocalCursor - (pos + area));
 			localPos.x -= 12; // ~padding + border
 			localPos.y += 2; // ~border
-			inX = localPos.x <  0 && localPos.x > -20; 
-			inY = localPos.y < 20 && localPos.y >   0;
+			inX = localPos.x <= -3 && localPos.x >= -23; 
+			inY = localPos.y <= 23 && localPos.y >=   4;
+			// Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
 			if (inX && inY) {
 				offset = (pos + area) - LocalCursor;
 				
@@ -230,17 +232,6 @@ public class IndexBase : ComponentBase {
 		Node node = Nodes[index];
 		Nodes.RemoveAt(index);
 		Nodes.Add(node);
-	}
-
-
-
-
-
-
-
-
-	protected void Drag() {
-		// Console.WriteLine("Drag");
 	}
 }
 

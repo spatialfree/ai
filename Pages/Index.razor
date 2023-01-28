@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using ai.Components
 @inherits ai.IndexBase
 @* @using ai.Data *@
 @* @inject ILocalStorageService localStorage *@
@@ -42,25 +43,27 @@
 >
 	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
 	@foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
-		<div class="node" style="
-			transform: translate(@(node.Pos.x)px, @(node.Pos.y)px); 
-			filter: @(index == Nodes.Count-1 && (held || pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");
-			">
-			<div @onmousedown="Drag" class="node-drag" style="
-				background-color: @(node.Color); color: #ffffff80;
-				cursor: @(held ? "grabbing" : "grab");
-			">:&nbsp;:</div>
-			<textarea @bind="node.Text" style="
-				width: @(node.Area.x)px; 
-				height: @(node.Area.y)px; 	
-			"></textarea>
-			<div class="node-area">
-				<img src="svg-icons/fullscreen-enter.svg" />
-			</div>
-		</div>
+		@if (index == Nodes.Count-1 && held) {
+			<CShelf X="@Canvas.x" Y="@Canvas.y" />
+		}
+		<CNode Noded="@node" Index="@index" />
+	}
+	@if (!held) {
+		<CShelf X="@Canvas.x" Y="@Canvas.y" />
 	}
 	</div>
 </div>
+
+@* 
+	shelf
+		add
+		set (not today) 
+
+	remove
+*@
+
+
+@* ai pathing through the nodes *@
 
 
 @* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *@
@@ -205,5 +208,15 @@ Only Shift-Enter
 <svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg" style="background-color: darkgray;">
 	<text contenteditable x="20" y="40" textLength="32px">@Con</text>
 </svg>
+
+@functions {
+	// node html markup
+	private MarkupString RenderNode() {
+		return new MarkupString(@"
+			<div>div
+			</div>
+		");
+	}
+}
 
 *@

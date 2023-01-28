@@ -1,0 +1,25 @@
+@inherits ai.IndexBase
+
+<div class="node" style="
+  transform: translate(@(Noded.Pos.x)px, @(Noded.Pos.y)px); 
+  filter: @(Index == Nodes.Count-1 && (held || pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");
+  ">
+  <div class="node-drag" style="
+    background-color: @(Noded.Color); color: #ffffff80;
+    cursor: @(held ? "grabbing" : "grab");
+  ">:&nbsp;:</div>
+  <textarea @bind="Noded.Text" style="
+    width: @(Noded.Area.x)px; 
+    height: @(Noded.Area.y)px; 	
+  "></textarea>
+  <div class="node-area">
+    <img src="svg-icons/fullscreen-enter.svg" />
+  </div>
+</div>
+
+@code {
+  [Parameter]
+  public Node Noded { get; set; } = new Node();
+  [Parameter]
+  public int Index { get; set; }
+}

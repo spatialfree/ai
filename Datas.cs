@@ -28,6 +28,15 @@ public class Chiral {
 }
 
 public class Node {
+	public Node() {
+
+	}
+	public Node(Node node) {
+		Text = node.Text;
+		Color = node.Color;
+		Pos = node.Pos;
+		Area = node.Area;
+	}
 	public string Text  { get; set; } = default!;
 	// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
 	public string Color { get; set; } = default!;

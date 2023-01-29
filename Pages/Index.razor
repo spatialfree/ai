@@ -43,12 +43,12 @@
 	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
 	@foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
 		@if (index == Nodes.Count-1 && held) {
-			<CShelf X="@Canvas.x" Y="@Canvas.y" Nodes="@mono.Shelf" />
+			<CShelf Shelff="@Shelf" X="@Canvas.x" Y="@Canvas.y" Nodes="@mono.Shelf" />
 		}
 		<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Held="@held" Pull="@pull" Cull="@cull" />
 	}
 	@if (!held) {
-		<CShelf X="@Canvas.x" Y="@Canvas.y" Nodes="@mono.Shelf" />
+		<CShelf Shelff="@Shelf" X="@Canvas.x" Y="@Canvas.y" Nodes="@mono.Shelf" />
 	}
 	</div>
 </div>
@@ -161,14 +161,19 @@
 
 @* _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ *@
 
-<div @onclick="MenuToggle" hidden="@(!ValidKey)" class="btn" style="
+<div @onclick="() => Menu = !Menu" hidden="@(!ValidKey)" class="btn" style="
 		position: fixed;
 		top: 12px; left: 12px;
 	">
 	<img src="svg-icons/@(Menu ? "pencil": "menu").svg" width="16px" />
 </div>
 
-
+<div @onclick="() => Shelf = !Shelf" hidden="@(!ValidKey || Menu)" class="btn" style="
+		position: fixed;
+		top: 12px; left: calc(50vw - 8px);
+	">
+	<img src="svg-icons/@(Shelf ? "chevron-top": "chevron-bottom").svg" width="16px" />
+</div>
 
 
 @*  

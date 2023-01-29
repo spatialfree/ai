@@ -21,7 +21,7 @@ public class IndexBase : ComponentBase {
 		try {
 			API = new OpenAIClient(new OpenAIAuthentication(ApiKey));
 			var endpoint = API.EmbeddingsEndpoint;
-			await endpoint.CreateEmbeddingAsync("key");
+			await endpoint.CreateEmbeddingAsync("TryKey");
 			ValidKey = true;
 		}
 		catch {
@@ -43,20 +43,15 @@ public class IndexBase : ComponentBase {
 	}
 	protected bool Cloud = false;
 
-	ObservableCollection<Node> nodes = new() {
-		new Node { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed\nLeaf Green", }
-	};
-	protected ObservableCollection<Node> Nodes {
+	ObservableCollection<Node> nodes { get; set; } = new();
+	public ObservableCollection<Node> Nodes {
 		get { return Cloud ? mono.Nodes : nodes; }
 	}
 
 
 
-
+	protected bool Shelf = false;
 	protected bool Menu = true;
-	protected void MenuToggle() {
-		Menu = !Menu;
-	}
 
 
 	protected string OutputLabel = "";
@@ -129,14 +124,14 @@ public class IndexBase : ComponentBase {
 	}
 
 	protected void MouseDown(MouseEventArgs e) {
-		SetCursor(e.ClientX, e.ClientY);
-		down = true;
-		Grab();
+		if (e.Button == 0) {
+			SetCursor(e.ClientX, e.ClientY);
+			Grab();
+		}
 	}
 
 	protected void MouseUp(MouseEventArgs e) {
-		down = held = pull = false;
-		Cull();
+		Drop();
 	}
 
 
@@ -147,21 +142,63 @@ public class IndexBase : ComponentBase {
 
 	protected void TouchStart(TouchEventArgs e) {
 		SetCursor(e.Touches[0].ClientX, e.Touches[0].ClientY);
-		down = true;
 		Grab();
 	}
 
 	protected void TouchEnd(TouchEventArgs e) {
-		down = held = pull = false;
-		Cull();
+		Drop();
 	}
 
 	void SetCursor(double x, double y) {
 		Cursor = new Vec(x, y); // +/- canvas
 	}
 
+	void Move() {
+		if (Nodes.Count == 0) return;
+		Node node = Nodes[Nodes.Count - 1];
+		if (held) { 
+			Vec newPos = LocalCursor + offset;
+			// round to int
+			newPos.x = (int)newPos.x;
+			newPos.y = (int)newPos.y;
+			node.Pos = newPos;
+		} else if (pull) {
+			Vec newArea = (LocalCursor + offset) - node.Pos;
+
+			cull = newArea.x < 0 && newArea.y < 0;
+			
+			newArea.x = Math.Max(newArea.x, 100);
+			newArea.y = Math.Max(newArea.y, 20);
+			node.Area = newArea;
+		} else if (down) {
+			Canvas = Cursor + canvasOffset;
+		}
+		StateHasChanged();
+	}
 
 	protected void Grab() {
+		down = true;
+
+		if (Shelf) {
+			for (int i = 0; i < mono.Shelf.Count; i++) {
+				Vec pos = mono.Shelf[i].Pos;
+
+				Vec localPos = (Cursor - pos);
+				bool inX = localPos.x <= -2 && localPos.x >= -41;
+				bool inY = localPos.y <= 25 && localPos.y >= -5;
+				Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
+				if (inX && inY) {
+					offset = pos - Cursor;
+
+					AddNode(i);
+					held = true;
+
+					StateHasChanged();
+					return;
+				}
+			}
+		}
+
 		for (int i = 0; i < Nodes.Count; i++) {
 			Vec pos = Nodes[i].Pos;
 
@@ -200,27 +237,16 @@ public class IndexBase : ComponentBase {
 		canvasOffset = Canvas - Cursor;
 	}
 
-	void Move() {
-		if (Nodes.Count == 0) return;
-		Node node = Nodes[Nodes.Count - 1];
-		if (held) { 
-			Vec newPos = LocalCursor + offset;
-			// round to int
-			newPos.x = (int)newPos.x;
-			newPos.y = (int)newPos.y;
-			node.Pos = newPos;
-		} else if (pull) {
-			Vec newArea = (LocalCursor + offset) - node.Pos;
-
-			cull = newArea.x < 0 && newArea.y < 0;
-			
-			newArea.x = Math.Max(newArea.x, 100);
-			newArea.y = Math.Max(newArea.y, 20);
-			node.Area = newArea;
-		} else if (down) {
-			Canvas = Cursor + canvasOffset;
+	void Drop() {
+		if (held && Shelf) {
+			// if drop back into shelf than delete
+			if (Cursor.y < 400) {
+				Nodes.RemoveAt(Nodes.Count - 1);
+			}
 		}
-		StateHasChanged();
+
+		down = held = pull = false;
+		Cull();
 	}
 
 	protected Vec Cursor = new Vec(200, 300);
@@ -245,9 +271,19 @@ public class IndexBase : ComponentBase {
 	}
 
 	void Lift(int index) {
+		if (Nodes.Count < 2 || index == Nodes.Count - 1) return;
 		Node node = Nodes[index];
 		Nodes.RemoveAt(index);
 		Nodes.Add(node);
+	}
+
+	public void AddNode(int index) {
+		Node newNode = new Node(mono.Shelf[index]);
+		newNode.Pos = LocalCursor + offset;
+
+		Nodes.Add(newNode);
+		Console.WriteLine($"AddNode {Nodes.Count}");
+		StateHasChanged();
 	}
 }
 

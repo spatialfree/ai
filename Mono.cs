@@ -18,7 +18,7 @@ public class Mono {
 	public List<Node> Shelf = new() {
 		new Node { Pos = new Vec(64,  100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed", },
 		new Node { Pos = new Vec(264, 100), Area = new Vec(100, 40), Color = "#edc1ad", Text = "1 | One\nFree DallE", },
-		new Node { Pos = new Vec(464, 100), Area = new Vec(160, 80), Color = "#6673c4", Text = "2 | Two\nDo everything with pixels and slap a scalar on top", },
+		new Node { Pos = new Vec(64, 180), Area = new Vec(160, 80), Color = "#6673c4", Text = "2 | Two\nDo everything with pixels and slap a scalar on top", },
 	};
 
 

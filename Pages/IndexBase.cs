@@ -102,7 +102,7 @@ public class IndexBase : ComponentBase {
 					StateHasChanged();
 				}
 
-				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
+				// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
 			}
 			catch (Exception ex) {
 				Error = true;
@@ -110,50 +110,16 @@ public class IndexBase : ComponentBase {
 				await Task.Delay(2000);
 				Error = false;
 
-				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} : {ex.Message}");
+				// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} : {ex.Message}");
 			}
 
 			Loading = false;
 		}
 	}
 
-	
-	protected void MouseMove(MouseEventArgs e) {
-		SetCursor(e.ClientX, e.ClientY);
-		Move();
-	}
-
-	protected void MouseDown(MouseEventArgs e) {
-		if (e.Button == 0) {
-			SetCursor(e.ClientX, e.ClientY);
-			Grab();
-		}
-	}
-
-	protected void MouseUp(MouseEventArgs e) {
-		Drop();
-	}
-
-
-	protected void TouchMove(TouchEventArgs e) {
-		SetCursor(e.Touches[0].ClientX, e.Touches[0].ClientY);
-		Move();
-	}
-
-	protected void TouchStart(TouchEventArgs e) {
-		SetCursor(e.Touches[0].ClientX, e.Touches[0].ClientY);
-		Grab();
-	}
-
-	protected void TouchEnd(TouchEventArgs e) {
-		Drop();
-	}
-
-	void SetCursor(double x, double y) {
-		Cursor = new Vec(x, y); // +/- canvas
-	}
-
-	void Move() {
+	protected void PointerMove(PointerEventArgs e) {
+		// Console.WriteLine($"PointerMove {e.PointerId}");
+		Cursor = new Vec(e.ClientX, e.ClientY); // OffsetY
 		if (Nodes.Count == 0) return;
 		Node node = Nodes[Nodes.Count - 1];
 		if (held) { 
@@ -162,6 +128,7 @@ public class IndexBase : ComponentBase {
 			newPos.x = (int)newPos.x;
 			newPos.y = (int)newPos.y;
 			node.Pos = newPos;
+			StateHasChanged();
 		} else if (pull) {
 			Vec newArea = (LocalCursor + offset) - node.Pos;
 
@@ -170,13 +137,16 @@ public class IndexBase : ComponentBase {
 			newArea.x = Math.Max(newArea.x, 100);
 			newArea.y = Math.Max(newArea.y, 20);
 			node.Area = newArea;
+			StateHasChanged();
 		} else if (down) {
 			Canvas = Cursor + canvasOffset;
+			StateHasChanged();
 		}
-		StateHasChanged();
 	}
 
-	protected void Grab() {
+	protected void PointerDown(PointerEventArgs e) {
+		// Console.WriteLine($"PointerDown : {e.Button}");
+		Cursor = new Vec(e.ClientX, e.ClientY);
 		down = true;
 
 		if (Shelf) {
@@ -186,7 +156,7 @@ public class IndexBase : ComponentBase {
 				Vec localPos = (Cursor - pos);
 				bool inX = localPos.x <= -2 && localPos.x >= -41;
 				bool inY = localPos.y <= 25 && localPos.y >= -5;
-				Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
+				// Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
 				if (inX && inY) {
 					offset = pos - Cursor;
 
@@ -237,11 +207,14 @@ public class IndexBase : ComponentBase {
 		canvasOffset = Canvas - Cursor;
 	}
 
-	void Drop() {
+	protected void PointerUp(PointerEventArgs e) {
+		// Console.WriteLine($"PointerUp : {e.Button}");
+		Cursor = new Vec(e.ClientX, e.ClientY);
 		if (held && Shelf) {
 			// if drop back into shelf than delete
 			if (Cursor.y < 400) {
 				Nodes.RemoveAt(Nodes.Count - 1);
+				// Console.WriteLine("CULL");
 			}
 		}
 
@@ -264,7 +237,7 @@ public class IndexBase : ComponentBase {
 	void Cull() {
 		if (cull) {
 			Nodes.RemoveAt(Nodes.Count - 1);
-			Console.WriteLine("CULL");
+			// Console.WriteLine("CULL");
 		}
 		cull = false;
 		StateHasChanged();
@@ -282,7 +255,7 @@ public class IndexBase : ComponentBase {
 		newNode.Pos = LocalCursor + offset;
 
 		Nodes.Add(newNode);
-		Console.WriteLine($"AddNode {Nodes.Count}");
+		// Console.WriteLine($"AddNode {Nodes.Count}");
 		StateHasChanged();
 	}
 }

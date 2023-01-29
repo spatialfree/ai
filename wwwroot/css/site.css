@@ -8,6 +8,7 @@
 * {
 	font-family: 'Atkinson Hyperlegible', Helvetica, Arial, sans-serif;
 	-webkit-tap-highlight-color: transparent;
+	touch-action: none;
 	/* border-radius: 1px; */
 	border: none;
 	outline: none;

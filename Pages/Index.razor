@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using ai.Components
 @inherits ai.IndexBase
 @* @using ai.Data *@
 @* @inject ILocalStorageService localStorage *@
@@ -44,12 +43,12 @@
 	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
 	@foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
 		@if (index == Nodes.Count-1 && held) {
-			<CShelf X="@Canvas.x" Y="@Canvas.y" />
+			<CShelf X="@Canvas.x" Y="@Canvas.y" Nodes="@mono.Shelf" />
 		}
-		<CNode Noded="@node" Index="@index" />
+		<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Held="@held" Pull="@pull" Cull="@cull" />
 	}
 	@if (!held) {
-		<CShelf X="@Canvas.x" Y="@Canvas.y" />
+		<CShelf X="@Canvas.x" Y="@Canvas.y" Nodes="@mono.Shelf" />
 	}
 	</div>
 </div>

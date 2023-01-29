@@ -1,13 +1,14 @@
-@inherits ai.IndexBase
-
 <div style="
 	position: fixed;
   width: 100vw;
 	height: 400px;
 	background-color: #404040;
   transform: translate(@(-X)px, @(-Y)px);
+  border-bottom: 1px solid #606060;
 ">
-
+@foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
+  <CNode Noded="@node" Index="@index" />
+}
 </div>
 
 @code {
@@ -15,4 +16,6 @@
   public double X { get; set; }
   [Parameter]
   public double Y { get; set; }
+  [Parameter]
+  public List<Node> Nodes { get; set; } = new();
 }

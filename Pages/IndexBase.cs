@@ -136,7 +136,7 @@ public class IndexBase : ComponentBase {
 
 	protected void MouseUp(MouseEventArgs e) {
 		down = held = pull = false;
-		StateHasChanged();
+		Cull();
 	}
 
 
@@ -153,7 +153,7 @@ public class IndexBase : ComponentBase {
 
 	protected void TouchEnd(TouchEventArgs e) {
 		down = held = pull = false;
-		StateHasChanged();
+		Cull();
 	}
 
 	void SetCursor(double x, double y) {
@@ -205,9 +205,15 @@ public class IndexBase : ComponentBase {
 		Node node = Nodes[Nodes.Count - 1];
 		if (held) { 
 			Vec newPos = LocalCursor + offset;
+			// round to int
+			newPos.x = (int)newPos.x;
+			newPos.y = (int)newPos.y;
 			node.Pos = newPos;
 		} else if (pull) {
 			Vec newArea = (LocalCursor + offset) - node.Pos;
+
+			cull = newArea.x < 0 && newArea.y < 0;
+			
 			newArea.x = Math.Max(newArea.x, 100);
 			newArea.y = Math.Max(newArea.y, 20);
 			node.Area = newArea;
@@ -227,6 +233,16 @@ public class IndexBase : ComponentBase {
 	protected bool down = false;
 	protected bool held = false;
 	protected bool pull = false;
+	protected bool cull = false;
+
+	void Cull() {
+		if (cull) {
+			Nodes.RemoveAt(Nodes.Count - 1);
+			Console.WriteLine("CULL");
+		}
+		cull = false;
+		StateHasChanged();
+	}
 
 	void Lift(int index) {
 		Node node = Nodes[index];

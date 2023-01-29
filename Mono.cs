@@ -14,7 +14,10 @@ public class Mono {
 
 	public string Pattern = "Pattern";
 
-
+	// ObvserableCollection?
+	public List<Node> Shelf = new() {
+		new Node { Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed\nLeaf Green", }
+	};
 
 
 	public ObservableCollection<Node> Nodes = new();

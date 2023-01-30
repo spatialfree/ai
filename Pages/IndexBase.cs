@@ -124,9 +124,6 @@ public class IndexBase : ComponentBase {
 		Node node = Nodes[Nodes.Count - 1];
 		if (held) { 
 			Vec newPos = LocalCursor + offset;
-			// round to int
-			newPos.x = (int)newPos.x;
-			newPos.y = (int)newPos.y;
 			node.Pos = newPos;
 			StateHasChanged();
 		} else if (pull) {
@@ -160,9 +157,13 @@ public class IndexBase : ComponentBase {
 				if (inX && inY) {
 					offset = pos - Cursor;
 
-					AddNode(i);
-					held = true;
+					Node newNode = new Node(mono.Shelf[i]);
+					newNode.Pos = LocalCursor + offset;
 
+					Nodes.Add(newNode);
+					inst = held = true;
+
+					// Console.WriteLine($"AddNode {Nodes.Count}");
 					StateHasChanged();
 					return;
 				}
@@ -210,19 +211,29 @@ public class IndexBase : ComponentBase {
 	protected void PointerUp(PointerEventArgs e) {
 		// Console.WriteLine($"PointerUp : {e.Button}");
 		Cursor = new Vec(e.ClientX, e.ClientY);
-		if (held && Shelf) {
-			// if drop back into shelf than delete
-			if (Cursor.y < 400) {
-				Nodes.RemoveAt(Nodes.Count - 1);
-				// Console.WriteLine("CULL");
-			}
+		if (Shelf && held && Cursor.y < 400) {
+			if (!inst) {
+				Node node = Nodes[Nodes.Count - 1];
+				node.Pos += Canvas;
+				mono.Shelf.Add(node);
+				Console.WriteLine("Declare Node");
+			} 
+			cull = true;
 		}
 
-		down = held = pull = false;
-		Cull();
+		if (cull) {
+			Nodes.RemoveAt(Nodes.Count - 1);
+			// Console.WriteLine("CULL");
+		}
+		down = held = pull = cull = inst = false;
+		StateHasChanged();
 	}
 
-	protected Vec Cursor = new Vec(200, 300);
+	Vec cursor = new Vec(200, 300);
+	protected Vec Cursor {
+		get { return cursor; }
+		set { cursor = new Vec((int)value.x, (int)value.y); }
+	}
 	protected Vec LocalCursor { get { return Cursor - Canvas; } }
 
 	Vec offset = new Vec(0, 0);
@@ -233,30 +244,13 @@ public class IndexBase : ComponentBase {
 	protected bool held = false;
 	protected bool pull = false;
 	protected bool cull = false;
-
-	void Cull() {
-		if (cull) {
-			Nodes.RemoveAt(Nodes.Count - 1);
-			// Console.WriteLine("CULL");
-		}
-		cull = false;
-		StateHasChanged();
-	}
+	protected bool inst = false;
 
 	void Lift(int index) {
 		if (Nodes.Count < 2 || index == Nodes.Count - 1) return;
 		Node node = Nodes[index];
 		Nodes.RemoveAt(index);
 		Nodes.Add(node);
-	}
-
-	public void AddNode(int index) {
-		Node newNode = new Node(mono.Shelf[index]);
-		newNode.Pos = LocalCursor + offset;
-
-		Nodes.Add(newNode);
-		// Console.WriteLine($"AddNode {Nodes.Count}");
-		StateHasChanged();
 	}
 }
 

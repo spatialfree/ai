@@ -9,7 +9,9 @@
   transition: top 0.3s;
 ">
 @foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
-  <CNode Noded="@node" Index="@index" />
+  @if (node.Shelf) {
+		<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Held="@Held" Pull="@Pull" Cull="@Cull" />
+  }
 }
 </div>
 
@@ -21,5 +23,13 @@
   [Parameter]
   public double Y { get; set; }
   [Parameter]
-  public List<Node> Nodes { get; set; } = new();
+  public ObservableCollection<Node> Nodes { get; set; } = new();
+
+
+  [Parameter]
+  public bool Held { get; set; }
+  [Parameter]
+  public bool Pull { get; set; }
+  [Parameter]
+  public bool Cull { get; set; }
 }

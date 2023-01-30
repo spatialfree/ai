@@ -14,15 +14,9 @@ public class Mono {
 
 	public string Pattern = "Pattern";
 
+
+
 	// ObvserableCollection?
-
-	public List<Node> Shelf = new() {
-		new Node { Pos = new Vec(64,  100), Area = new Vec(100, 20), Color = "#57b373", Text = "0 | Zed", },
-		new Node { Pos = new Vec(264, 100), Area = new Vec(100, 40), Color = "#edc1ad", Text = "1 | One\nFree DallE", },
-		new Node { Pos = new Vec(64,  180), Area = new Vec(160, 80), Color = "#6673c4", Text = "2 | Two\nDo everything with pixels and slap a scalar on top", },
-	};
-
-
 	public ObservableCollection<Node> Nodes = new();
 
   string cd { get { return Directory.GetCurrentDirectory(); } }
@@ -54,6 +48,7 @@ public class Mono {
 		
 				string contents = $"{TimeStamp}\n___";
 				for (int j = 0; j < Nodes.Count; j++) {
+					contents += $"\nShelf {Nodes[j].Shelf.ToString().ToLower()}";
 					contents += $"\nText {Nodes[j].Text.Replace("\n", "\\n")}";
 					contents += $"\nColor {Nodes[j].Color}";
 					contents += $"\nPos {Nodes[j].Pos}";
@@ -93,12 +88,13 @@ public class Mono {
 						}
 
 						Node node = new Node {
-							Text  = lines[j].Replace("Text ",    "").Replace("\\n", "\n"),
-							Color = lines[j+1].Replace("Color ", "").Trim(),
-							Pos   = lines[j+2].Replace("Pos ",   "").ToVec(),
-							Area  = lines[j+3].Replace("Area ",  "").ToVec()
+							Shelf = lines[j  ].Replace("Shelf ", "").ToLower() == "true",
+							Text  = lines[j+1].Replace("Text ",    "").Replace("\\n", "\n"),
+							Color = lines[j+2].Replace("Color ", "").Trim(),
+							Pos   = lines[j+3].Replace("Pos ",   "").ToVec(),
+							Area  = lines[j+4].Replace("Area ",  "").ToVec()
 						};
-						j += 3;
+						j += 4;
 						Nodes.Add(node);
 					}
 				}

@@ -42,12 +42,14 @@
 	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
 	@foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
 		@if (index == Nodes.Count-1 && held) {
-			<CShelf Shelff="@Shelf" X="@Canvas.x" Y="@Canvas.y" Nodes="@mono.Shelf" />
+			<CShelf Shelff="@Shelf" X="@Canvas.x" Y="@Canvas.y" Nodes="@Nodes" Held="@held" Pull="@pull" Cull="@cull" />
 		}
-		<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Held="@held" Pull="@pull" Cull="@cull" />
+		@if (!node.Shelf) {
+			<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Held="@held" Pull="@pull" Cull="@cull" />
+		}
 	}
 	@if (!held) {
-		<CShelf Shelff="@Shelf" X="@Canvas.x" Y="@Canvas.y" Nodes="@mono.Shelf" />
+		<CShelf Shelff="@Shelf" X="@Canvas.x" Y="@Canvas.y" Nodes="@Nodes" Held="@held" Pull="@pull" Cull="@cull" />
 	}
 	</div>
 </div>

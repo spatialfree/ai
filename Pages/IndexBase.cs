@@ -43,7 +43,9 @@ public class IndexBase : ComponentBase {
 	}
 	protected bool Cloud = false;
 
-	ObservableCollection<Node> nodes { get; set; } = new();
+	ObservableCollection<Node> nodes { get; set; } = new() {
+		new Node { Shelf = true, Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "Text 0 | Zed" }
+	};
 	public ObservableCollection<Node> Nodes {
 		get { return Cloud ? mono.Nodes : nodes; }
 	}
@@ -117,17 +119,23 @@ public class IndexBase : ComponentBase {
 		}
 	}
 
+
+
+
+
 	protected void PointerMove(PointerEventArgs e) {
 		// Console.WriteLine($"PointerMove {e.PointerId}");
 		Cursor = new Vec(e.ClientX, e.ClientY); // OffsetY
+
 		if (Nodes.Count == 0) return;
 		Node node = Nodes[Nodes.Count - 1];
+
 		if (held) { 
-			Vec newPos = LocalCursor + offset;
+			Vec newPos = AutoCursor(node.Shelf) + offset;
 			node.Pos = newPos;
 			StateHasChanged();
 		} else if (pull) {
-			Vec newArea = (LocalCursor + offset) - node.Pos;
+			Vec newArea = (AutoCursor(node.Shelf) + offset) - node.Pos;
 
 			cull = newArea.x < 0 && newArea.y < 0;
 			
@@ -146,39 +154,18 @@ public class IndexBase : ComponentBase {
 		Cursor = new Vec(e.ClientX, e.ClientY);
 		down = true;
 
-		if (Shelf) {
-			for (int i = 0; i < mono.Shelf.Count; i++) {
-				Vec pos = mono.Shelf[i].Pos;
-
-				Vec localPos = (Cursor - pos);
-				bool inX = localPos.x <= -2 && localPos.x >= -41;
-				bool inY = localPos.y <= 25 && localPos.y >= -5;
-				// Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
-				if (inX && inY) {
-					offset = pos - Cursor;
-
-					Node newNode = new Node(mono.Shelf[i]);
-					newNode.Pos = LocalCursor + offset;
-
-					Nodes.Add(newNode);
-					inst = held = true;
-
-					// Console.WriteLine($"AddNode {Nodes.Count}");
-					StateHasChanged();
-					return;
-				}
-			}
-		}
-
 		for (int i = 0; i < Nodes.Count; i++) {
-			Vec pos = Nodes[i].Pos;
+			Node node = Nodes[i];
 
-			Vec localPos = (LocalCursor - pos);
+			Vec localPos = AutoCursor(node.Shelf) - node.Pos;
 			bool inX = localPos.x <= -2 && localPos.x >= -41;
 			bool inY = localPos.y <= 25 && localPos.y >= -5;
 			// Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
 			if (inX && inY) {
-				offset = pos - LocalCursor;
+				offset = node.Pos - AutoCursor(node.Shelf);
+				if (node.Shelf) {
+					oldPos = node.Pos;
+				}
 
 				Lift(i);
 				held = true;
@@ -188,14 +175,14 @@ public class IndexBase : ComponentBase {
 			}
 
 			Vec area = Nodes[i].Area;
-			localPos = (LocalCursor - (pos + area));
+			localPos = (AutoCursor(node.Shelf) - (node.Pos + area));
 			localPos.x -= 12; // ~padding + border
 			localPos.y += 2; // ~border
 			inX = localPos.x <= -3 && localPos.x >= -23; 
 			inY = localPos.y <= 23 && localPos.y >=   4;
 			// Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
 			if (inX && inY) {
-				offset = (pos + area) - LocalCursor;
+				offset = (node.Pos + area) - AutoCursor(node.Shelf);
 				
 				Lift(i);
 				pull = true;
@@ -211,14 +198,27 @@ public class IndexBase : ComponentBase {
 	protected void PointerUp(PointerEventArgs e) {
 		// Console.WriteLine($"PointerUp : {e.Button}");
 		Cursor = new Vec(e.ClientX, e.ClientY);
-		if (Shelf && held && Cursor.y < 400) {
-			if (!inst) {
-				Node node = Nodes[Nodes.Count - 1];
-				node.Pos += Canvas;
-				mono.Shelf.Add(node);
-				Console.WriteLine("Declare Node");
-			} 
-			cull = true;
+		if (held && Shelf) { 
+			Node node = Nodes[Nodes.Count - 1];
+			if (node.Shelf) {
+				if (Cursor.y > 400) {
+					Node newNode = new Node(node);
+					newNode.Shelf = false;
+					newNode.Pos = LocalCursor + offset;
+					inst = held = true;
+					Nodes.Add(newNode); // OOP
+
+					// put shelf node back
+					node.Pos = oldPos;
+					// Console.WriteLine("Instantiate Node");
+				}
+			} else {
+				if (Cursor.y < 400) {
+					node.Shelf = true;
+					node.Pos += Canvas;
+					// Console.WriteLine("Declare Node");
+				}
+			}
 		}
 
 		if (cull) {
@@ -235,10 +235,15 @@ public class IndexBase : ComponentBase {
 		set { cursor = new Vec((int)value.x, (int)value.y); }
 	}
 	protected Vec LocalCursor { get { return Cursor - Canvas; } }
+	protected Vec AutoCursor(bool shelf) {
+		return shelf ? Cursor : LocalCursor;
+	}
 
 	Vec offset = new Vec(0, 0);
 	Vec canvasOffset = new Vec(0, 0);
 	protected Vec Canvas = new Vec(0, 0);
+
+	Vec oldPos = new Vec(0, 0); // vague variable name 
 	
 	protected bool down = false;
 	protected bool held = false;

@@ -32,11 +32,13 @@ public class Node {
 
 	}
 	public Node(Node node) {
+		Shelf = node.Shelf;
 		Text = node.Text;
 		Color = node.Color;
 		Pos = node.Pos;
 		Area = node.Area;
 	}
+	public bool Shelf { get; set; } = false;
 	public string Text  { get; set; } = default!;
 	// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
 	public string Color { get; set; } = default!;

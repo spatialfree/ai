@@ -133,7 +133,6 @@ public class IndexBase : ComponentBase {
 		if (held) { 
 			Vec newPos = AutoCursor(node.Shelf) + offset;
 			node.Pos = newPos;
-			StateHasChanged();
 		} else if (pull) {
 			Vec newArea = (AutoCursor(node.Shelf) + offset) - node.Pos;
 
@@ -142,11 +141,10 @@ public class IndexBase : ComponentBase {
 			newArea.x = Math.Max(newArea.x, 100);
 			newArea.y = Math.Max(newArea.y, 20);
 			node.Area = newArea;
-			StateHasChanged();
 		} else if (down) {
 			Canvas = Cursor + canvasOffset;
-			StateHasChanged();
 		}
+		StateHasChanged();
 	}
 
 	protected void PointerDown(PointerEventArgs e) {

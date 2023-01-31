@@ -6,10 +6,14 @@ public class Mono {
     Restore();
 		Nodes.CollectionChanged += (sender, e) => {
 			Recorded = Restored = false;
+			// this only gets called when the collection is changed
+			// not when the properties of the nodes are changed
 		};
   }
 
-
+	public bool Synced {
+		get { return Recorded || Restored; }
+	}
 	
 
 	public string Pattern = "Pattern";

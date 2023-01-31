@@ -156,8 +156,8 @@ public class IndexBase : ComponentBase {
 			Node node = Nodes[i];
 
 			Vec localPos = AutoCursor(node.Shelf) - node.Pos;
-			bool inX = localPos.x <= -2 && localPos.x >= -41;
-			bool inY = localPos.y <= 25 && localPos.y >= -5;
+			bool inX = localPos.x <= 21 && localPos.x >= -3;
+			bool inY = localPos.y <= 21 && localPos.y >= -3;
 			// Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
 			if (inX && inY) {
 				offset = node.Pos - AutoCursor(node.Shelf);
@@ -174,10 +174,8 @@ public class IndexBase : ComponentBase {
 
 			Vec area = Nodes[i].Area;
 			localPos = (AutoCursor(node.Shelf) - (node.Pos + area));
-			localPos.x -= 12; // ~padding + border
-			localPos.y += 2; // ~border
-			inX = localPos.x <= -3 && localPos.x >= -23; 
-			inY = localPos.y <= 23 && localPos.y >=   4;
+			inX = localPos.x <= 9 && localPos.x >= -15; 
+			inY = localPos.y <= 3 && localPos.y >= -21;
 			// Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
 			if (inX && inY) {
 				offset = (node.Pos + area) - AutoCursor(node.Shelf);

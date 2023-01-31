@@ -2,15 +2,40 @@
   transform: translate(@(Noded.Pos.x)px, @(Noded.Pos.y)px); 
   filter: @(Top && (Held || Pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");
   ">
-  <div class="node-drag" style="
-    background-color: @(Noded.Color); color: #ffffff80;
-    cursor: @(Held ? "grabbing" : "grab");
-  ">:&nbsp;:</div>
   <textarea @bind="Noded.Text" style="
     width: @(Noded.Area.x)px; height: @(Noded.Area.y)px; 
     background-color: @(Top && Cull ? "red" : "white");
     color: @(Top && Cull ? "white" : "black");
+    border-color: @(Noded.Color);
   "></textarea>
+  @* <div class="node-drag" style="
+    color: @(Noded.Color);
+    cursor: @(Held ? "grabbing" : "grab");
+  ">::</div> *@
+  <div style="
+  	user-select: none;
+    position: fixed;
+    top: 0px; left: 0px;
+    width: @(Noded.Area.x)px; height: @(Noded.Area.y)px; 
+    margin: 2px;
+    background-color: #808080dd;
+    padding: 0px 2px;
+
+    display: none;
+  ">
+    @* <div>play</div>
+    <div>flip</div> *@
+    <input type="text" placeholder="node-name" style="
+      width: 100%;
+    " />
+    <div style="
+      display: flex; justify-content: space-evenly; align-items: center;
+    ">
+      <img class="icon" src="svg-icons/media-play.svg" width="16px" />
+      <img class="icon" src="svg-icons/menu.svg" width="16px" />
+      <img class="icon" src="svg-icons/pencil.svg" width="16px" />
+    </div>
+  </div>
   <div class="node-area">
     <img src="svg-icons/fullscreen-enter.svg" />
   </div>

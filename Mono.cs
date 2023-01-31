@@ -128,6 +128,48 @@ NOTES
 				hash function
 		
 	
+	scale on edges and corners
+		rather than just the bottom right corner
+
+	"data areas"
+		unique id/name
+		text (1-4096 tokens)
+		{ ref(.part) }
+
+	"encapsulation"
+		unique id/name
+		contain "data areas"
+		define input/output
+		execution
+
+
+
+	Directional
+		to
+			language model prompt patterning
+				process
+					branchial~
+					sequenced
+					programmatic
+					modular
+				memory
+					on demand
+
+		from
+			conversational
+				back and forth
+					1 : 1
+				memory
+					limited
+
+	Constraints
+		Text
+			That way the language model can interact with as much of it as possible
+			Just text is bad tho?
+		Mobile 1st
+		
+
+
 
 
 	do everything with pixels and slap a scalar on top

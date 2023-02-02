@@ -44,7 +44,9 @@ public class IndexBase : ComponentBase {
 	protected bool Cloud = false;
 
 	ObservableCollection<Node> nodes { get; set; } = new() {
-		new Node { shelf = true, pos = new Vec(60, 100), area = new Vec(60, 20), text = "Text" }
+		new Node { shelf = true, pos = new Vec(60, 100), area = new Vec(60, 20), text = "Text" },
+		new Node { shelf = false, pos = new Vec(60, 100), area = new Vec(60, 20), text = "Text" },
+		new Node { shelf = false, pos = new Vec(200, 100), area = new Vec(60, 20), text = "Text" },
 	};
 	public ObservableCollection<Node> Nodes {
 		get { return Cloud ? mono.Nodes : nodes; }
@@ -56,83 +58,10 @@ public class IndexBase : ComponentBase {
 	protected bool Menu = true;
 
 
-	protected string OutputLabel = "";
-	protected int OutputIndex = 0;
-	protected List<string> Outputs = new() { "" };
-	protected void Back() { OutputIndex--; }
-	protected void Next() { OutputIndex++; }
-
-	protected void Swap() {
-		var txt = Nodes[1].text;
-		Nodes[1].text = Outputs[OutputIndex];
-		Outputs[OutputIndex] = txt;
-	}
-
-	protected int   MaxTokens   = 256;
-	protected float Temperature = 1.0f;
-	protected float Contrast    = 0.0f;
-	protected float Repeat      = 0.0f;
-
-	protected bool Loading = false;
-	protected bool Error = false;
-	string completion = "";
-	protected async Task<string> Complete(string prompt) {
-		completion = "";
-		if (!Loading) {
-			Loading = true;
-
-			try {
-				// if (Outputs[OutputIndex].Length > 0) {
-				// 	if (OutputIndex < Outputs.Count - 1)
-				// 		Outputs.RemoveRange(OutputIndex + 1, Outputs.Count - (OutputIndex + 1));
-					
-				// 	Outputs.Add("");
-				// 	OutputIndex++;
-				// }
-
-				CompletionRequest request = new CompletionRequest();
-				request.Model = OpenAI.Models.Model.Davinci;
-				// request.Prompt = Nodes[0].Full + Nodes[1].Full + Tools.Formatted(OutputLabel,"\n");
-				request.Prompt = prompt;
-				request.MaxTokens = MaxTokens;
-				request.Temperature = Temperature;
-				request.PresencePenalty = Contrast;
-				request.FrequencyPenalty = -Repeat;
-
-				var endpoint = API.CompletionsEndpoint;
-				await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
-					completion += token.Completions[0].Text;
-					completion = completion.TrimStart('\n');
-					
-					StateHasChanged();
-				}
-
-				// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
-			}
-			catch (Exception ex) {
-				Error = true;
-				StateHasChanged();
-				await Task.Delay(2000);
-				Error = false;
-
-				// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} : {ex.Message}");
-			}
-
-			Loading = false;
-		}
-
-		return completion;
-	}
-
-
-
-
-
 	protected void PointerMove(PointerEventArgs e) {
 		// Console.WriteLine($"PointerMove {e.PointerId}");
 		Cursor = new Vec(e.ClientX, e.ClientY); // OffsetY
 
-		if (Nodes.Count == 0) return;
 		Node node = Nodes[Nodes.Count - 1];
 
 		if (held) { 
@@ -227,7 +156,12 @@ public class IndexBase : ComponentBase {
 		}
 
 		if (cull) {
-			Nodes.RemoveAt(Nodes.Count - 1);
+			if (Nodes.Count(todo => !todo.shelf) <= 2) {
+				Nodes[Nodes.Count - 1].name = "";
+				Nodes[Nodes.Count - 1].text = "";
+			} else {
+				Nodes.RemoveAt(Nodes.Count - 1);
+			}
 			// Console.WriteLine("CULL");
 		}
 		down = held = pull = cull = inst = false;
@@ -255,7 +189,6 @@ public class IndexBase : ComponentBase {
 
 
 	protected async Task Run() {
-		
 		Node node = Nodes[Nodes.Count - 2];
 
 		string prep = "";
@@ -277,10 +210,10 @@ public class IndexBase : ComponentBase {
 			if (!read) { prep += node.text[i]; }
 		}
 
-		Console.WriteLine(prep);
-		var ccc = await Complete(prep);
-		// Console.WriteLine(ccc);
-		Nodes[Nodes.Count - 1].text = ccc;
+		// Console.WriteLine(prep);
+		// Nodes[Nodes.Count - 1].text = completion;
+		await Complete(prep);
+		// Console.WriteLine(Nodes[Nodes.Count - 1].text);
 	}
 
 	Node GetNodeByName(string name) {
@@ -292,10 +225,75 @@ public class IndexBase : ComponentBase {
 		Console.WriteLine($"Node {name} not found");
 		return new Node();
 	}
+
+	protected bool Loading = false;
+	protected bool Error = false;
+	// string completion = "";
+	protected async Task Complete(string prompt) {
+		if (!Loading) {
+			Loading = true;
+
+			try {
+				CompletionRequest request = new CompletionRequest();
+				request.Model = OpenAI.Models.Model.Davinci;
+				// request.Prompt = Nodes[0].Full + Nodes[1].Full + Tools.Formatted(OutputLabel,"\n");
+				request.Prompt = prompt;
+				request.MaxTokens = MaxTokens;
+				request.Temperature = Temperature;
+				request.PresencePenalty = Contrast;
+				request.FrequencyPenalty = -Repeat;
+
+				var endpoint = API.CompletionsEndpoint;
+				await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
+					Nodes[Nodes.Count - 1].text += token.Completions[0].Text;
+					Nodes[Nodes.Count - 1].text = Nodes[Nodes.Count - 1].text.TrimStart('\n');
+					
+					StateHasChanged();
+				}
+
+				// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
+			}
+			catch (Exception ex) {
+				Error = true;
+				StateHasChanged();
+				await Task.Delay(2000);
+				Error = false;
+
+				// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} : {ex.Message}");
+			}
+
+			Loading = false;
+		}
+	}
+	protected int   MaxTokens   = 256;
+	protected float Temperature = 1.0f;
+	protected float Contrast    = 0.0f;
+	protected float Repeat      = 0.0f;
 }
 
 /*
 	GRAVEYARD
+	
+	if (Outputs[OutputIndex].Length > 0) {
+		if (OutputIndex < Outputs.Count - 1)
+			Outputs.RemoveRange(OutputIndex + 1, Outputs.Count - (OutputIndex + 1));
+		
+		Outputs.Add("");
+		OutputIndex++;
+	}
+
+	protected string OutputLabel = "";
+	protected int OutputIndex = 0;
+	protected List<string> Outputs = new() { "" };
+	protected void Back() { OutputIndex--; }
+	protected void Next() { OutputIndex++; }
+
+	protected void Swap() {
+		var txt = Nodes[1].text;
+		Nodes[1].text = Outputs[OutputIndex];
+		Outputs[OutputIndex] = txt;
+	}
+
 		<h3>Todo (@todos.Count(todo => !todo.IsDone))</h3>
 
 	[Inject] ILocalStorageService localStorage { get; set; } = default!;

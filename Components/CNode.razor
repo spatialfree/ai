@@ -1,6 +1,7 @@
 <div class="node" style="
   transform: translate(@(Noded.pos.x)px, @(Noded.pos.y)px); 
   filter: @(Top && (Held || Pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");
+  outline-color: @(outlineColor);
 ">
   <input @bind="Noded.name" @bind:event="oninput" type="text" style="width: @(Noded.area.x)px;" />
   <textarea @bind="Noded.text" @bind:event="oninput" style="
@@ -9,7 +10,7 @@
     color: @(Top && Cull ? "white" : "black");
   "></textarea>
   <div hidden="@(Top)" style="
-    background-color: @(Next ? "white" : "#808080");
+    background-color: #808080;
     opacity: 0.5;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   "></div>
@@ -21,14 +22,14 @@
   position: fixed;
   transform: translate(@(Noded.pos.x)px, @(Noded.pos.y)px);
   background-color: magenta;
-  @* display: none; *@
+  display: none;
 "></div>
 <div style="
   width: 1px; height: 1px;
   position: fixed;
   transform: translate(@(Noded.pos.x + Noded.area.x + 20)px, @(Noded.pos.y + Noded.area.y + 40)px);
   background-color: magenta;
-  @* display: none; *@
+  display: none;
 "></div>
 
 @code {
@@ -40,8 +41,16 @@
   @* [Parameter]
   public Action<bool> AddNode { get; set; } *@
 
-  [Parameter] public bool Top  { get; set; }
-  [Parameter] public bool Next { get; set; }
+  [Parameter] public bool   Top  { get; set; }
+  [Parameter] public bool   Next { get; set; }
+
+
+  string outlineColor { get {
+    string color    = "#00000022";
+    if (Top) color  = "#ffffffff";
+    if (Next) color = "#000000ff";
+    return color;
+  }}
 
   [Parameter] public bool Held { get; set; }
   [Parameter] public bool Pull { get; set; }

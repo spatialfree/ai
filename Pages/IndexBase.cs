@@ -255,8 +255,8 @@ public class IndexBase : ComponentBase {
 
 
 	protected async Task Run() {
-		// start from the top(end) of the list
-		Node node = Nodes[Nodes.Count - 1];
+		
+		Node node = Nodes[Nodes.Count - 2];
 
 		string prep = "";
 
@@ -279,7 +279,8 @@ public class IndexBase : ComponentBase {
 
 		Console.WriteLine(prep);
 		var ccc = await Complete(prep);
-		Console.WriteLine(ccc);
+		// Console.WriteLine(ccc);
+		Nodes[Nodes.Count - 1].text = ccc;
 	}
 
 	Node GetNodeByName(string name) {

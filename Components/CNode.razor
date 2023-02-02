@@ -9,7 +9,8 @@
     color: @(Top && Cull ? "white" : "black");
   "></textarea>
   <div hidden="@(Top)" style="
-    background-color: #80808080;
+    background-color: @(Next ? "white" : "#808080");
+    opacity: 0.5;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   "></div>
 </div>
@@ -39,7 +40,8 @@
   @* [Parameter]
   public Action<bool> AddNode { get; set; } *@
 
-  [Parameter] public bool Top { get; set; }
+  [Parameter] public bool Top  { get; set; }
+  [Parameter] public bool Next { get; set; }
 
   [Parameter] public bool Held { get; set; }
   [Parameter] public bool Pull { get; set; }

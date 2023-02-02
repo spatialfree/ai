@@ -45,7 +45,7 @@
 			<CShelf Shelff="@Shelf" X="@Canvas.x" Y="@Canvas.y" Nodes="@Nodes" Held="@held" Pull="@pull" Cull="@cull" />
 		}
 		@if (!node.shelf) {
-			<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Held="@held" Pull="@pull" Cull="@cull" />
+			<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Next="@(index == Nodes.Count-2)" Held="@held" Pull="@pull" Cull="@cull" />
 		}
 	}
 	@if (!held) {

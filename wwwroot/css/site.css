@@ -25,14 +25,14 @@ html, body {
 }
 
 *::-webkit-scrollbar {
-	width: 2px;
-	/* display: none; */
-	background-color: #222;
+	width: 1px;
+	display: none;
+	background-color: white;
 	/* border: 1px solid #fff; */
 	/* border-radius: 2px; */
 }
 *::-webkit-scrollbar-thumb {
-	background-color: #80808080;
+	background-color: #808080;
 	/* border: 1px solid #ffffff33; */
 	/* border-radius: 2px; */
 	/* border-left: none; */
@@ -76,18 +76,18 @@ input::placeholder {
 	user-select: none;
 	cursor: pointer;
 	display: flex; align-items: center;
-	width:  48px;
-	height: 48px;
-	/* background-color: #80808033; */
+	width:  40px;
+	height: 40px;
+	/* background-color: #fff; */
 	color: white;
-	border-radius: 48px;
+	border-radius: 40px;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 }
 .btn img {
-	width:  24px;
-	height: 24px;
+	width:  20px;
+	height: 20px;
 	filter: invert(1);
 }
 
@@ -106,51 +106,34 @@ img {
 }
 
 .node {
-	position: fixed; 
-	width: fit-content;
+	position: fixed;
+	border-radius: 10px;
+	
+	outline: 2px solid #00000022;
+	outline-offset: -1px;
+	overflow: hidden;
+}
+.node input {
+	border-radius: 0;
+	width: 100%;
+	height: calc(30px - 2px);
+	/* height: 30px; */
+	padding: 0px 10px;
+	text-align: center;
+	font-size: 15px; line-height: 15px;
+	font-weight: 700;
+	border-bottom: 2px solid #80808080;
+	background-color: rgb(64, 128, 128);
+	color: white;
 }
 .node textarea {
-	border: 2px solid #222; /* #ddd */ 
-	border-right: none;
 	resize: none; 
-	padding: 0 4px; 
-	font-size: 14px; line-height: 20px;
+	overflow-y: scroll;
+	padding: 5px 10px;
 
-	/* text-indent: 20px */
-}
-.node-drag {
-	user-select: none; 
-	width: 24px; 
-	height: 24px; 
-	position: fixed; 
-	left: 0px; 
-	top:  0px; 
-	/* z-index: -100;  */
-	font-size: 24px; font-weight: 700;
-	line-height: 20px; letter-spacing: 2px;
-	/* padding-left: 12px;  */
-
-	text-align: center;
-
-	/* background-color: #222; */
-}
-.node-area {
-	/* background-color: #80808080; */
-	user-select: none; cursor: nwse-resize; 
-	width:  24px; 
-	height: 24px; 
-	position: fixed; 
-	right:  0; 
-	bottom: 0; 
-}
-.node-area img {
-	pointer-events: none; 
-	filter: invert(0.5); 
-	opacity: 0.666; 
-	mix-blend-mode: invert; 
-	width: 14px;
-	position: fixed; 
-	bottom: 5px; right: 5px;
+	font-size: 12px; line-height: 15px;
+	
+	cursor: default;
 }
 
 .apikey {

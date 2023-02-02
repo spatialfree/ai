@@ -11,6 +11,16 @@ public static class Tools {
 		return rolled;
 	}
 
+	public static int Stepped(this double value) {
+		return (int)(value / 10) * 10;
+	}
+	public static Vec Stepped(this Vec value) {
+		return new Vec(
+			value.x.Stepped(), 
+			value.y.Stepped()
+		);
+	}
+
   public static string? Formatted(string? str, string? append) {
 		return string.IsNullOrEmpty(str) ? "" : str + append;
 	}

@@ -20,7 +20,7 @@ public class Vec {
 	
 
   public override string ToString()
-    => string.Format("{0:0.##}, {1:0.##}", x, y);
+    => string.Format("{0:0.##},{1:0.##}", x, y);
 }
 
 public class Chiral {
@@ -29,21 +29,33 @@ public class Chiral {
 
 public class Node {
 	public Node() {
+		name = "";
+		text = "";
+		color = "black";
 
+		pos = new Vec(0, 0);
+		area = new Vec(0, 0);
 	}
 	public Node(Node node) {
-		Shelf = node.Shelf;
-		Text = node.Text;
-		Color = node.Color;
-		Pos = node.Pos;
-		Area = node.Area;
+		shelf = node.shelf;
+
+		name = node.name;
+		text = node.text;
+		color = node.color;
+
+		pos = node.pos;
+		area = node.area;
 	}
-	public bool Shelf { get; set; } = false;
-	public string Text  { get; set; } = default!;
+	public bool shelf;
+	
+	public string name;
+	public string text;
+	public string color;
+
+	public Vec pos;
+	public Vec area;
+
 	// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
-	public string Color { get; set; } = default!;
-	public Vec Pos { get; set; } = default!;
-	public Vec Area { get; set; } = default!;
 }
 
 

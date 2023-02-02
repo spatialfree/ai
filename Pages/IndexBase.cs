@@ -44,7 +44,7 @@ public class IndexBase : ComponentBase {
 	protected bool Cloud = false;
 
 	ObservableCollection<Node> nodes { get; set; } = new() {
-		new Node { Shelf = true, Pos = new Vec(64, 100), Area = new Vec(100, 20), Color = "#57b373", Text = "Text 0 | Zed" }
+		new Node { shelf = true, pos = new Vec(60, 100), area = new Vec(60, 20), text = "Text" }
 	};
 	public ObservableCollection<Node> Nodes {
 		get { return Cloud ? mono.Nodes : nodes; }
@@ -63,8 +63,8 @@ public class IndexBase : ComponentBase {
 	protected void Next() { OutputIndex++; }
 
 	protected void Swap() {
-		var txt = Nodes[1].Text;
-		Nodes[1].Text = Outputs[OutputIndex];
+		var txt = Nodes[1].text;
+		Nodes[1].text = Outputs[OutputIndex];
 		Outputs[OutputIndex] = txt;
 	}
 
@@ -75,22 +75,25 @@ public class IndexBase : ComponentBase {
 
 	protected bool Loading = false;
 	protected bool Error = false;
-	protected async Task Complete() {
+	string completion = "";
+	protected async Task<string> Complete(string prompt) {
+		completion = "";
 		if (!Loading) {
 			Loading = true;
 
 			try {
-				if (Outputs[OutputIndex].Length > 0) {
-					if (OutputIndex < Outputs.Count - 1)
-						Outputs.RemoveRange(OutputIndex + 1, Outputs.Count - (OutputIndex + 1));
+				// if (Outputs[OutputIndex].Length > 0) {
+				// 	if (OutputIndex < Outputs.Count - 1)
+				// 		Outputs.RemoveRange(OutputIndex + 1, Outputs.Count - (OutputIndex + 1));
 					
-					Outputs.Add("");
-					OutputIndex++;
-				}
+				// 	Outputs.Add("");
+				// 	OutputIndex++;
+				// }
 
 				CompletionRequest request = new CompletionRequest();
 				request.Model = OpenAI.Models.Model.Davinci;
 				// request.Prompt = Nodes[0].Full + Nodes[1].Full + Tools.Formatted(OutputLabel,"\n");
+				request.Prompt = prompt;
 				request.MaxTokens = MaxTokens;
 				request.Temperature = Temperature;
 				request.PresencePenalty = Contrast;
@@ -98,8 +101,8 @@ public class IndexBase : ComponentBase {
 
 				var endpoint = API.CompletionsEndpoint;
 				await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
-					Outputs[OutputIndex] += token.Completions[0].Text;
-					Outputs[OutputIndex] = Outputs[OutputIndex].TrimStart('\n');
+					completion += token.Completions[0].Text;
+					completion = completion.TrimStart('\n');
 					
 					StateHasChanged();
 				}
@@ -117,6 +120,8 @@ public class IndexBase : ComponentBase {
 
 			Loading = false;
 		}
+
+		return completion;
 	}
 
 
@@ -131,18 +136,18 @@ public class IndexBase : ComponentBase {
 		Node node = Nodes[Nodes.Count - 1];
 
 		if (held) { 
-			Vec newPos = AutoCursor(node.Shelf) + offset;
-			node.Pos = newPos;
+			Vec newPos = AutoCursor(node.shelf) + offset;
+			node.pos = newPos.Stepped();
 		} else if (pull) {
-			Vec newArea = (AutoCursor(node.Shelf) + offset) - node.Pos;
+			Vec newArea = (AutoCursor(node.shelf) + offset) - node.pos;
 
 			cull = newArea.x < 0 && newArea.y < 0;
 			
-			newArea.x = Math.Max(newArea.x, 100);
-			newArea.y = Math.Max(newArea.y, 20);
-			node.Area = newArea;
+			newArea.x = Math.Max(newArea.x.Stepped(), 60);
+			newArea.y = Math.Max(newArea.y.Stepped(), 20);
+			node.area = newArea;
 		} else if (down) {
-			Canvas = Cursor + canvasOffset;
+			Canvas = Cursor.Stepped() + canvasOffset;
 		}
 		StateHasChanged();
 	}
@@ -152,43 +157,47 @@ public class IndexBase : ComponentBase {
 		Cursor = new Vec(e.ClientX, e.ClientY);
 		down = true;
 
-		for (int i = 0; i < Nodes.Count; i++) {
+		for (int i = Nodes.Count-1; i >= 0; i--) {
 			Node node = Nodes[i];
 
-			Vec localPos = AutoCursor(node.Shelf) - node.Pos;
-			bool inX = localPos.x <= 21 && localPos.x >= -3;
-			bool inY = localPos.y <= 21 && localPos.y >= -3;
-			// Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
-			if (inX && inY) {
-				offset = node.Pos - AutoCursor(node.Shelf);
-				if (node.Shelf) {
-					oldPos = node.Pos;
+
+
+			Vec localPos = AutoCursor(node.shelf) - node.pos;
+			bool inXMin = localPos.x >= 0;
+			bool inXMax = localPos.x < node.area.x + 20;
+			// print 0 for inside both and - for outside min and + for outside max
+			int x = (inXMin ? 0 : -1) + (inXMax ? 0 : 1);
+			string xstr = x == 0 ? "0" : x < 0 ? "-" : "+";
+
+			bool inYMin = localPos.y >= 0;
+			bool inYMax = localPos.y < node.area.y + 40;
+			int y = (inYMin ? 0 : -1) + (inYMax ? 0 : 1);
+			string ystr = y == 0 ? "0" : y < 0 ? "-" : "+";
+
+			// Console.WriteLine($"{xstr}{ystr} {(int)e.ClientX - node.pos.x}");
+			if (inXMin && inXMax && inYMin && inYMax) {
+				offset = node.pos - AutoCursor(node.shelf);
+				oldPos = node.pos;
+
+				// Lift
+				if (Nodes.Count > 1) {
+					Nodes.RemoveAt(i);
+					Nodes.Add(node);
 				}
 
-				Lift(i);
-				held = true;
+				if ((AutoCursor(node.shelf) - node.pos).Mag < 10.0) {
+					pull = true;
+				} else {
+					held = true;
+				}
 
-				StateHasChanged();
-				return;
-			}
-
-			Vec area = Nodes[i].Area;
-			localPos = (AutoCursor(node.Shelf) - (node.Pos + area));
-			inX = localPos.x <= 9 && localPos.x >= -15; 
-			inY = localPos.y <= 3 && localPos.y >= -21;
-			// Console.WriteLine($"{i} : {localPos} : {inX} : {inY}");
-			if (inX && inY) {
-				offset = (node.Pos + area) - AutoCursor(node.Shelf);
-				
-				Lift(i);
-				pull = true;
 
 				StateHasChanged();
 				return;
 			}
 		}
 
-		canvasOffset = Canvas - Cursor;
+		canvasOffset = Canvas - Cursor.Stepped();
 	}
 
 	protected void PointerUp(PointerEventArgs e) {
@@ -196,22 +205,22 @@ public class IndexBase : ComponentBase {
 		Cursor = new Vec(e.ClientX, e.ClientY);
 		if (held && Shelf) { 
 			Node node = Nodes[Nodes.Count - 1];
-			if (node.Shelf) {
+			if (node.shelf) {
 				if (Cursor.y > 400) {
 					Node newNode = new Node(node);
-					newNode.Shelf = false;
-					newNode.Pos = LocalCursor + offset;
+					newNode.shelf = false;
+					newNode.pos = node.pos - Canvas;
 					inst = held = true;
 					Nodes.Add(newNode); // OOP
 
 					// put shelf node back
-					node.Pos = oldPos;
+					node.pos = oldPos;
 					// Console.WriteLine("Instantiate Node");
 				}
 			} else {
 				if (Cursor.y < 400) {
-					node.Shelf = true;
-					node.Pos += Canvas;
+					node.shelf = true;
+					node.pos += Canvas;
 					// Console.WriteLine("Declare Node");
 				}
 			}
@@ -225,11 +234,7 @@ public class IndexBase : ComponentBase {
 		StateHasChanged();
 	}
 
-	Vec cursor = new Vec(200, 300);
-	protected Vec Cursor {
-		get { return cursor; }
-		set { cursor = new Vec((int)value.x, (int)value.y); }
-	}
+	Vec Cursor = new Vec(200, 300);
 	protected Vec LocalCursor { get { return Cursor - Canvas; } }
 	protected Vec AutoCursor(bool shelf) {
 		return shelf ? Cursor : LocalCursor;
@@ -247,11 +252,44 @@ public class IndexBase : ComponentBase {
 	protected bool cull = false;
 	protected bool inst = false;
 
-	void Lift(int index) {
-		if (Nodes.Count < 2 || index == Nodes.Count - 1) return;
-		Node node = Nodes[index];
-		Nodes.RemoveAt(index);
-		Nodes.Add(node);
+
+
+	protected async Task Run() {
+		// start from the top(end) of the list
+		Node node = Nodes[Nodes.Count - 1];
+
+		string prep = "";
+
+		bool read = false;
+		string reference = "";
+		for (int i = 0; i < node.text.Length; i++) {
+			if (node.text[i] == '}') { read = false; 
+				reference = reference.Trim();
+				Node refNode = GetNodeByName(reference);
+				prep += refNode.text;
+
+				reference = "";
+				continue;
+			}
+			if (read) { reference += node.text[i]; }
+			if (node.text[i] == '{') { read = true; }
+
+			if (!read) { prep += node.text[i]; }
+		}
+
+		Console.WriteLine(prep);
+		var ccc = await Complete(prep);
+		Console.WriteLine(ccc);
+	}
+
+	Node GetNodeByName(string name) {
+		foreach (Node node in Nodes) {
+			if (node.name == name) {
+				return node;
+			}
+		}
+		Console.WriteLine($"Node {name} not found");
+		return new Node();
 	}
 }
 

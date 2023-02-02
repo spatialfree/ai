@@ -5,11 +5,11 @@
 	height: 400px;
 	background-color: #404040ee;
   transform: translate(@(-X)px, @(-Y)px);
-  border-bottom: 1px solid #606060;
+  border-bottom: 2px solid #606060;
   transition: top 0.3s;
 ">
 @foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
-  @if (node.Shelf) {
+  @if (node.shelf) {
 		<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Held="@Held" Pull="@Pull" Cull="@Cull" />
   }
 }

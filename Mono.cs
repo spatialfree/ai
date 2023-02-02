@@ -19,7 +19,6 @@ public class Mono {
 	public string Pattern = "Pattern";
 
 
-
 	// ObvserableCollection?
 	public ObservableCollection<Node> Nodes = new();
 
@@ -52,11 +51,12 @@ public class Mono {
 		
 				string contents = $"{TimeStamp}\n___";
 				for (int j = 0; j < Nodes.Count; j++) {
-					contents += $"\nShelf {Nodes[j].Shelf.ToString().ToLower()}";
-					contents += $"\nText {Nodes[j].Text.Replace("\n", "\\n")}";
-					contents += $"\nColor {Nodes[j].Color}";
-					contents += $"\nPos {Nodes[j].Pos}";
-					contents += $"\nArea {Nodes[j].Area}";
+					contents += $"\nShelf {Nodes[j].shelf.ToString().ToLower()}";
+					contents += $"\nName  {Nodes[j].name.Trim()}";
+					contents += $"\nText  {Nodes[j].text.Replace("\n", "\\n") }";
+					contents += $"\nColor {Nodes[j].color}";
+					contents += $"\nPos   {Nodes[j].pos.Stepped()}";
+					contents += $"\nArea  {Nodes[j].area.Stepped()}";
 					contents += $"\n";
 				}
 
@@ -92,13 +92,14 @@ public class Mono {
 						}
 
 						Node node = new Node {
-							Shelf = lines[j  ].Replace("Shelf ", "").ToLower() == "true",
-							Text  = lines[j+1].Replace("Text ",    "").Replace("\\n", "\n"),
-							Color = lines[j+2].Replace("Color ", "").Trim(),
-							Pos   = lines[j+3].Replace("Pos ",   "").ToVec(),
-							Area  = lines[j+4].Replace("Area ",  "").ToVec()
+							shelf = lines[j++].Replace("Shelf ", "").ToLower() == "true",
+							name  = lines[j++].Replace("Name  ", "").Trim(),
+							text  = lines[j++].Replace("Text  ", "").Replace("\\n", "\n"),
+							color = lines[j++].Replace("Color ", "").Trim(),
+							pos   = lines[j++].Replace("Pos   ", "").ToVec(),
+							area  = lines[j++].Replace("Area  ", "").ToVec()
 						};
-						j += 4;
+
 						Nodes.Add(node);
 					}
 				}
@@ -143,7 +144,6 @@ NOTES
 		execution
 
 
-
 	Directional
 		to
 			language model prompt patterning
@@ -169,6 +169,12 @@ NOTES
 		Mobile 1st
 		
 
+	{a}{b}
+	{a} + {b}
+	{a.top}
+	{a.prompt}
+	{a.out}
+	{a.fresh}
 
 
 

@@ -230,6 +230,7 @@ public class IndexBase : ComponentBase {
 	protected bool Error = false;
 	// string completion = "";
 	protected async Task Complete(string prompt) {
+		Nodes[Nodes.Count - 1].text = "";
 		if (!Loading) {
 			Loading = true;
 

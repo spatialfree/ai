@@ -42,20 +42,15 @@ public class IndexBase : ComponentBase {
 		}
 	}
 	protected bool Cloud = false;
+	protected bool Menu  = true;
 
 	ObservableCollection<Node> nodes { get; set; } = new() {
-		new Node { shelf = true, pos = new Vec(60, 100), area = new Vec(60, 20), text = "Text" },
-		new Node { shelf = false, pos = new Vec(60, 100), area = new Vec(60, 20), text = "Text" },
-		new Node { shelf = false, pos = new Vec(200, 100), area = new Vec(60, 20), text = "Text" },
+		new Node { pos = new Vec(60, 100), area = new Vec(80, 20), text = "Lorem ipsum " },
+		new Node { pos = new Vec(200, 100), area = new Vec(150, 100), text = "" },
 	};
 	public ObservableCollection<Node> Nodes {
 		get { return Cloud ? mono.Nodes : nodes; }
 	}
-
-
-
-	protected bool Shelf = false;
-	protected bool Menu = true;
 
 
 	protected void PointerMove(PointerEventArgs e) {
@@ -65,10 +60,10 @@ public class IndexBase : ComponentBase {
 		Node node = Nodes[Nodes.Count - 1];
 
 		if (held) { 
-			Vec newPos = AutoCursor(node.shelf) + offset;
+			Vec newPos = LocalCursor + offset;
 			node.pos = newPos.Stepped();
 		} else if (pull) {
-			Vec newArea = (AutoCursor(node.shelf) + offset) - node.pos;
+			Vec newArea = (LocalCursor + offset) - node.pos;
 
 			cull = newArea.x < 0 && newArea.y < 0;
 			
@@ -78,11 +73,21 @@ public class IndexBase : ComponentBase {
 		} else if (down) {
 			Canvas = Cursor.Stepped() + canvasOffset;
 		}
+
 		StateHasChanged();
 	}
 
 	protected void PointerDown(PointerEventArgs e) {
 		// Console.WriteLine($"PointerDown : {e.Button}");
+
+		TimeSpan time = DateTime.Now - lastDown;
+		bool doubleDown = time.TotalMilliseconds < 500;
+		lastDown = DateTime.Now;
+
+
+		if (Loading) return;
+
+
 		Cursor = new Vec(e.ClientX, e.ClientY);
 		down = true;
 
@@ -91,7 +96,7 @@ public class IndexBase : ComponentBase {
 
 
 
-			Vec localPos = AutoCursor(node.shelf) - node.pos;
+			Vec localPos = LocalCursor - node.pos;
 			bool inXMin = localPos.x >= 0;
 			bool inXMax = localPos.x < node.area.x + 20;
 			// print 0 for inside both and - for outside min and + for outside max
@@ -105,7 +110,7 @@ public class IndexBase : ComponentBase {
 
 			// Console.WriteLine($"{xstr}{ystr} {(int)e.ClientX - node.pos.x}");
 			if (inXMin && inXMax && inYMin && inYMax) {
-				offset = node.pos - AutoCursor(node.shelf);
+				offset = node.pos - LocalCursor;
 				oldPos = node.pos;
 
 				// Lift
@@ -114,7 +119,7 @@ public class IndexBase : ComponentBase {
 					Nodes.Add(node);
 				}
 
-				if ((AutoCursor(node.shelf) - node.pos).Mag < 10.0) {
+				if ((LocalCursor - node.pos).Mag < 10.0) {
 					pull = true;
 				} else {
 					held = true;
@@ -126,37 +131,22 @@ public class IndexBase : ComponentBase {
 			}
 		}
 
+		if (doubleDown) {
+			Node newNode = new Node();
+			newNode.pos = LocalCursor.Stepped();
+			pull = true;
+			Nodes.Add(newNode);
+		}
+
 		canvasOffset = Canvas - Cursor.Stepped();
 	}
 
 	protected void PointerUp(PointerEventArgs e) {
 		// Console.WriteLine($"PointerUp : {e.Button}");
 		Cursor = new Vec(e.ClientX, e.ClientY);
-		if (held && Shelf) { 
-			Node node = Nodes[Nodes.Count - 1];
-			if (node.shelf) {
-				if (Cursor.y > 400) {
-					Node newNode = new Node(node);
-					newNode.shelf = false;
-					newNode.pos = node.pos - Canvas;
-					inst = held = true;
-					Nodes.Add(newNode); // OOP
-
-					// put shelf node back
-					node.pos = oldPos;
-					// Console.WriteLine("Instantiate Node");
-				}
-			} else {
-				if (Cursor.y < 400) {
-					node.shelf = true;
-					node.pos += Canvas;
-					// Console.WriteLine("Declare Node");
-				}
-			}
-		}
 
 		if (cull) {
-			if (Nodes.Count(todo => !todo.shelf) <= 2) {
+			if (Nodes.Count <= 2) {
 				Nodes[Nodes.Count - 1].name = "";
 				Nodes[Nodes.Count - 1].text = "";
 			} else {
@@ -164,15 +154,13 @@ public class IndexBase : ComponentBase {
 			}
 			// Console.WriteLine("CULL");
 		}
-		down = held = pull = cull = inst = false;
+
+		down = held = pull = cull = false;
 		StateHasChanged();
 	}
 
 	Vec Cursor = new Vec(200, 300);
 	protected Vec LocalCursor { get { return Cursor - Canvas; } }
-	protected Vec AutoCursor(bool shelf) {
-		return shelf ? Cursor : LocalCursor;
-	}
 
 	Vec offset = new Vec(0, 0);
 	Vec canvasOffset = new Vec(0, 0);
@@ -184,7 +172,10 @@ public class IndexBase : ComponentBase {
 	protected bool held = false;
 	protected bool pull = false;
 	protected bool cull = false;
-	protected bool inst = false;
+
+
+	DateTime lastDown = DateTime.Now;
+	protected bool edit = false;
 
 
 
@@ -197,7 +188,6 @@ public class IndexBase : ComponentBase {
 		string reference = "";
 		for (int i = 0; i < node.text.Length; i++) {
 			if (node.text[i] == '}') { read = false; 
-				reference = reference.Trim();
 				Node refNode = GetNodeByName(reference);
 				prep += refNode.text;
 
@@ -218,7 +208,7 @@ public class IndexBase : ComponentBase {
 
 	Node GetNodeByName(string name) {
 		foreach (Node node in Nodes) {
-			if (node.name == name) {
+			if (node.name.Trim().ToLower() == name.Trim().ToLower()) {
 				return node;
 			}
 		}
@@ -237,7 +227,6 @@ public class IndexBase : ComponentBase {
 			try {
 				CompletionRequest request = new CompletionRequest();
 				request.Model = OpenAI.Models.Model.Davinci;
-				// request.Prompt = Nodes[0].Full + Nodes[1].Full + Tools.Formatted(OutputLabel,"\n");
 				request.Prompt = prompt;
 				request.MaxTokens = MaxTokens;
 				request.Temperature = Temperature;
@@ -260,7 +249,7 @@ public class IndexBase : ComponentBase {
 				await Task.Delay(2000);
 				Error = false;
 
-				// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} : {ex.Message}");
+				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} : {ex.Message}");
 			}
 
 			Loading = false;
@@ -340,5 +329,5 @@ public class IndexBase : ComponentBase {
 	}
 	double[] GetVector(EmbeddingsResponse er) { return er.Data[0].Embedding.ToArray(); }
 
-
+	Nodes.Count(todo => !todo.shelf) <= 2
 */

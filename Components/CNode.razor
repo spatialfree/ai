@@ -3,7 +3,9 @@
   filter: @(Top && (Held || Pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");
   outline-color: @(outlineColor);
 ">
-  <input @bind="Noded.name" @bind:event="oninput" type="text" style="width: @(Noded.area.x)px;" />
+  <input @bind="Noded.name" @bind:event="oninput" type="text" style="
+    width: @(Noded.area.x)px;
+  " />
   <textarea @bind="Noded.text" @bind:event="oninput" style="
     width: @(Noded.area.x)px; height: @(Noded.area.y)px; 
     background-color: @(Top && Cull ? "red" : "white");

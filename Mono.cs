@@ -51,7 +51,6 @@ public class Mono {
 		
 				string contents = $"{TimeStamp}\n___";
 				for (int j = 0; j < Nodes.Count; j++) {
-					contents += $"\nShelf {Nodes[j].shelf.ToString().ToLower()}";
 					contents += $"\nName  {Nodes[j].name.Trim()}";
 					contents += $"\nText  {Nodes[j].text.Replace("\n", "\\n") }";
 					contents += $"\nColor {Nodes[j].color}";
@@ -92,7 +91,6 @@ public class Mono {
 						}
 
 						Node node = new Node {
-							shelf = lines[j++].Replace("Shelf ", "").ToLower() == "true",
 							name  = lines[j++].Replace("Name  ", "").Trim(),
 							text  = lines[j++].Replace("Text  ", "").Replace("\\n", "\n"),
 							color = lines[j++].Replace("Color ", "").Trim(),

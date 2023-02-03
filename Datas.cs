@@ -37,8 +37,6 @@ public class Node {
 		area = new Vec(0, 0);
 	}
 	public Node(Node node) {
-		shelf = node.shelf;
-
 		name = node.name;
 		text = node.text;
 		color = node.color;
@@ -46,7 +44,6 @@ public class Node {
 		pos = node.pos;
 		area = node.area;
 	}
-	public bool shelf;
 	
 	public string name;
 	public string text;

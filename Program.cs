@@ -1,4 +1,5 @@
 global using System;
+global using System.Net;
 global using System.Collections.ObjectModel;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.Components;
@@ -17,16 +18,25 @@ var builder = WebApplication.CreateBuilder(args);
 	builder.Services.AddSingleton<Mono>();
 	// builder.Services.AddScoped<IJSRuntime, JSRuntime>();
 
-
+	if (!builder.Environment.IsDevelopment())
+	{
+		builder.Services.AddHttpsRedirection(options =>
+		{
+			options.RedirectStatusCode = (int)HttpStatusCode.PermanentRedirect;
+			options.HttpsPort = 443;
+		});
+	}
 
 var app = builder.Build();
 	if (!app.Environment.IsDevelopment()) { // Configure the HTTP request pipeline.
 		app.UseExceptionHandler("/Error");
 		app.UseHsts(); // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-		app.UseHttpsRedirection();
 		Console.WriteLine("Running in production mode");
 	}
+	
 	app.UseStaticFiles();
+	app.UseHttpsRedirection();
+	
 	app.UseRouting();
 	app.MapBlazorHub();
 	app.MapFallbackToPage("/_Host");

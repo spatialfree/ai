@@ -2,6 +2,7 @@ global using System;
 global using System.Net;
 global using System.Collections.ObjectModel;
 global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.HttpOverrides;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Web;
 
@@ -28,6 +29,10 @@ var builder = WebApplication.CreateBuilder(args);
 	// }
 
 	var app = builder.Build();
+	app.UseForwardedHeaders(new ForwardedHeadersOptions {
+		ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+	});
+
 	if (!app.Environment.IsDevelopment()) { // Configure the HTTP request pipeline.
 		app.UseExceptionHandler("/Error");
 		app.UseHsts(); // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.

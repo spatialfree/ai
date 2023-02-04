@@ -1,5 +1,4 @@
 global using System;
-global using System.Net;
 global using System.Collections.ObjectModel;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.AspNetCore.HttpOverrides;
@@ -9,7 +8,6 @@ global using Microsoft.AspNetCore.Components.Web;
 global using Microsoft.JSInterop;
 
 global using OpenAI;
-global using OpenAI.Embeddings;
 
 using ai;
 
@@ -18,15 +16,6 @@ var builder = WebApplication.CreateBuilder(args);
 	builder.Services.AddServerSideBlazor();
 	builder.Services.AddSingleton<Mono>();
 	// builder.Services.AddScoped<IJSRuntime, JSRuntime>();
-
-	// if (!builder.Environment.IsDevelopment())
-	// {
-	// 	builder.Services.AddHttpsRedirection(options =>
-	// 	{
-	// 		options.RedirectStatusCode = (int)HttpStatusCode.PermanentRedirect;
-	// 		options.HttpsPort = 443;
-	// 	});
-	// }
 
 	var app = builder.Build();
 	app.UseForwardedHeaders(new ForwardedHeadersOptions {
@@ -40,7 +29,7 @@ var builder = WebApplication.CreateBuilder(args);
 	}
 	
 	app.UseStaticFiles();
-	app.UseHttpsRedirection();
+	// app.UseHttpsRedirection();
 	
 	app.UseRouting();
 	app.MapBlazorHub();

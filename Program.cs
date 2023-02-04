@@ -14,22 +14,18 @@ using ai;
 var builder = WebApplication.CreateBuilder(args);
 	builder.Services.AddRazorPages();
 	builder.Services.AddServerSideBlazor();
-	// builder.Services.AddBlazoredLocalStorage();
 	builder.Services.AddSingleton<Mono>();
 	// builder.Services.AddScoped<IJSRuntime, JSRuntime>();
 
-	// var apiKey = builder.Configuration["OpenAI:ApiKey"];
-	// builder.Services.AddSingleton<OpenAIService>(sp => new OpenAIService(apiKey));
 
 
 var app = builder.Build();
 	if (!app.Environment.IsDevelopment()) { // Configure the HTTP request pipeline.
 		app.UseExceptionHandler("/Error");
-		app.UseHttpsRedirection();
 		app.UseHsts(); // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+		app.UseHttpsRedirection();
 		Console.WriteLine("Running in production mode");
 	}
-	app.UseHttpsRedirection();
 	app.UseStaticFiles();
 	app.UseRouting();
 	app.MapBlazorHub();

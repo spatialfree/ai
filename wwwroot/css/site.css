@@ -107,14 +107,11 @@ img {
 
 .node {
 	position: fixed;
-	border-radius: 10px;
 	
-	outline: 2px solid #00000022;
-	outline-offset: -1px;
-	overflow: hidden;
+	/* overflow: hidden; */
 }
 .node input {
-	border-radius: 0;
+	border-radius: 10px 10px 0 0;
 	width: 100%;
 	height: calc(30px - 2px);
 	/* height: 30px; */
@@ -127,6 +124,8 @@ img {
 	color: white;
 }
 .node textarea {
+	border-radius: 0 0 10px 10px;
+
 	resize: none; 
 	overflow-y: scroll;
 	padding: 5px 10px;

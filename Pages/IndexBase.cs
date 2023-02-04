@@ -51,8 +51,43 @@ public class IndexBase : ComponentBase {
 	public ObservableCollection<Node> Nodes {
 		get { return Cloud ? mono.Nodes : nodes; }
 	}
+	public Node TopNode {
+		get { return Nodes[Nodes.Count - 1]; }
+	}
+	public Node NextNode {
+		get { return Nodes[Nodes.Count - 2]; }
+	}
+	public Vec[] Corners(Node node) {
+		Vec[] corners = new Vec[4];
+		corners[0] = node.pos + new Vec(5, 5);
+		corners[1] = node.pos + new Vec(node.area.x + 20 - 5, 5);
+		corners[2] = node.pos + node.area + new Vec(20 -5, 40 - 5);
+		corners[3] = node.pos + new Vec(5, node.area.y + 40 - 5);
+		return corners;
+	}
+	// closest corner pair for Top and Next Node
+	public Vec[] Closest {
+		get {
+			Vec[] closest = new Vec[2];
+			Vec[] corners = Corners(TopNode);
+			Vec[] nextCorners = Corners(NextNode);
+			double minDist = double.MaxValue;
+			for (int i = 0; i < 4; i++) {
+				for (int j = 0; j < 4; j++) {
+					double dist = (corners[i] - nextCorners[j]).Mag;
+					if (dist < minDist) {
+						minDist = dist;
+						closest[0] = corners[i];
+						closest[1] = nextCorners[j];
+					}
+				}
+			}
+			return closest;
+		}
+	}
 
 
+	DateTime lastDown = DateTime.Now;
 	protected void PointerMove(PointerEventArgs e) {
 		// Console.WriteLine($"PointerMove {e.PointerId}");
 		Cursor = new Vec(e.ClientX, e.ClientY); // OffsetY
@@ -85,7 +120,7 @@ public class IndexBase : ComponentBase {
 		lastDown = DateTime.Now;
 
 
-		if (Loading) return;
+		if (Loading || !edit) return;
 
 
 		Cursor = new Vec(e.ClientX, e.ClientY);
@@ -173,10 +208,7 @@ public class IndexBase : ComponentBase {
 	protected bool pull = false;
 	protected bool cull = false;
 
-
-	DateTime lastDown = DateTime.Now;
-	protected bool edit = false;
-
+	protected bool edit  = false;
 
 
 	protected async Task Run() {

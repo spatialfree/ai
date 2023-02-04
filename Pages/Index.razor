@@ -13,8 +13,21 @@
 >
 	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
 	@foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
-		<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Next="@(index == Nodes.Count-2)" Held="@held" Pull="@pull" Cull="@cull" />
+		<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Next="@(index == Nodes.Count-2)" Edit="@edit" Held="@held" Pull="@pull" Cull="@cull" />
 	}
+		<svg style="
+			pointer-events: none;
+			position: fixed;
+			top: 0; bottom: 0; left: 0; right: 0;
+			width: 100vw; height: 100vh;
+			stroke-width: 10px;
+			stroke-linecap: round;
+		">
+			@* line between *@
+			<line stroke="#aaa" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
+			<circle fill="white" r="3" cx="@(Closest[0].x)" cy="@(Closest[0].y)" />
+			<circle fill="black"  r="3" cx="@(Closest[1].x)" cy="@(Closest[1].y)" />
+		</svg>
 	</div>
 </div>
 
@@ -120,6 +133,13 @@
 	">
 	<img src="svg-icons/@(Menu ? "pencil": "menu").svg" />
 	<div hidden="@(!(Cloud && !mono.Synced))" style="width: fit-content; font-size: 24px; position: fixed; transform: translate(18px, -12px);">*</div>
+</div>
+
+<div @onclick="() => edit = !edit" hidden="@(!ValidKey || Menu)" class="btn" style="
+		position: fixed;
+		top: 10px; left: calc(50vw - 15px);
+	">
+	<img src="svg-icons/@(edit ? "text": "move").svg" />
 </div>
 
 <div @onclick="Run" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="

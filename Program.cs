@@ -25,7 +25,7 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 	if (!app.Environment.IsDevelopment()) { // Configure the HTTP request pipeline.
 		app.UseExceptionHandler("/Error");
-		app.UseHttpsRedirection();
+		// app.UseHttpsRedirection();
 		app.UseHsts(); // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 		Console.WriteLine("Running in production mode");
 	}

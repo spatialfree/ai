@@ -99,6 +99,7 @@ public class IndexBase : ComponentBase {
 			node.pos = newPos.Stepped();
 		} else if (pull) {
 			Vec newArea = (LocalCursor + offset) - node.pos;
+			newArea -= new Vec(5, 20);
 
 			cull = newArea.x < 0 && newArea.y < 0;
 			
@@ -145,7 +146,6 @@ public class IndexBase : ComponentBase {
 
 			// Console.WriteLine($"{xstr}{ystr} {(int)e.ClientX - node.pos.x}");
 			if (inXMin && inXMax && inYMin && inYMax) {
-				offset = node.pos - LocalCursor;
 				oldPos = node.pos;
 
 				// Lift
@@ -154,9 +154,11 @@ public class IndexBase : ComponentBase {
 					Nodes.Add(node);
 				}
 
-				if ((LocalCursor - node.pos).Mag < 10.0) {
+				if ((LocalCursor - Corners(node)[2]).Mag < 10.0) {
+					offset = Corners(node)[2] - LocalCursor;
 					pull = true;
 				} else {
+					offset = node.pos - LocalCursor;
 					held = true;
 				}
 
@@ -169,6 +171,7 @@ public class IndexBase : ComponentBase {
 		if (doubleDown) {
 			Node newNode = new Node();
 			newNode.pos = LocalCursor.Stepped();
+			newNode.area = new Vec(60, 20);
 			pull = true;
 			Nodes.Add(newNode);
 		}

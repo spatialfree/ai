@@ -35,7 +35,7 @@ var builder = WebApplication.CreateBuilder(args);
 	}
 	
 	app.UseStaticFiles();
-	// app.UseHttpsRedirection();
+	app.UseHttpsRedirection();
 	
 	app.UseRouting();
 	app.MapBlazorHub();

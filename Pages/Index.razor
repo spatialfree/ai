@@ -20,13 +20,14 @@
 			position: fixed;
 			top: 0; bottom: 0; left: 0; right: 0;
 			width: 100vw; height: 100vh;
-			stroke-width: 10px;
+			stroke: #aaa;
+			stroke-width: 2px;
 			stroke-linecap: round;
 		">
 			@* line between *@
-			<line stroke="#aaa" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
-			<circle fill="white" r="3" cx="@(Closest[0].x)" cy="@(Closest[0].y)" />
-			<circle fill="black"  r="3" cx="@(Closest[1].x)" cy="@(Closest[1].y)" />
+			<line class="stroke-scroll" stroke-width="10px" stroke-dasharray="10 20" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
+			<circle fill="white" r="4" cx="@(Closest[0].x)" cy="@(Closest[0].y)" />
+			<circle fill="black" r="4" cx="@(Closest[1].x)" cy="@(Closest[1].y)" />
 		</svg>
 	</div>
 </div>

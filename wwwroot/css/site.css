@@ -135,6 +135,14 @@ img {
 	cursor: default;
 }
 
+.stroke-scroll {
+	animation: stroke-scroll 1s linear infinite;
+}
+@keyframes stroke-scroll {
+	0% { stroke-dashoffset: -30; }
+	100% { stroke-dashoffset: 0; }
+}
+
 .apikey {
 	background-color: white !important;
 	color: rgb(64, 64, 64) !important;

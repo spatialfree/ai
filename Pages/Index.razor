@@ -65,11 +65,11 @@
 		<br>
 
 		<div class="btn-row">
-			<div @onclick="mono.Restore" disabled="@(!Cloud)" class="btn">
+			<div @onclick="mono.Restore" disabled="@(!Cloud)" class="btn" style="background-color: transparent;">
 				<img src="svg-icons/cloud-download.svg" />
 				@(mono.Restored ? "Restored" : "Restore")
 			</div>
-			<div @onclick="mono.Record" disabled="@(!Cloud)" class="btn">
+			<div @onclick="mono.Record" disabled="@(!Cloud)" class="btn" style="background-color: transparent;">
 				<img src="svg-icons/cloud-upload.svg" />
 				@(mono.Recorded ? "Recorded" : "Record")
 			</div>
@@ -162,42 +162,36 @@
 
 <div @onclick="() => Menu = !Menu" hidden="@(!ValidKey)" disabled="@Loading" class="btn" style="
 		position: fixed;
-		top: 0; left: 0;
-		width:  50px;
-		height: 50px;
+		top: 10px; left: 10px;
+		@(!Menu ? "filter: invert(1.0);" : "background-color: transparent;")
 	">
-	<img src="svg-icons/@(Menu ? "pencil": "menu").svg" style="
-		width:  24px;
-		height: 24px;
-	" />
-	<div hidden="@(!(Cloud && !mono.Synced))" style="width: fit-content; font-size: 24px; position: fixed; transform: translate(18px, -12px);">*</div>
-</div>
-
-<div @onclick="() => edit = !edit" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="
-		position: fixed;
-		top: 0; left: calc(50vw - 15px);
-		width:  50px;
-		height: 50px;
-	">
-	<img src="svg-icons/@(edit ? "text": "move").svg" style="
-		width:  24px;
-		height: 24px;
-	" />
+	<img src="svg-icons/@(Menu ? "pencil": "menu").svg" />
+	<div hidden="@(!(Cloud && !mono.Synced))" style="
+		width: fit-content; 
+		font-size: 24px; 
+		position: fixed; 
+		transform: translate(14px, -8px);
+	">*</div>
 </div>
 
 <div @onclick="Run" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="
 		position: fixed;
-		top: 0; right: 0;
-		width:  50px;
-		height: 50px;
+		top: 10px; right: 10px;
 	">
 	<svg class="@(Loading ? "spin" : "") @(Error ? "error" : "")" xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 0 32 32" style="
-		fill: white;
+		fill: black;
 	">
 		<g transform="translate(1.4, 1.23)">
 			<path d="M27.21,12.08c.67-2.01,.44-4.21-.63-6.04-1.61-2.8-4.85-4.24-8.01-3.57C17.16,.89,15.14-.01,13.02,0c-3.23,0-6.1,2.08-7.1,5.15-2.08,.43-3.87,1.73-4.92,3.57-1.62,2.8-1.25,6.32,.92,8.72-.67,2.01-.44,4.21,.63,6.03,1.61,2.81,4.85,4.25,8.02,3.58,1.4,1.58,3.42,2.49,5.54,2.48,3.23,0,6.1-2.08,7.1-5.15,2.08-.43,3.87-1.73,4.91-3.57,1.63-2.8,1.26-6.32-.91-8.72Zm-2.3-5.07c.64,1.12,.88,2.43,.66,3.7-.04-.03-.12-.07-.17-.1l-5.88-3.4c-.3-.17-.67-.17-.97,0l-6.89,3.98v-2.92l5.69-3.29c2.65-1.53,6.03-.62,7.56,2.03Zm-13.25,6.07l2.9-1.68,2.9,1.68v3.35l-2.9,1.68-2.9-1.68v-3.35ZM13.01,1.93c1.3,0,2.55,.45,3.55,1.28-.04,.02-.12,.07-.18,.1l-5.88,3.39c-.3,.17-.48,.49-.48,.84v7.96l-2.53-1.46V7.46c0-3.06,2.47-5.53,5.53-5.54ZM2.68,9.69h0c.65-1.12,1.66-1.98,2.88-2.43v6.99c0,.35,.18,.66,.48,.84l6.88,3.97-2.54,1.47-5.68-3.28c-2.64-1.53-3.55-4.91-2.02-7.56Zm1.55,12.83h0c-.65-1.11-.88-2.43-.66-3.7,.04,.03,.12,.07,.17,.1l5.88,3.4c.3,.17,.67,.17,.97,0l6.88-3.98v2.92l-5.69,3.28c-2.65,1.52-6.03,.62-7.56-2.02Zm11.89,5.08c-1.29,0-2.55-.45-3.54-1.28,.04-.02,.13-.07,.18-.1l5.88-3.39c.3-.17,.49-.49,.48-.84v-7.95l2.53,1.46v6.57c0,3.06-2.48,5.54-5.53,5.54Zm10.34-7.76c-.65,1.12-1.67,1.98-2.88,2.42v-6.99c0-.35-.18-.67-.48-.84h0l-6.89-3.98,2.53-1.46,5.69,3.28c2.65,1.53,3.55,4.91,2.02,7.56Z"></path>
 		</g>
 	</svg>
+</div>
+
+<div @onclick="() => edit = !edit" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="
+		position: fixed;
+		bottom: 20px; left: calc(50vw - 15px);
+	">
+	<img src="svg-icons/@(edit ? "text": "crop").svg" style="filter: invert(0);" />
 </div>
 
 @*  

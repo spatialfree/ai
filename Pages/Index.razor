@@ -3,7 +3,7 @@
 @* @using ai.Data *@
 @* @inject ILocalStorageService localStorage *@
 
-@* <PageTitle>Index</PageTitle> *@
+@* <PageTitle>prompturing</PageTitle> *@
 
 @* 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 *@
 
@@ -34,13 +34,22 @@
 
 @* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *@
 
-<div style="
+<div hidden="@(!Menu)" style="
+	display: flex; 
 	position: fixed;
-	display: @(Menu ? "flex" : "none"); 
-	flex-flow: column; align-items: center; justify-content: center;
 	top: 0; bottom: 0; left: 0; right: 0;
 	background-color: #000000ee;
+	flex-flow: column; align-items: center; justify-content: center;
+	text-align: center
 	">
+
+	@* Welcome *@
+	<div hidden="@(ValidKey)">
+		<img src="res/logo.svg" style="width: 100px;" />
+		<h1>prompturing</h1>
+		<p style="color: white; width: 180px; margin: 0 auto;">Your Turing-complete language model prompting environment.</p>
+	</div>
+	<br><br><br>
 
 	@* Prompter Login *@
 	<input @bind="Prompter" type="username" autocomplete="username" placeholder="Name" />

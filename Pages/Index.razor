@@ -18,7 +18,7 @@
 			position: fixed;
 			top: -5000px; bottom: 0; left: -5000px; right: 0;
 			width: 10000px; height: 10000px;
-			stroke: #787878;
+			stroke: #7a7b7e;
 			fill: none;
 		">
 		@for (int i = 0; i < 15; i++) {
@@ -162,22 +162,34 @@
 
 <div @onclick="() => Menu = !Menu" hidden="@(!ValidKey)" disabled="@Loading" class="btn" style="
 		position: fixed;
-		top: 10px; left: 10px;
+		top: 0; left: 0;
+		width:  50px;
+		height: 50px;
 	">
-	<img src="svg-icons/@(Menu ? "pencil": "menu").svg" />
+	<img src="svg-icons/@(Menu ? "pencil": "menu").svg" style="
+		width:  24px;
+		height: 24px;
+	" />
 	<div hidden="@(!(Cloud && !mono.Synced))" style="width: fit-content; font-size: 24px; position: fixed; transform: translate(18px, -12px);">*</div>
 </div>
 
 <div @onclick="() => edit = !edit" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="
 		position: fixed;
-		top: 10px; left: calc(50vw - 15px);
+		top: 0; left: calc(50vw - 15px);
+		width:  50px;
+		height: 50px;
 	">
-	<img src="svg-icons/@(edit ? "text": "move").svg" />
+	<img src="svg-icons/@(edit ? "text": "move").svg" style="
+		width:  24px;
+		height: 24px;
+	" />
 </div>
 
 <div @onclick="Run" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="
 		position: fixed;
-		top: 10px; right: 10px;
+		top: 0; right: 0;
+		width:  50px;
+		height: 50px;
 	">
 	<svg class="@(Loading ? "spin" : "") @(Error ? "error" : "")" xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 0 32 32" style="
 		fill: white;

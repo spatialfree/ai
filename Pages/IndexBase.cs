@@ -93,7 +93,7 @@ public class IndexBase : ComponentBase {
 	DateTime lastDown = DateTime.Now;
 	protected void PointerMove(PointerEventArgs e) {
 		// Console.WriteLine($"PointerMove {e.PointerId}");
-		Cursor = new Vec(e.ClientX, e.ClientY); // OffsetY
+		Cursor = new Vec(e.ClientX, e.ClientY);
 
 		Node node = Nodes[Nodes.Count - 1];
 
@@ -110,7 +110,7 @@ public class IndexBase : ComponentBase {
 			newArea.y = Math.Max(newArea.y.Stepped(), 20);
 			node.area = newArea;
 		} else if (down) {
-			Canvas = Cursor.Stepped() + canvasOffset;
+			Canvas = Cursor + canvasOffset;
 		}
 
 		StateHasChanged();
@@ -118,22 +118,14 @@ public class IndexBase : ComponentBase {
 
 	protected void PointerDown(PointerEventArgs e) {
 		// Console.WriteLine($"PointerDown : {e.Button}");
+		Cursor = new Vec(e.ClientX, e.ClientY);
 
 		TimeSpan time = DateTime.Now - lastDown;
-		bool doubleDown = time.TotalMilliseconds < 500;
+		bool doubleDown = (Cursor - oldCursor).Mag < 20 &&time.TotalMilliseconds < 500;
 		lastDown = DateTime.Now;
-
-
-		if (Loading || !edit) return;
-
-
-		Cursor = new Vec(e.ClientX, e.ClientY);
-		down = true;
 
 		for (int i = Nodes.Count-1; i >= 0; i--) {
 			Node node = Nodes[i];
-
-
 
 			Vec localPos = LocalCursor - node.pos;
 			bool inXMin = localPos.x >= 0;
@@ -149,6 +141,9 @@ public class IndexBase : ComponentBase {
 
 			// Console.WriteLine($"{xstr}{ystr} {(int)e.ClientX - node.pos.x}");
 			if (inXMin && inXMax && inYMin && inYMax) {
+				if (Loading || !edit) return;
+
+
 				oldPos = node.pos;
 
 				// Lift
@@ -177,9 +172,10 @@ public class IndexBase : ComponentBase {
 			newNode.area = new Vec(60, 20);
 			pull = true;
 			Nodes.Add(newNode);
+		} else {
+			canvasOffset = Canvas - Cursor.Stepped();
+			down = true;
 		}
-
-		canvasOffset = Canvas - Cursor.Stepped();
 	}
 
 	protected void PointerUp(PointerEventArgs e) {
@@ -194,14 +190,18 @@ public class IndexBase : ComponentBase {
 				Nodes.RemoveAt(Nodes.Count - 1);
 			}
 			// Console.WriteLine("CULL");
+		} else if (down) { // need a new bool for grabbing the canvas
+			Canvas = Cursor.Stepped() + canvasOffset;
 		}
 
+		oldCursor = Cursor;
 		down = held = pull = cull = false;
 		StateHasChanged();
 	}
 
-	Vec Cursor = new Vec(200, 300);
-	protected Vec LocalCursor { get { return Cursor - Canvas; } }
+	Vec oldCursor = new Vec(0, 0);
+	Vec Cursor 		= new Vec(0, 0);
+	Vec LocalCursor { get { return Cursor - Canvas; } }
 
 	Vec offset = new Vec(0, 0);
 	Vec canvasOffset = new Vec(0, 0);

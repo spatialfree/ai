@@ -12,22 +12,38 @@
 	style="position: fixed; top: 0; bottom: 0; left: 0; right: 0;"
 >
 	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
+
+		<svg style="
+			pointer-events: none;
+			position: fixed;
+			top: -5000px; bottom: 0; left: -5000px; right: 0;
+			width: 10000px; height: 10000px;
+			stroke: #787878;
+			fill: none;
+		">
+		@for (int i = 0; i < 15; i++) {
+			<circle cx="5000" cy="5000" r="@((i * 200) + (i * i * 10))" stroke-width="@(100 + (i * i * 2))px" />
+		}
+		</svg>
+
 	@foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
 		<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Next="@(index == Nodes.Count-2)" Edit="@edit" Held="@held" Pull="@pull" Cull="@cull" />
 	}
 		<svg style="
 			pointer-events: none;
 			position: fixed;
-			top: 0; bottom: 0; left: 0; right: 0;
-			width: 100vw; height: 100vh;
+			top: -5000px; bottom: 0; left: -5000px; right: 0;
+			width: 10000px; height: 10000px;
 			stroke: #aaa;
 			stroke-width: 2px;
 			@* stroke-linecap: round; *@
 		">
 			@* line between *@
-			<line class="stroke-scroll" stroke-width="10px" stroke-dasharray="2 1" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
-			<circle fill="white" r="4" cx="@(Closest[0].x)" cy="@(Closest[0].y)" />
-			<circle fill="black" r="4" cx="@(Closest[1].x)" cy="@(Closest[1].y)" />
+			<g style="transform: translate(5000px, 5000px);">
+				<line class="stroke-scroll" stroke-width="10px" stroke-dasharray="2 1" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
+				<circle fill="white" r="4" cx="@(Closest[0].x)" cy="@(Closest[0].y)" />
+				<circle fill="black" r="4" cx="@(Closest[1].x)" cy="@(Closest[1].y)" />
+			</g>
 		</svg>
 	</div>
 </div>
@@ -40,7 +56,7 @@
 	top: 0; bottom: 0; left: 0; right: 0;
 	background-color: #000000ee;
 	flex-flow: column; align-items: center; justify-content: center;
-	text-align: center
+	text-align: center;
 	">
 
 	@* Pattern Management *@

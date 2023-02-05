@@ -13,11 +13,10 @@
   <div hidden="@(!Edit)" style="
     user-select: none; moz-user-select: none; -webkit-user-select: none;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #80808080;
-    outline: 2px solid white;
+    background-color:  @(Top && Held ? "#ffffff80" : "#80808080");
+    outline: 2px solid @(Top && Pull ? "#ffffffff" : "#ffffff80");
     outline-offset: -2px;
-    border-radius: 10px;
-    
+    border-radius: 8px;
   ">
   @* a circle in each corner *@
     @* <div style="

@@ -14,6 +14,7 @@ public class IndexBase : ComponentBase {
 
 	string lastTry = "";
 	protected async Task TryKey() {
+		Loading = true;
 		if (ApiKey == lastTry)
 			return;
 		lastTry = ApiKey;
@@ -29,6 +30,7 @@ public class IndexBase : ComponentBase {
 			ValidKey = false;
 		}
 
+		Loading = false;
 		StateHasChanged();
 	}
 
@@ -259,6 +261,7 @@ public class IndexBase : ComponentBase {
 		Nodes[Nodes.Count - 1].text = "";
 		if (!Loading) {
 			Loading = true;
+			edit = false;
 
 			try {
 				CompletionRequest request = new CompletionRequest();
@@ -280,6 +283,7 @@ public class IndexBase : ComponentBase {
 				// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
 			}
 			catch (Exception ex) {
+				Loading = true;
 				Error = true;
 				StateHasChanged();
 				await Task.Delay(2000);

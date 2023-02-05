@@ -139,9 +139,11 @@
 	<br>
 	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="Api Key" class="apikey" spellCheck=false />
 	<br>
-	<img class="icon @(Loading ? "spin" : "")" src="svg-icons/key.svg" style="
-		filter: contrast(0%) sepia(30%) saturate(10000%) hue-rotate(@(ValidKey ? "110": "-30")deg);
-	" />
+	<div style="background-color: white; padding: 10px; border-radius: 20px;">
+		<img class="icon @(Loading ? "spin" : "")" src="svg-icons/key.svg" style="
+			filter: contrast(0%) sepia(30%) saturate(10000%) hue-rotate(@(ValidKey ? "110": "-30")deg);
+		" />
+	</div>
 	<br>
 	<a href="https://beta.openai.com/account/api-keys" target="_blank">
 		Get OpenAI API Key

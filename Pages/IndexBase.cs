@@ -58,11 +58,12 @@ public class IndexBase : ComponentBase {
 		get { return Nodes[Nodes.Count - 2]; }
 	}
 	public Vec[] Corners(Node node) {
+		int inset = 10;
 		Vec[] corners = new Vec[4];
-		corners[0] = node.pos + new Vec(5, 5);
-		corners[1] = node.pos + new Vec(node.area.x + 20 - 5, 5);
-		corners[2] = node.pos + node.area + new Vec(20 -5, 40 - 5);
-		corners[3] = node.pos + new Vec(5, node.area.y + 40 - 5);
+		corners[0] = node.pos + new Vec(inset, inset);
+		corners[1] = node.pos + new Vec(node.area.x + 20 - inset, inset);
+		corners[2] = node.pos + node.area + new Vec(20 - inset, 40 - inset);
+		corners[3] = node.pos + new Vec(inset, node.area.y + 40 - inset);
 		return corners;
 	}
 	// closest corner pair for Top and Next Node

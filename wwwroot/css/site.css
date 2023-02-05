@@ -129,6 +129,7 @@ img {
 	resize: none; 
 	overflow-y: scroll;
 	padding: 5px 10px;
+	touch-action: pan-y;
 
 	font-size: 12px; line-height: 15px;
 	

@@ -38,6 +38,10 @@ html, body {
 	/* border-left: none; */
 }
 
+title {
+	display: none;
+}
+
 h1 {
 	color: white;
 	margin-bottom: 10px;
@@ -115,6 +119,8 @@ img {
 	/* overflow: hidden; */
 }
 .node input {
+	touch-action: pan-x;
+	overflow-x: scroll;
 	border-radius: 10px 10px 0 0;
 	width: 100%;
 	height: calc(30px - 2px);
@@ -132,8 +138,8 @@ img {
 
 	resize: none; 
 	overflow-y: scroll;
-	padding: 5px 10px;
 	touch-action: pan-y;
+	padding: 5px 10px;
 
 	font-size: 12px; line-height: 15px;
 	

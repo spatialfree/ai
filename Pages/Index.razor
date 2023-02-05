@@ -3,7 +3,7 @@
 @* @using ai.Data *@
 @* @inject ILocalStorageService localStorage *@
 
-@* <PageTitle>prompturing</PageTitle> *@
+<PageTitle>prompturing</PageTitle>
 
 @* 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 *@
 
@@ -43,32 +43,6 @@
 	text-align: center
 	">
 
-	@* Welcome *@
-	<div hidden="@(ValidKey)">
-		<img src="res/logo.svg" style="width: 100px;" />
-		<h1>prompturing</h1>
-		<p style="color: white; width: 180px; margin: 0 auto;">Your Turing-complete language model prompting environment.</p>
-	</div>
-	<br><br><br>
-
-	@* Prompter Login *@
-	<input @bind="Prompter" type="username" autocomplete="username" placeholder="Name" />
-	<br>
-	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="Api Key" class="apikey" spellCheck=false />
-	<br>
-	<img class="icon" src="svg-icons/key.svg" style="filter: contrast(0%) sepia(30%) saturate(10000%) hue-rotate(@(ValidKey ? "110": "-30")deg);" />
-	<br>
-	<a href="https://beta.openai.com/account/api-keys" target="_blank">
-		Get OpenAI API Key
-	</a>
-	<br>
-	<a href="https://beta.openai.com/docs/api-reference/completions/create" target="_blank">
-		Documentation
-	</a>
-	<br>
-	<br>
-	<br>
-
 	@* Pattern Management *@
 	<div hidden="@(!ValidKey)">
 		<input @bind="Pattern" placeholder="Pattern" />
@@ -91,8 +65,6 @@
 
 	@* Model Paramaters *@
 	<div hidden="@(!ValidKey)" style="text-align: center; color: white;">
-		<img class="icon" src="svg-icons/text.svg" />
-		<br>
 		<div class="row">
 			<div class="limit">&nbsp;&nbsp;16</div>
 			<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
@@ -100,9 +72,10 @@
 		@* <input type="checkbox" /> 2x boost *@
 		</div>
 		<br>
+		<img class="icon" src="svg-icons/text.svg" />
 		<br>
 
-		<img class="icon" src="svg-icons/pulse.svg" />
+		@* <img class="icon" src="svg-icons/pulse.svg" />
 		<br>
 		<div class="row">
 			<div class="limit">0</div>
@@ -129,9 +102,39 @@
 			<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
 			<div class="limit">2</div>
 		</div>
-		<br>
-		<br>
+		*@
 	</div>
+	<br>
+	<br>
+	<br>
+
+	@* Welcome *@
+	<div hidden="@(ValidKey)">
+		<img src="res/logo.svg" style="width: 100px;" />
+		<h1>prompturing</h1>
+		<p style="color: white; width: 180px; margin: 0 auto;">Your Turing-complete language model prompting environment.</p>
+	</div>
+	<br>
+	<br>
+	<br>
+
+	@* Prompter Login *@
+	<input @bind="Prompter" type="username" autocomplete="username" placeholder="Name" />
+	<br>
+	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="Api Key" class="apikey" spellCheck=false />
+	<br>
+	<img class="icon" src="svg-icons/key.svg" style="filter: contrast(0%) sepia(30%) saturate(10000%) hue-rotate(@(ValidKey ? "110": "-30")deg);" />
+	<br>
+	<a href="https://beta.openai.com/account/api-keys" target="_blank">
+		Get OpenAI API Key
+	</a>
+	<br>
+	<a href="https://beta.openai.com/docs/api-reference/completions/create" target="_blank">
+		Documentation
+	</a>
+	<br>
+	<br>
+	<br>
 </div>
 
 

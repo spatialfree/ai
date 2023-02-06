@@ -117,6 +117,15 @@ public class Mono {
 /*
 
 NOTES
+	TODO
+		Housekeeping
+		Token usage
+		String of thought 
+			(for tracking what the system is doing)
+		Arrays?
+
+
+
 	Libraries~ (too soon?)
 	Boards~
 

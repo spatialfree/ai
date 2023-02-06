@@ -1,0 +1,16 @@
+{
+	"background_color": "#808080",
+	"description": "Your Turing-complete language model prompting environment.",
+	"display": "fullscreen",
+	"icons": [
+		{
+			"src": "favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		}
+	],
+	"name": "prompturing, a prompt IDE",
+	"short_name": "prompturing",
+	"start_url": "/"
+}

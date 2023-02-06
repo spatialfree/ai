@@ -47,8 +47,9 @@ public class IndexBase : ComponentBase {
 	protected bool Menu  = true;
 
 	ObservableCollection<Node> nodes { get; set; } = new() {
-		new Node { pos = new Vec(60, 100), area = new Vec(80, 20), name = "read", text = "Lorem ipsum " },
-		new Node { pos = new Vec(200, 100), area = new Vec(150, 100), name = "write", text = "" },
+		new Node { pos = new Vec(150, 80), area = new Vec(80, 40), name = "x", text = "test" },
+		new Node { pos = new Vec(20, 80), area = new Vec(100, 40), name = "read", text = "Say this is a {x}" },
+		new Node { pos = new Vec(20, 180), area = new Vec(210, 200), name = "write", text = "" },
 	};
 	public ObservableCollection<Node> Nodes {
 		get { return Cloud ? mono.Nodes : nodes; }
@@ -258,6 +259,7 @@ public class IndexBase : ComponentBase {
 	protected bool Error = false;
 	// string completion = "";
 	protected async Task Complete(string prompt) {
+		string oldText = Nodes[Nodes.Count - 1].text;
 		Nodes[Nodes.Count - 1].text = "";
 		if (!Loading) {
 			Loading = true;
@@ -293,6 +295,9 @@ public class IndexBase : ComponentBase {
 			}
 
 			Loading = false;
+		}
+		if (Nodes[Nodes.Count - 1].text == "") {
+			Nodes[Nodes.Count - 1].text = oldText;
 		}
 	}
 	protected int   MaxTokens   = 256;

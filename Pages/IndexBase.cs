@@ -102,8 +102,8 @@ public class IndexBase : ComponentBase {
 			Vec newPos = LocalCursor + offset;
 			node.pos = newPos.Stepped();
 		} else if (pull) {
-			Vec newArea = (LocalCursor + offset) - node.pos;
-			newArea -= new Vec(5, 20);
+			Vec newArea = (LocalCursor + offset) - Corners(node)[0];
+			newArea -= new Vec(0, 15);
 
 			cull = newArea.x < 0 && newArea.y < 0;
 			
@@ -153,7 +153,7 @@ public class IndexBase : ComponentBase {
 					Nodes.Add(node);
 				}
 
-				if ((LocalCursor - Corners(node)[2]).Mag < 10.0) {
+				if ((LocalCursor - Corners(node)[2]).Mag < 20.0) {
 					offset = Corners(node)[2] - LocalCursor;
 					pull = true;
 				} else {
@@ -174,7 +174,7 @@ public class IndexBase : ComponentBase {
 			pull = true;
 			Nodes.Add(newNode);
 		} else {
-			canvasOffset = Canvas - Cursor.Stepped();
+			canvasOffset = Canvas - Cursor;
 			down = true;
 		}
 	}
@@ -191,9 +191,7 @@ public class IndexBase : ComponentBase {
 				Nodes.RemoveAt(Nodes.Count - 1);
 			}
 			// Console.WriteLine("CULL");
-		} else if (down) { // need a new bool for grabbing the canvas
-			Canvas = Cursor.Stepped() + canvasOffset;
-		}
+		} 
 
 		oldCursor = Cursor;
 		down = held = pull = cull = false;

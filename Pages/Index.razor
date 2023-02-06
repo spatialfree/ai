@@ -34,13 +34,14 @@
 			position: fixed;
 			top: -5000px; bottom: 0; left: -5000px; right: 0;
 			width: 10000px; height: 10000px;
-			stroke: #aaa;
+			stroke: #808080;
 			stroke-width: 2px;
 			@* stroke-linecap: round; *@
 		">
 			@* line between *@
 			<g style="transform: translate(5000px, 5000px);">
-				<line class="stroke-scroll" stroke-width="10px" stroke-dasharray="2 1" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
+				<line stroke="rgb(100, 128, 200)" stroke-width="10px" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
+				<line stroke="rgb(200, 128, 100)" stroke-width="6px" class="stroke-scroll" stroke-dasharray="1 1" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
 				<circle fill="white" r="4" cx="@(Closest[0].x)" cy="@(Closest[0].y)" />
 				<circle fill="black" r="4" cx="@(Closest[1].x)" cy="@(Closest[1].y)" />
 			</g>

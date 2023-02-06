@@ -148,10 +148,10 @@ img {
 }
 
 .stroke-scroll {
-	animation: stroke-scroll 1s linear infinite;
+	animation: stroke-scroll 1s infinite linear;
 }
 @keyframes stroke-scroll {
-	0% { stroke-dashoffset: -30; }
+	0% { stroke-dashoffset: -10; }
 	100% { stroke-dashoffset: 0; }
 }
 

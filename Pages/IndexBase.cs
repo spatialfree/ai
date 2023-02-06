@@ -112,6 +112,8 @@ public class IndexBase : ComponentBase {
 			node.area = newArea;
 		} else if (down) {
 			Canvas = Cursor + canvasOffset;
+			Canvas.x = (int)Canvas.x;
+			Canvas.y = (int)Canvas.y;
 		}
 
 		StateHasChanged();

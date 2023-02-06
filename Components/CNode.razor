@@ -2,10 +2,11 @@
   transform: translate(@(Noded.pos.x)px, @(Noded.pos.y)px); 
   filter: @(Top && (Held || Pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");
 ">
-  <input @bind="Noded.name" @bind:event="oninput" type="text" style="
+  <input @bind="Noded.name" @bind:event="oninput" type="text" class="@(Edit ? "no-select" : "")" style="
     width: @(Noded.area.x)px;
+	  background-color: @(Top && Cull ? "red" : Noded.color);
   " />
-  <textarea @bind="Noded.text" @bind:event="oninput" style="
+  <textarea @bind="Noded.text" @bind:event="oninput" class="@(Edit ? "no-select" : "")" style="
     width: @(Noded.area.x)px; height: @(Noded.area.y)px; 
     background-color: @(Top && Cull ? "red" : "white");
     color: @(Top && Cull ? "white" : "black");

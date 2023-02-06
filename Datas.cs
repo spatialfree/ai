@@ -31,7 +31,7 @@ public class Node {
 	public Node() {
 		name = "";
 		text = "";
-		color = "black";
+		color = RandomColor();
 
 		pos = new Vec(0, 0);
 		area = new Vec(0, 0);
@@ -53,6 +53,17 @@ public class Node {
 	public Vec area;
 
 	// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
+
+	string RandomColor() {
+		Random random = new Random();
+		int v = 255;
+		int b = random.Next(0, v - 64);
+		v -= b;
+		int g = random.Next(0, v);
+		v -= g;
+		int r = v;
+		return $"rgb({r},{g},{b})";
+	}
 }
 
 

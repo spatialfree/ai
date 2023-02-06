@@ -47,8 +47,8 @@ public class IndexBase : ComponentBase {
 	protected bool Menu  = true;
 
 	ObservableCollection<Node> nodes { get; set; } = new() {
-		new Node { pos = new Vec(60, 100), area = new Vec(80, 20), text = "Lorem ipsum " },
-		new Node { pos = new Vec(200, 100), area = new Vec(150, 100), text = "" },
+		new Node { pos = new Vec(60, 100), area = new Vec(80, 20), name = "read", text = "Lorem ipsum " },
+		new Node { pos = new Vec(200, 100), area = new Vec(150, 100), name = "write", text = "" },
 	};
 	public ObservableCollection<Node> Nodes {
 		get { return Cloud ? mono.Nodes : nodes; }
@@ -166,7 +166,7 @@ public class IndexBase : ComponentBase {
 			}
 		}
 
-		if (doubleDown) {
+		if (edit && doubleDown) {
 			Node newNode = new Node();
 			newNode.pos = LocalCursor.Stepped();
 			newNode.area = new Vec(60, 20);

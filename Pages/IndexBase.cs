@@ -133,15 +133,15 @@ public class IndexBase : ComponentBase {
 			Vec localPos = LocalCursor - node.pos;
 			bool inXMin = localPos.x >= 0;
 			bool inXMax = localPos.x < node.area.x + 20;
-			// print 0 for inside both and - for outside min and + for outside max
 			int x = (inXMin ? 0 : -1) + (inXMax ? 0 : 1);
-			string xstr = x == 0 ? "0" : x < 0 ? "-" : "+";
 
 			bool inYMin = localPos.y >= 0;
 			bool inYMax = localPos.y < node.area.y + 40;
 			int y = (inYMin ? 0 : -1) + (inYMax ? 0 : 1);
-			string ystr = y == 0 ? "0" : y < 0 ? "-" : "+";
 
+			// print 0 for inside both and - for outside min and + for outside max
+			// string xstr = x == 0 ? "0" : x < 0 ? "-" : "+";
+			// string ystr = y == 0 ? "0" : y < 0 ? "-" : "+";
 			// Console.WriteLine($"{xstr}{ystr} {(int)e.ClientX - node.pos.x}");
 			if (inXMin && inXMax && inYMin && inYMax) {
 				if (Loading || !edit) return;

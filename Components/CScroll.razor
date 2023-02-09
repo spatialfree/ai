@@ -1,6 +1,5 @@
 <div class="scroll" style="
-  transform: translate(@(Data.pos.x)px, @(Data.pos.y)px); 
-  filter: @(Top && (Held || Pull) ? "drop-shadow(2px 4px 6px #00000033)" : "unset");
+  transform: translate(@(Data.pos.x)px, @(Data.pos.y)px);
 ">
   <input @bind="Data.name" @bind:event="oninput" type="text" class="@(Edit ? "no-select" : "")" style="
     width: @(Data.area.x)px;

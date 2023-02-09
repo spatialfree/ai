@@ -23,8 +23,8 @@ public class Vec {
     => string.Format("{0:0.##},{1:0.##}", x, y);
 }
 
-public class Node {
-	public Node() {
+public class Scroll {
+	public Scroll() {
 		name = "";
 		text = "";
 		color = RandomColor();
@@ -32,13 +32,13 @@ public class Node {
 		pos = new Vec(0, 0);
 		area = new Vec(0, 0);
 	}
-	public Node(Node node) {
-		name = node.name;
-		text = node.text;
-		color = node.color;
+	public Scroll(Scroll scroll) {
+		name = scroll.name;
+		text = scroll.text;
+		color = scroll.color;
 
-		pos = node.pos;
-		area = node.area;
+		pos = scroll.pos;
+		area = scroll.area;
 	}
 	
 	public string name;

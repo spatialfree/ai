@@ -4,10 +4,10 @@ using System.IO;
 public class Mono {
   public Mono() {
     Restore();
-		Nodes.CollectionChanged += (sender, e) => {
+		Scrolls.CollectionChanged += (sender, e) => {
 			Recorded = Restored = false;
 			// this only gets called when the collection is changed
-			// not when the properties of the nodes are changed
+			// not when the properties of the scrolls are changed
 		};
   }
 
@@ -20,7 +20,7 @@ public class Mono {
 
 
 	// ObvserableCollection?
-	public ObservableCollection<Node> Nodes = new();
+	public ObservableCollection<Scroll> Scrolls = new();
 
   string cd { get { return Directory.GetCurrentDirectory(); } }
   string dir { get { return $"{cd}/Records/"; } }
@@ -50,12 +50,12 @@ public class Mono {
 				path = $"{dir}{index}";
 		
 				string contents = $"{TimeStamp}\n___";
-				for (int j = 0; j < Nodes.Count; j++) {
-					contents += $"\nName  {Nodes[j].name.Trim()}";
-					contents += $"\nText  {Nodes[j].text.Replace("\n", "\\n") }";
-					contents += $"\nColor {Nodes[j].color}";
-					contents += $"\nPos   {Nodes[j].pos.Stepped()}";
-					contents += $"\nArea  {Nodes[j].area.Stepped()}";
+				for (int j = 0; j < Scrolls.Count; j++) {
+					contents += $"\nName  {Scrolls[j].name.Trim()}";
+					contents += $"\nText  {Scrolls[j].text.Replace("\n", "\\n") }";
+					contents += $"\nColor {Scrolls[j].color}";
+					contents += $"\nPos   {Scrolls[j].pos.Stepped()}";
+					contents += $"\nArea  {Scrolls[j].area.Stepped()}";
 					contents += $"\n";
 				}
 
@@ -80,7 +80,7 @@ public class Mono {
 			string name = Path.GetFileName(path);
 			if (name.Contains(')')) {
 				bool meta = true;
-				Nodes.Clear();
+				Scrolls.Clear();
 				string[] lines = File.ReadAllLines(path);
 				for (int j = 0; j < lines.Length; j++) {
 					if (meta) {
@@ -90,7 +90,7 @@ public class Mono {
 							continue;
 						}
 
-						Node node = new Node {
+						Scroll scroll = new Scroll {
 							name  = lines[j++].Replace("Name  ", "").Trim(),
 							text  = lines[j++].Replace("Text  ", "").Replace("\\n", "\n"),
 							color = lines[j++].Replace("Color ", "").Trim(),
@@ -98,7 +98,7 @@ public class Mono {
 							area  = lines[j++].Replace("Area  ", "").ToVec()
 						};
 
-						Nodes.Add(node);
+						Scrolls.Add(scroll);
 					}
 				}
 				Restored = true;

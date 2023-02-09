@@ -114,12 +114,12 @@ img {
 	padding-top: 1.1rem;
 }
 
-.node {
+.scroll {
 	position: fixed;
 	
 	/* overflow: hidden; */
 }
-.node input {
+.scroll input {
 	touch-action: pan-x;
 	overflow-x: scroll;
 	border-radius: 10px 10px 0 0;
@@ -134,7 +134,7 @@ img {
 	background-color: rgb(64, 64, 64);
 	color: white;
 }
-.node textarea {
+.scroll textarea {
 	border-radius: 0 0 10px 10px;
 
 	resize: none; 
@@ -151,7 +151,7 @@ img {
 	animation: stroke-scroll 1s infinite linear;
 }
 @keyframes stroke-scroll {
-	0% { stroke-dashoffset: -10; }
+	0% { stroke-dashoffset: -8; }
 	100% { stroke-dashoffset: 0; }
 }
 

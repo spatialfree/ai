@@ -13,12 +13,12 @@
 >
 	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
 
-		<svg style="
+		<svg hidden="@(!drag)" style="
 			pointer-events: none;
 			position: fixed;
 			top: -5000px; bottom: 0; left: -5000px; right: 0;
 			width: 10000px; height: 10000px;
-			stroke: rgb(124, 124, 124);
+			stroke: rgb(124, 126, 128);
 			fill: none;
 		">
 		@for (int i = 0; i < 15; i++) {
@@ -26,8 +26,8 @@
 		}
 		</svg>
 
-	@foreach (var (node, index) in Nodes.Select((node, index) => (node, index))) {
-		<CNode Noded="@node" Index="@index" Top="@(index == Nodes.Count-1)" Next="@(index == Nodes.Count-2)" Edit="@edit" Held="@held" Pull="@pull" Cull="@cull" />
+	@foreach (var (scroll, index) in Scrolls.Select((scroll, index) => (scroll, index))) {
+		<CScroll Data="@scroll" Index="@index" Top="@(index == Scrolls.Count-1)" Next="@(index == Scrolls.Count-2)" Edit="@edit" Held="@held" Pull="@pull" Cull="@cull" />
 	}
 		<svg style="
 			pointer-events: none;
@@ -40,10 +40,10 @@
 		">
 			@* line between *@
 			<g style="transform: translate(5000px, 5000px);">
-				<line stroke="rgb(100, 128, 200)" stroke-width="10px" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
-				<line stroke="rgb(200, 128, 100)" stroke-width="6px" class="stroke-scroll" stroke-dasharray="1 1" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
-				<circle fill="white" r="4" cx="@(Closest[0].x)" cy="@(Closest[0].y)" />
-				<circle fill="black" r="4" cx="@(Closest[1].x)" cy="@(Closest[1].y)" />
+				<line stroke="rgb( 64, 128, 256)" stroke-width="10px" stroke-linecap="round" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
+				<line stroke="rgb(256, 128,  64)" stroke-width="6px" class="stroke-scroll" stroke-dasharray="2 2" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
+				<circle fill="white" stroke="none" r="3" cx="@(Closest[0].x)" cy="@(Closest[0].y)" />
+				<circle fill="black" stroke="none" r="3" cx="@(Closest[1].x)" cy="@(Closest[1].y)" />
 			</g>
 		</svg>
 	</div>
@@ -191,7 +191,7 @@
 
 <div @onclick="() => edit = !edit" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="
 		position: fixed;
-		bottom: 20px; left: calc(50vw - 15px);
+		bottom: 22.5px; left: calc(50vw - 22.5px);
 	">
 	<img src="svg-icons/@(edit ? "text": "crop").svg" style="filter: invert(0); transform: scaleX(-1);" />
 </div>

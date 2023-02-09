@@ -46,35 +46,35 @@ public class IndexBase : ComponentBase {
 	protected bool Cloud = false;
 	protected bool Menu  = true;
 
-	ObservableCollection<Node> nodes { get; set; } = new() {
-		new Node { pos = new Vec(150, 80), area = new Vec(80, 40), name = "x", text = "test" },
-		new Node { pos = new Vec(20, 80), area = new Vec(100, 40), name = "read", text = "Say this is a {x}" },
-		new Node { pos = new Vec(20, 180), area = new Vec(210, 200), name = "write", text = "" },
+	ObservableCollection<Scroll> scrolls { get; set; } = new() {
+		new Scroll { pos = new Vec(150, 80), area = new Vec(80, 40), name = "x", text = "test" },
+		new Scroll { pos = new Vec(20, 80), area = new Vec(100, 40), name = "read", text = "Say this is a {x}" },
+		new Scroll { pos = new Vec(20, 180), area = new Vec(210, 200), name = "write", text = "" },
 	};
-	public ObservableCollection<Node> Nodes {
-		get { return Cloud ? mono.Nodes : nodes; }
+	public ObservableCollection<Scroll> Scrolls {
+		get { return Cloud ? mono.Scrolls : scrolls; }
 	}
-	public Node TopNode {
-		get { return Nodes[Nodes.Count - 1]; }
+	public Scroll TopScroll {
+		get { return Scrolls[Scrolls.Count - 1]; }
 	}
-	public Node NextNode {
-		get { return Nodes[Nodes.Count - 2]; }
+	public Scroll NextScroll {
+		get { return Scrolls[Scrolls.Count - 2]; }
 	}
-	public Vec[] Corners(Node node) {
-		int inset = 10;
+	public Vec[] Corners(Scroll scroll) {
+		int inset = 5;
 		Vec[] corners = new Vec[4];
-		corners[0] = node.pos + new Vec(inset, inset);
-		corners[1] = node.pos + new Vec(node.area.x + 20 - inset, inset);
-		corners[2] = node.pos + node.area + new Vec(20 - inset, 40 - inset);
-		corners[3] = node.pos + new Vec(inset, node.area.y + 40 - inset);
+		corners[0] = scroll.pos + new Vec(inset, inset);
+		corners[1] = scroll.pos + new Vec(scroll.area.x + 20 - inset, inset);
+		corners[2] = scroll.pos + scroll.area + new Vec(20 - inset, 40 - inset);
+		corners[3] = scroll.pos + new Vec(inset, scroll.area.y + 40 - inset);
 		return corners;
 	}
-	// closest corner pair for Top and Next Node
+	// closest corner pair for Top and Next Scroll
 	public Vec[] Closest {
 		get {
 			Vec[] closest = new Vec[2];
-			Vec[] corners = Corners(TopNode);
-			Vec[] nextCorners = Corners(NextNode);
+			Vec[] corners = Corners(TopScroll);
+			Vec[] nextCorners = Corners(NextScroll);
 			double minDist = double.MaxValue;
 			for (int i = 0; i < 4; i++) {
 				for (int j = 0; j < 4; j++) {
@@ -96,24 +96,24 @@ public class IndexBase : ComponentBase {
 		// Console.WriteLine($"PointerMove {e.PointerId}");
 		Cursor = new Vec(e.ClientX, e.ClientY);
 
-		Node node = Nodes[Nodes.Count - 1];
+		Scroll scroll = TopScroll;
 
-		if (held) { 
+		if (drag) {
+			Canvas = Cursor + canvasOffset;
+			Canvas.x = (int)Canvas.x;
+			Canvas.y = (int)Canvas.y;
+		} else if (held) { 
 			Vec newPos = LocalCursor + offset;
-			node.pos = newPos.Stepped();
+			scroll.pos = newPos.Stepped();
 		} else if (pull) {
-			Vec newArea = (LocalCursor + offset) - Corners(node)[0];
+			Vec newArea = (LocalCursor + offset) - Corners(scroll)[0];
 			newArea -= new Vec(0, 15);
 
 			cull = newArea.x < 0 && newArea.y < 0;
 			
 			newArea.x = Math.Max(newArea.x.Stepped(), 60);
 			newArea.y = Math.Max(newArea.y.Stepped(), 20);
-			node.area = newArea;
-		} else if (down) {
-			Canvas = Cursor + canvasOffset;
-			Canvas.x = (int)Canvas.x;
-			Canvas.y = (int)Canvas.y;
+			scroll.area = newArea;
 		}
 
 		StateHasChanged();
@@ -127,39 +127,39 @@ public class IndexBase : ComponentBase {
 		bool doubleDown = (Cursor - oldCursor).Mag < 20 &&time.TotalMilliseconds < 500;
 		lastDown = DateTime.Now;
 
-		for (int i = Nodes.Count-1; i >= 0; i--) {
-			Node node = Nodes[i];
+		for (int i = Scrolls.Count-1; i >= 0; i--) {
+			Scroll scroll = Scrolls[i];
 
-			Vec localPos = LocalCursor - node.pos;
+			Vec localPos = LocalCursor - scroll.pos;
 			bool inXMin = localPos.x >= 0;
-			bool inXMax = localPos.x < node.area.x + 20;
+			bool inXMax = localPos.x < scroll.area.x + 20;
 			int x = (inXMin ? 0 : -1) + (inXMax ? 0 : 1);
 
 			bool inYMin = localPos.y >= 0;
-			bool inYMax = localPos.y < node.area.y + 40;
+			bool inYMax = localPos.y < scroll.area.y + 40;
 			int y = (inYMin ? 0 : -1) + (inYMax ? 0 : 1);
 
 			// print 0 for inside both and - for outside min and + for outside max
 			// string xstr = x == 0 ? "0" : x < 0 ? "-" : "+";
 			// string ystr = y == 0 ? "0" : y < 0 ? "-" : "+";
-			// Console.WriteLine($"{xstr}{ystr} {(int)e.ClientX - node.pos.x}");
+			// Console.WriteLine($"{xstr}{ystr} {(int)e.ClientX - scroll.pos.x}");
 			if (inXMin && inXMax && inYMin && inYMax) {
 				if (Loading || !edit) return;
 
 
-				oldPos = node.pos;
+				oldPos = scroll.pos;
 
 				// Lift
-				if (Nodes.Count > 1) {
-					Nodes.RemoveAt(i);
-					Nodes.Add(node);
+				if (Scrolls.Count > 1) {
+					Scrolls.RemoveAt(i);
+					Scrolls.Add(scroll);
 				}
 
-				if ((LocalCursor - Corners(node)[2]).Mag < 20.0) {
-					offset = Corners(node)[2] - LocalCursor;
+				if ((LocalCursor - Corners(scroll)[2]).Mag < 30.0) {
+					offset = new Vec(0, 0);
 					pull = true;
 				} else {
-					offset = node.pos - LocalCursor;
+					offset = scroll.pos - LocalCursor;
 					held = true;
 				}
 
@@ -170,14 +170,15 @@ public class IndexBase : ComponentBase {
 		}
 
 		if (edit && doubleDown) {
-			Node newNode = new Node();
-			newNode.pos = LocalCursor.Stepped();
-			newNode.area = new Vec(60, 20);
+			Scroll newScroll = new Scroll();
+			newScroll.pos = LocalCursor.Stepped();
+			newScroll.area = new Vec(60, 20);
+			offset = new Vec(0, 0);
 			pull = true;
-			Nodes.Add(newNode);
+			Scrolls.Add(newScroll);
 		} else {
 			canvasOffset = Canvas - Cursor;
-			down = true;
+			drag = true;
 		}
 	}
 
@@ -186,17 +187,17 @@ public class IndexBase : ComponentBase {
 		Cursor = new Vec(e.ClientX, e.ClientY);
 
 		if (cull) {
-			if (Nodes.Count <= 2) {
-				Nodes[Nodes.Count - 1].name = "";
-				Nodes[Nodes.Count - 1].text = "";
+			if (Scrolls.Count <= 2) {
+				TopScroll.name = "";
+				TopScroll.text = "";
 			} else {
-				Nodes.RemoveAt(Nodes.Count - 1);
+				Scrolls.RemoveAt(Scrolls.Count - 1);
 			}
 			// Console.WriteLine("CULL");
 		} 
 
 		oldCursor = Cursor;
-		down = held = pull = cull = false;
+		drag = held = pull = cull = false;
 		StateHasChanged();
 	}
 
@@ -210,7 +211,7 @@ public class IndexBase : ComponentBase {
 
 	Vec oldPos = new Vec(0, 0); // vague variable name 
 	
-	protected bool down = false;
+	protected bool drag = false;
 	protected bool held = false;
 	protected bool pull = false;
 	protected bool cull = false;
@@ -219,48 +220,46 @@ public class IndexBase : ComponentBase {
 
 
 	protected async Task Run() {
-		Node node = Nodes[Nodes.Count - 2];
+		Scroll scroll = Scrolls[Scrolls.Count - 2];
 
 		string prep = "";
 
 		bool read = false;
 		string reference = "";
-		for (int i = 0; i < node.text.Length; i++) {
-			if (node.text[i] == '}') { read = false; 
-				Node refNode = GetNodeByName(reference);
-				prep += refNode.text;
+		for (int i = 0; i < scroll.text.Length; i++) {
+			if (scroll.text[i] == '}') { read = false; 
+				Scroll refScroll = GetScrollText(reference);
+				prep += refScroll.text;
 
 				reference = "";
 				continue;
 			}
-			if (read) { reference += node.text[i]; }
-			if (node.text[i] == '{') { read = true; }
+			if (read) { reference += scroll.text[i]; }
+			if (scroll.text[i] == '{') { read = true; }
 
-			if (!read) { prep += node.text[i]; }
+			if (!read) { prep += scroll.text[i]; }
 		}
 
 		// Console.WriteLine(prep);
-		// Nodes[Nodes.Count - 1].text = completion;
 		await Complete(prep);
-		// Console.WriteLine(Nodes[Nodes.Count - 1].text);
 	}
 
-	Node GetNodeByName(string name) {
-		foreach (Node node in Nodes) {
-			if (node.name.Trim().ToLower() == name.Trim().ToLower()) {
-				return node;
+	Scroll GetScrollText(string name) {
+		foreach (Scroll scroll in Scrolls) {
+			if (scroll.name.Trim().ToLower() == name.Trim().ToLower()) {
+				return scroll;
 			}
 		}
-		Console.WriteLine($"Node {name} not found");
-		return new Node();
+		Console.WriteLine($"Scroll {name} not found");
+		return new Scroll();
 	}
 
 	protected bool Loading = false;
 	protected bool Error = false;
 	// string completion = "";
 	protected async Task Complete(string prompt) {
-		string oldText = Nodes[Nodes.Count - 1].text;
-		Nodes[Nodes.Count - 1].text = "";
+		string oldText = TopScroll.text;
+		TopScroll.text = "";
 		if (!Loading) {
 			Loading = true;
 			edit = false;
@@ -276,8 +275,8 @@ public class IndexBase : ComponentBase {
 
 				var endpoint = API.CompletionsEndpoint;
 				await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
-					Nodes[Nodes.Count - 1].text += token.Completions[0].Text;
-					Nodes[Nodes.Count - 1].text = Nodes[Nodes.Count - 1].text.TrimStart('\n');
+					TopScroll.text += token.Completions[0].Text;
+					TopScroll.text = TopScroll.text.TrimStart('\n');
 					
 					StateHasChanged();
 				}
@@ -296,8 +295,8 @@ public class IndexBase : ComponentBase {
 
 			Loading = false;
 		}
-		if (Nodes[Nodes.Count - 1].text == "") {
-			Nodes[Nodes.Count - 1].text = oldText;
+		if (TopScroll.text == "") {
+			TopScroll.text = oldText;
 		}
 	}
 	protected int   MaxTokens   = 256;

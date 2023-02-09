@@ -73,8 +73,9 @@ pos = from + direction * works
     inline references
   Run
     Read
-      parse references
-    Write
+      recursive reference parser
+      rendered
+    Complete
       stream ai output
 
 

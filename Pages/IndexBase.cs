@@ -49,7 +49,7 @@ public class IndexBase : ComponentBase {
 	ObservableCollection<Scroll> scrolls { get; set; } = new() {
 		new Scroll { pos = new Vec(150, 80), area = new Vec(80, 40), name = "x", text = "test" },
 		new Scroll { pos = new Vec(20, 80), area = new Vec(100, 40), name = "read", text = "Say this is a {x}" },
-		new Scroll { pos = new Vec(20, 180), area = new Vec(210, 200), name = "write", text = "" },
+		new Scroll { pos = new Vec(20, 180), area = new Vec(210, 200), name = "complete", text = "" },
 	};
 	public ObservableCollection<Scroll> Scrolls {
 		get { return Cloud ? mono.Scrolls : scrolls; }

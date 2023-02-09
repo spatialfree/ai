@@ -219,29 +219,48 @@ public class IndexBase : ComponentBase {
 	protected bool edit  = false;
 
 
+	protected bool Loading = false;
+	protected bool Error = false;
+
 	protected async Task Run() {
-		Scroll scroll = Scrolls[Scrolls.Count - 2];
+		Loading = true;
+		edit = false;
+		stream = "";
+		await Read(NextScroll);
 
-		string prep = "";
+		Console.WriteLine(stream);
+		await Complete(stream);
+		Loading = false;
+	}
 
+	string stream = "";
+	async Task Read(Scroll scroll) {
 		bool read = false;
 		string reference = "";
-		for (int i = 0; i < scroll.text.Length; i++) {
-			if (scroll.text[i] == '}') { read = false; 
-				Scroll refScroll = GetScrollText(reference);
-				prep += refScroll.text;
+		string text = scroll.text;
+		for (int i = 0; i < text.Length; i++) {
+			
+			scroll.text = text.Insert(i, "|");
+			StateHasChanged();
+			await Task.Delay(100);
 
-				reference = "";
+			if (text[i] == '{') { 
+				read = true; 
 				continue;
 			}
-			if (read) { reference += scroll.text[i]; }
-			if (scroll.text[i] == '{') { read = true; }
-
-			if (!read) { prep += scroll.text[i]; }
+			if (text[i] == '}') { 
+				await Read(GetScrollText(reference));
+				reference = "";
+				read = false; 
+				continue;
+			}
+			if (read) { 
+				reference += text[i]; 
+			} else {
+				stream += text[i]; 
+			}
 		}
-
-		// Console.WriteLine(prep);
-		await Complete(prep);
+		scroll.text = text;
 	}
 
 	Scroll GetScrollText(string name) {
@@ -254,47 +273,39 @@ public class IndexBase : ComponentBase {
 		return new Scroll();
 	}
 
-	protected bool Loading = false;
-	protected bool Error = false;
-	// string completion = "";
 	protected async Task Complete(string prompt) {
 		string oldText = TopScroll.text;
 		TopScroll.text = "";
-		if (!Loading) {
-			Loading = true;
-			edit = false;
 
-			try {
-				CompletionRequest request = new CompletionRequest();
-				request.Model = OpenAI.Models.Model.Davinci;
-				request.Prompt = prompt;
-				request.MaxTokens = MaxTokens;
-				request.Temperature = Temperature;
-				request.PresencePenalty = Contrast;
-				request.FrequencyPenalty = -Repeat;
+		try {
+			CompletionRequest request = new CompletionRequest();
+			request.Model = OpenAI.Models.Model.Davinci;
+			request.Prompt = prompt;
+			request.MaxTokens = MaxTokens;
+			request.Temperature = Temperature;
+			request.PresencePenalty = Contrast;
+			request.FrequencyPenalty = -Repeat;
 
-				var endpoint = API.CompletionsEndpoint;
-				await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
-					TopScroll.text += token.Completions[0].Text;
-					TopScroll.text = TopScroll.text.TrimStart('\n');
-					
-					StateHasChanged();
-				}
-
-				// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
-			}
-			catch (Exception ex) {
-				Loading = true;
-				Error = true;
+			var endpoint = API.CompletionsEndpoint;
+			await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
+				TopScroll.text += token.Completions[0].Text;
+				TopScroll.text = TopScroll.text.TrimStart('\n');
+				
 				StateHasChanged();
-				await Task.Delay(2000);
-				Error = false;
-
-				Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} : {ex.Message}");
 			}
 
-			Loading = false;
+			// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
 		}
+		catch (Exception ex) {
+			Loading = true;
+			Error = true;
+			StateHasChanged();
+			await Task.Delay(2000);
+			Error = false;
+
+			Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} : {ex.Message}");
+		}
+
 		if (TopScroll.text == "") {
 			TopScroll.text = oldText;
 		}

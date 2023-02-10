@@ -234,8 +234,9 @@ public class IndexBase : ComponentBase {
 			edit = false;
 			stream = "";
 			await Read(NextScroll);
-
 			Console.WriteLine(stream);
+
+			if (!Loading) return;
 			await Complete(stream);
 			Loading = false;
 		}

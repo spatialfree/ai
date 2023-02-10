@@ -1,3 +1,6 @@
+using OpenAI;
+using OpenAI.Completions;
+
 namespace ai;
 
 public class IndexBase : ComponentBase {
@@ -223,14 +226,19 @@ public class IndexBase : ComponentBase {
 	protected bool Error = false;
 
 	protected async Task Run() {
-		Loading = true;
-		edit = false;
-		stream = "";
-		await Read(NextScroll);
+		if (Loading) {
+			// Cancel
+			Loading = false;
+		} else {
+			Loading = true;
+			edit = false;
+			stream = "";
+			await Read(NextScroll);
 
-		Console.WriteLine(stream);
-		await Complete(stream);
-		Loading = false;
+			Console.WriteLine(stream);
+			await Complete(stream);
+			Loading = false;
+		}
 	}
 
 	string stream = "";
@@ -239,10 +247,11 @@ public class IndexBase : ComponentBase {
 		string reference = "";
 		string text = scroll.text;
 		for (int i = 0; i < text.Length; i++) {
-			
-			scroll.text = text.Insert(i, "|");
+			if (!Loading) break;
+
+			scroll.text = text.Insert(i, "[").Insert(i+2, "]");
 			StateHasChanged();
-			await Task.Delay(100);
+			await Task.Delay(50);
 
 			if (text[i] == '{') { 
 				read = true; 
@@ -261,6 +270,7 @@ public class IndexBase : ComponentBase {
 			}
 		}
 		scroll.text = text;
+		StateHasChanged();
 	}
 
 	Scroll GetScrollText(string name) {
@@ -287,12 +297,16 @@ public class IndexBase : ComponentBase {
 			request.FrequencyPenalty = -Repeat;
 
 			var endpoint = API.CompletionsEndpoint;
+			int tokens = 0;
 			await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
+				if (!Loading) break;
+
 				TopScroll.text += token.Completions[0].Text;
 				TopScroll.text = TopScroll.text.TrimStart('\n');
-				
+				tokens++;
 				StateHasChanged();
 			}
+			Console.WriteLine(tokens);
 
 			// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
 		}

@@ -53,9 +53,7 @@ works
     Estimates
     History
     Totals
-  Unobfiscate the core systems
-    show reading
-  Reference more
+  Reference.details
   Arrays~
   Generic encapsulation
   Libraries~

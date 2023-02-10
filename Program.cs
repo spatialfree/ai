@@ -7,8 +7,6 @@ global using Microsoft.AspNetCore.Components.Web;
 
 global using Microsoft.JSInterop;
 
-global using OpenAI;
-
 using ai;
 
 var builder = WebApplication.CreateBuilder(args);

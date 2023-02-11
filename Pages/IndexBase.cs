@@ -37,6 +37,7 @@ public class IndexBase : ComponentBase {
 		Loading = false;
 		StateHasChanged();
 	}
+	protected bool Menu  = true;
 
 
 	string pattern = "";
@@ -49,7 +50,32 @@ public class IndexBase : ComponentBase {
 	}
 	protected bool Cloud = false;
 
-	protected bool Menu  = true;
+	protected string Style = 
+@".page {
+  max-width: 400px;
+  margin: 0 auto;
+  margin-top: 40px;
+}
+h1 { 
+  display: block; 
+  font-size: 40px;
+}";
+	protected string Styled {
+		get { 
+			// split into lines
+			// and each line with an opening bracket {
+			// gets .page added to the start of the line
+			string[] lines = Style.Split('\n');
+			for (int i = 0; i < lines.Length; i++) {
+				if (lines[i].Contains("{") && !lines[i].Contains(".page")) {
+					lines[i] = ".page>" + lines[i];
+				}
+			}
+			string str = string.Join("\n", lines);
+			str = ".page>* { all: unset; font-family: 'Atkinson Hyperlegible', Helvetica, sans-serif; }" + str;
+			return str;
+		}
+	}
 	protected bool Page  = false;
 
 	ObservableCollection<Scroll> scrolls { get; set; } = new() {
@@ -411,4 +437,5 @@ public class IndexBase : ComponentBase {
 	double[] GetVector(EmbeddingsResponse er) { return er.Data[0].Embedding.ToArray(); }
 
 	Nodes.Count(todo => !todo.shelf) <= 2
+
 */

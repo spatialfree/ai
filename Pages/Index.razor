@@ -6,28 +6,23 @@
 <PageTitle>prompturing</PageTitle>
 
 @* - - - - - - - - - - - - - - -  Page  - - - - - - - - - - - - - - - *@
-<div style="
-	max-width: 400px;
-	margin: 0 auto;
-	margin-top: 100px;
-">
+<div class="page">
 	@foreach (var scroll in SortedScrolls) {
 		@if (scroll.name.Contains("<h1>")) { <h1>@scroll.text</h1> }
 		@if (scroll.name.Contains("<p>" )) { <p>@scroll.text</p> }
 	}
 
-<style contenteditable="@(true)" spellcheck="false" style="
-	background-color: black; color: white; 
-	margin-top: 100px; padding: 10px;
-	border-radius: 10px; outline: 2px solid black; outline-offset: 2px;
-	white-space: pre-wrap; font-family: 'DM Mono', monospace; font-size: 12px;
-">
-h1 { 
-  color: black;
-}
-</style>
-
 </div>
+<style style="display: none;">@Styled</style>
+<textarea @bind="Style" @bind:event="oninput" spellcheck="false" style="
+	white-space: pre;
+	width: -webkit-fill-available;
+	height: 200px;
+	margin-top: 100px; padding: 10px;
+	background-color: black; color: white; 
+	border-radius: 10px; outline: 2px solid black; outline-offset: 2px;
+	font-family: 'DM Mono', monospace; font-size: 12px;
+"></textarea>
 
 @* - - - - - - - - - - - - - - - Canvas - - - - - - - - - - - - - - - *@
 

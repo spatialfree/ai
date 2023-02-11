@@ -48,11 +48,11 @@ constraints
 
 
 works
-  Front end
   Token usage
-    Estimates
-    History
-    Totals
+    auto Limit by textarea area *2x the visible area
+    estimates
+    history
+    totals
   Reference.details
   Arrays~
   Generic encapsulation
@@ -62,9 +62,9 @@ works
 
 pos = from + direction * works
   Canvases
-    Navigation rings
-    Local insances (in memory)
-    One cloud shared instance
+    navigation rings
+    local insances (in memory)
+    one cloud shared instance
   Scrolls
     customizable
     dynamic
@@ -75,6 +75,9 @@ pos = from + direction * works
       rendered
     Complete
       stream ai output
+  Page
+    surface scrolls
+    live style editing
 
 
 ``` 

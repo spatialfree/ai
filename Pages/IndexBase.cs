@@ -1,5 +1,6 @@
 using OpenAI;
 using OpenAI.Completions;
+using System.Text.RegularExpressions;
 
 namespace ai;
 
@@ -47,15 +48,21 @@ public class IndexBase : ComponentBase {
 		}
 	}
 	protected bool Cloud = false;
+
 	protected bool Menu  = true;
+	protected bool Page  = false;
 
 	ObservableCollection<Scroll> scrolls { get; set; } = new() {
-		new Scroll { pos = new Vec(150, 80), area = new Vec(80, 40), name = "x", text = "test" },
-		new Scroll { pos = new Vec(20, 80), area = new Vec(100, 40), name = "read", text = "Say this is a {x}" },
-		new Scroll { pos = new Vec(20, 180), area = new Vec(210, 200), name = "complete", text = "" },
+		new Scroll { pos = new Vec(150, 80), area = new Vec(80, 40),   name = "x<h1>",       text = "test" },
+		new Scroll { pos = new Vec(20, 80),  area = new Vec(100, 40),  name = "read",        text = "Say this is a {x}" },
+		new Scroll { pos = new Vec(20, 180), area = new Vec(210, 200), name = "complete<p>", text = "" },
 	};
 	public ObservableCollection<Scroll> Scrolls {
 		get { return Cloud ? mono.Scrolls : scrolls; }
+	}
+	public ObservableCollection<Scroll> SortedScrolls {
+		// sort top to bottom and left to right using scroll.pos
+		get { return new(Scrolls.OrderBy(s => s.pos.y).ThenBy(s => s.pos.x)); }
 	}
 	public Scroll TopScroll {
 		get { return Scrolls[Scrolls.Count - 1]; }
@@ -276,7 +283,11 @@ public class IndexBase : ComponentBase {
 
 	Scroll GetScrollText(string name) {
 		foreach (Scroll scroll in Scrolls) {
-			if (scroll.name.Trim().ToLower() == name.Trim().ToLower()) {
+			string scrollName = scroll.name;
+			// remove any tags<> and containing characters from the name
+			// ex name<h1> becomes name
+			scrollName = Regex.Replace(scrollName, @"<[^>]*>", "");
+			if (scrollName.Trim().ToLower() == name.Trim().ToLower()) {
 				return scroll;
 			}
 		}

@@ -5,13 +5,41 @@
 
 <PageTitle>prompturing</PageTitle>
 
-@* 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 *@
+@* - - - - - - - - - - - - - - -  Page  - - - - - - - - - - - - - - - *@
+<div style="
+	max-width: 400px;
+	margin: 0 auto;
+	margin-top: 100px;
+">
+	@foreach (var scroll in SortedScrolls) {
+		@if (scroll.name.Contains("<h1>")) { <h1>@scroll.text</h1> }
+		@if (scroll.name.Contains("<p>" )) { <p>@scroll.text</p> }
+	}
 
-<div 
+<style contenteditable="@(true)" spellcheck="false" style="
+	background-color: black; color: white; 
+	margin-top: 100px; padding: 10px;
+	border-radius: 10px; outline: 2px solid black; outline-offset: 2px;
+	white-space: pre-wrap; font-family: 'DM Mono', monospace; font-size: 12px;
+">
+h1 { 
+  color: black;
+}
+</style>
+
+</div>
+
+@* - - - - - - - - - - - - - - - Canvas - - - - - - - - - - - - - - - *@
+
+<div
+	hidden="@(Page)"
 	@onpointermove="PointerMove" @onpointerdown="PointerDown" @onpointerup="PointerUp"
-	style="position: fixed; top: 0; bottom: 0; left: 0; right: 0;"
+	style="position: fixed; top: 0; bottom: 0; left: 0; right: 0;
+		background-color: #808080;
+	"
 >
-	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);">
+	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);
+	">
 
 		<svg hidden="@(!drag)" style="
 			pointer-events: none;
@@ -49,7 +77,7 @@
 	</div>
 </div>
 
-@* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - *@
+@* - - - - - - - - - - - - - - - Menu - - - - - - - - - - - - - - - *@
 
 <div hidden="@(!Menu)" style="
 	display: flex; 
@@ -75,51 +103,6 @@
 				@(mono.Recorded ? "Recorded" : "Record")
 			</div>
 		</div>
-	</div>
-	<br>
-	<br>
-	<br>
-
-	@* Model Paramaters *@
-	<div hidden="@(!ValidKey)" style="text-align: center; color: white;">
-		<div class="row">
-			<div class="limit">&nbsp;&nbsp;16</div>
-			<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
-			<div class="limit">2048</div>
-		@* <input type="checkbox" /> 2x boost *@
-		</div>
-		<br>
-		<img class="icon" src="svg-icons/text.svg" />
-		<br>
-
-		@* <img class="icon" src="svg-icons/pulse.svg" />
-		<br>
-		<div class="row">
-			<div class="limit">0</div>
-			<input @bind="Temperature" type="range" min="0" max="1" step="0.01" />
-			<div class="limit">1</div>
-		</div>
-		<br>
-		<br>
-
-		<img class="icon" src="svg-icons/contrast.svg" />
-		<br>
-		<div class="row">
-			<div class="limit">- 2</div>
-			<input @bind="Contrast" type="range" min="-1.9" max="1.9" step="0.1" />
-			<div class="limit">2</div>
-		</div>
-		<br>
-		<br>
-
-		<img class="icon" src="svg-icons/loop-circular.svg" />
-		<br>
-		<div class="row">
-			<div class="limit">- 2</div>
-			<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
-			<div class="limit">2</div>
-		</div>
-		*@
 	</div>
 	<br>
 	<br>
@@ -159,10 +142,9 @@
 	<footer>Developed by <a href="https://ethanmerchant.com">Ethan Merchant</a></footer>
 </div>
 
+@* - - - - - - - - - - - - - - - HUD - - - - - - - - - - - - - - - *@
 
-@* _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ *@
-
-<div @onclick="() => Menu = !Menu" hidden="@(!ValidKey)" disabled="@Loading" class="btn" style="
+<div @onclick="() => Menu = !Menu" hidden="@(!ValidKey || Page)" disabled="@Loading" class="btn" style="
 		position: fixed;
 		top: 10px; left: 10px;
 		@(!Menu ? "filter: invert(1.0);" : "background-color: transparent;")
@@ -176,7 +158,15 @@
 	">*</div>
 </div>
 
-<div @onclick="Run" hidden="@(!ValidKey || Menu)" class="btn" style="
+<div @onclick="() => Page = !Page" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="
+		position: fixed;
+		top: 10px; left: calc(50vw - 22.5px);
+		background-color: transparent;
+	">
+	<img src="svg-icons/chevron-@(Page ? "top" : "bottom").svg" style="filter: invert(@(Page ? 0 : 1));" />
+</div>
+
+<div @onclick="Run" hidden="@(!ValidKey || Menu || Page)" class="btn" style="
 		position: fixed;
 		top: 10px; right: 10px;
 	">
@@ -189,7 +179,7 @@
 	</svg>
 </div>
 
-<div @onclick="() => edit = !edit" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="
+<div @onclick="() => edit = !edit" hidden="@(!ValidKey || Menu || Page)" disabled="@Loading" class="btn" style="
 		position: fixed;
 		bottom: 22.5px; left: calc(50vw - 22.5px);
 	">
@@ -242,5 +232,52 @@ Only Shift-Enter
 		");
 	}
 }
+
+
+
+
+	Model Paramaters
+	<div hidden="@(!ValidKey)" style="text-align: center; color: white;">
+		<div class="row">
+			<div class="limit">&nbsp;&nbsp;16</div>
+			<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
+			<div class="limit">2048</div>
+		</div>
+		<br>
+		<img class="icon" src="svg-icons/text.svg" />
+		<br>
+
+		<img class="icon" src="svg-icons/pulse.svg" />
+		<br>
+		<div class="row">
+			<div class="limit">0</div>
+			<input @bind="Temperature" type="range" min="0" max="1" step="0.01" />
+			<div class="limit">1</div>
+		</div>
+		<br>
+		<br>
+
+		<img class="icon" src="svg-icons/contrast.svg" />
+		<br>
+		<div class="row">
+			<div class="limit">- 2</div>
+			<input @bind="Contrast" type="range" min="-1.9" max="1.9" step="0.1" />
+			<div class="limit">2</div>
+		</div>
+		<br>
+		<br>
+
+		<img class="icon" src="svg-icons/loop-circular.svg" />
+		<br>
+		<div class="row">
+			<div class="limit">- 2</div>
+			<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
+			<div class="limit">2</div>
+		</div>
+		
+	</div>
+	<br>
+	<br>
+	<br>
 
 *@

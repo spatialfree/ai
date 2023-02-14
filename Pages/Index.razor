@@ -10,6 +10,8 @@
 	@foreach (var scroll in SortedScrolls) {
 		@if (scroll.name.Contains("<h1>")) { <h1>@scroll.text</h1> }
 		@if (scroll.name.Contains("<p>" )) { <p>@scroll.text</p> }
+		@if (scroll.name.Contains("<input>" )) { <input @bind="scroll.text" placeholder="@scroll.taglessName"></input> }
+		@if (scroll.name.Contains("<button>" )) { <button @onclick="Run">@scroll.taglessName</button> }
 	}
 
 </div>

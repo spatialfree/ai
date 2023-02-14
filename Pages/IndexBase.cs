@@ -1,6 +1,5 @@
 using OpenAI;
 using OpenAI.Completions;
-using System.Text.RegularExpressions;
 
 namespace ai;
 
@@ -59,6 +58,19 @@ public class IndexBase : ComponentBase {
 h1 { 
   display: block; 
   font-size: 40px;
+}
+input {
+  display: block; 
+  margin: 10px 0; padding: 5px;
+  border-bottom: 1px solid black;
+}
+button {
+  display: block;
+  margin: 10px 0; padding: 10px 15px;
+  border: 1px solid black;
+  box-shadow: 2px 2px;
+  font-weight: 700;
+  letter-spacing: 1px;
 }";
 	protected string Styled {
 		get { 
@@ -79,9 +91,36 @@ h1 {
 	protected bool Page  = false;
 
 	ObservableCollection<Scroll> scrolls { get; set; } = new() {
-		new Scroll { pos = new Vec(150, 80), area = new Vec(80, 40),   name = "x<h1>",       text = "test" },
-		new Scroll { pos = new Vec(20, 80),  area = new Vec(100, 40),  name = "read",        text = "Say this is a {x}" },
-		new Scroll { pos = new Vec(20, 180), area = new Vec(210, 200), name = "complete<p>", text = "" },
+		new Scroll { 
+			pos = new Vec(20, 80),
+			area = new Vec(60, 20),
+			name = "<h1>",
+			text = "Test" 
+		},
+		new Scroll { 
+			pos = new Vec(150, 180),
+			area = new Vec(80, 40),
+			name = "x<input>",
+			text = ""
+		},
+		new Scroll { 
+			pos = new Vec(50, 280),
+			area = new Vec(180, 20),
+			name = "run<button>",
+			text = ""
+		},
+		new Scroll { 
+			pos = new Vec(20, 180), 
+			area = new Vec(100, 40),
+			name = "read<p>",
+			text = "Say this is a {x}" 
+		},
+		new Scroll { 
+			pos = new Vec(20, 360), 
+			area = new Vec(210, 200), 
+			name = "complete<p>", 
+			text = "" 
+		},
 	};
 	public ObservableCollection<Scroll> Scrolls {
 		get { return Cloud ? mono.Scrolls : scrolls; }
@@ -309,11 +348,7 @@ h1 {
 
 	Scroll GetScrollText(string name) {
 		foreach (Scroll scroll in Scrolls) {
-			string scrollName = scroll.name;
-			// remove any tags<> and containing characters from the name
-			// ex name<h1> becomes name
-			scrollName = Regex.Replace(scrollName, @"<[^>]*>", "");
-			if (scrollName.Trim().ToLower() == name.Trim().ToLower()) {
+			if (scroll.taglessName.Trim().ToLower() == name.Trim().ToLower()) {
 				return scroll;
 			}
 		}

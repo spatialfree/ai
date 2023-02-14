@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 public class Vec {
 	public double x { get; set; }
 	public double y { get; set; }
@@ -42,6 +44,7 @@ public class Scroll {
 	}
 	
 	public string name;
+	public string taglessName => Regex.Replace(name, @"<[^>]*>", ""); 
 	public string text;
 	public string color;
 

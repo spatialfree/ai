@@ -15,6 +15,10 @@ to
     user created
     expandable
     inline data connections
+    context/convention control flow
+      left-right top-bottom
+      chained based on contact?
+      how they are triggered?
 
 from
   Conversational AI

@@ -49,6 +49,11 @@ public class IndexBase : ComponentBase {
 	}
 	protected bool Cloud = false;
 
+	string styleHeader = 
+@".page>* {
+	all: unset; 
+	font-family: 'Atkinson Hyperlegible', Helvetica, sans-serif; 
+}";
 	protected string Style = 
 @".page {
   max-width: 400px;
@@ -58,6 +63,9 @@ public class IndexBase : ComponentBase {
 h1 { 
   display: block; 
   font-size: 40px;
+}
+p {
+  display: block; 
 }
 input {
   display: block; 
@@ -84,8 +92,7 @@ button {
 				}
 			}
 			string str = string.Join("\n", lines);
-			str = ".page>* { all: unset; font-family: 'Atkinson Hyperlegible', Helvetica, sans-serif; }" + str;
-			return str;
+			return styleHeader + str;
 		}
 	}
 	protected bool Page  = false;
@@ -93,30 +100,30 @@ button {
 	ObservableCollection<Scroll> scrolls { get; set; } = new() {
 		new Scroll { 
 			pos = new Vec(20, 80),
-			area = new Vec(60, 20),
+			area = new Vec(80, 20),
 			name = "<h1>",
 			text = "Test" 
 		},
 		new Scroll { 
-			pos = new Vec(150, 180),
-			area = new Vec(80, 40),
+			pos = new Vec(150, 80),
+			area = new Vec(80, 20),
 			name = "x<input>",
-			text = ""
+			text = "mario"
 		},
 		new Scroll { 
-			pos = new Vec(50, 280),
-			area = new Vec(180, 20),
+			pos = new Vec(280, 80),
+			area = new Vec(100, 20),
 			name = "run<button>",
 			text = ""
 		},
 		new Scroll { 
 			pos = new Vec(20, 180), 
-			area = new Vec(100, 40),
+			area = new Vec(210, 40),
 			name = "read<p>",
 			text = "Say this is a {x}" 
 		},
 		new Scroll { 
-			pos = new Vec(20, 360), 
+			pos = new Vec(20, 260), 
 			area = new Vec(210, 200), 
 			name = "complete<p>", 
 			text = "" 
@@ -169,7 +176,9 @@ button {
 	DateTime lastDown = DateTime.Now;
 	protected void PointerMove(PointerEventArgs e) {
 		// Console.WriteLine($"PointerMove {e.PointerId}");
+		if (e.PointerId != pointerId) return;
 		Cursor = new Vec(e.ClientX, e.ClientY);
+
 
 		Scroll scroll = TopScroll;
 
@@ -196,6 +205,10 @@ button {
 
 	protected void PointerDown(PointerEventArgs e) {
 		// Console.WriteLine($"PointerDown : {e.Button}");
+		if (down) return;
+		pointerId = e.PointerId;
+		down = true;
+
 		Cursor = new Vec(e.ClientX, e.ClientY);
 
 		TimeSpan time = DateTime.Now - lastDown;
@@ -259,6 +272,9 @@ button {
 
 	protected void PointerUp(PointerEventArgs e) {
 		// Console.WriteLine($"PointerUp : {e.Button}");
+		if (e.PointerId != pointerId) return;
+		down = false;
+		// Console.WriteLine(e.PointerId);
 		Cursor = new Vec(e.ClientX, e.ClientY);
 
 		if (cull) {
@@ -286,6 +302,9 @@ button {
 
 	Vec oldPos = new Vec(0, 0); // vague variable name 
 	
+	bool down = false;
+	long pointerId = -1;
+
 	protected bool drag = false;
 	protected bool held = false;
 	protected bool pull = false;

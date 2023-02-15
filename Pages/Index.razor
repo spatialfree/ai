@@ -24,6 +24,7 @@
 	background-color: black; color: white; 
 	border-radius: 10px; outline: 2px solid black; outline-offset: 2px;
 	font-family: 'DM Mono', monospace; font-size: 12px;
+	touch-action: pan-y;
 "></textarea>
 
 @* - - - - - - - - - - - - - - - Canvas - - - - - - - - - - - - - - - *@
@@ -31,7 +32,8 @@
 <div
 	hidden="@(Page)"
 	@onpointermove="PointerMove" @onpointerdown="PointerDown" @onpointerup="PointerUp"
-	style="position: fixed; top: 0; bottom: 0; left: 0; right: 0;
+	style="
+		position: fixed; top: 0; bottom: 0; left: 0; right: 0;
 		background-color: #808080;
 	"
 >

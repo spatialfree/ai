@@ -176,6 +176,18 @@ button {
 		}
 	}
 
+	protected void Wheel(WheelEventArgs e) {
+		canvasOffset = Canvas - (pointers[0].screen / Scale);
+		Scale -= e.DeltaY / 1000;
+		Scale = Math.Clamp(Scale, 0.1, 2);
+
+		// scale around pointer[0]
+		Vec newCanvas = (pointers[0].screen / Scale) + canvasOffset;
+		newCanvas.x = (int)newCanvas.x;
+		newCanvas.y = (int)newCanvas.y;
+		Canvas = newCanvas;
+		// this is close, but the first time you zoom in, it zooms in on the center of the screen
+	}
 
 	protected void PointerMove(PointerEventArgs e) {
 		for (int i = 0; i < pointers.Length; i++) {
@@ -194,7 +206,7 @@ button {
 		Scroll scroll = TopScroll;
 
 		if (drag) {
-			Canvas = pointers[0].screen + canvasOffset;
+			Canvas = (pointers[0].screen / Scale) + canvasOffset;
 			Canvas.x = (int)Canvas.x;
 			Canvas.y = (int)Canvas.y;
 
@@ -226,6 +238,7 @@ button {
 			}
 		}
 		if (!pointers[0].dwn) return;
+		// Console.WriteLine($"screen {pointers[0].screen}\ncanvas {pointers[0].canvas}\n");
 
 		for (int i = Scrolls.Count-1; i >= 0; i--) {
 			Scroll scroll = Scrolls[i];
@@ -240,9 +253,11 @@ button {
 			int y = (inYMin ? 0 : -1) + (inYMax ? 0 : 1);
 
 			// print 0 for inside both and - for outside min and + for outside max
-			// string xstr = x == 0 ? "0" : x < 0 ? "-" : "+";
-			// string ystr = y == 0 ? "0" : y < 0 ? "-" : "+";
-			// Console.WriteLine($"{xstr}{ystr} {(int)e.ClientX - scroll.pos.x}");
+			// if (scroll == TopScroll) {
+			// 	string xstr = x == 0 ? "0" : x < 0 ? "-" : "+";
+			// 	string ystr = y == 0 ? "0" : y < 0 ? "-" : "+";
+			// 	Console.WriteLine($"{xstr}{ystr} {(int)pointers[0].canvas.x - scroll.pos.x}");
+			// }
 			if (inXMin && inXMax && inYMin && inYMax) {
 				if (Loading || !edit) return;
 
@@ -273,7 +288,7 @@ button {
 			pull = true;
 			Scrolls.Add(newScroll);
 		} else {
-			canvasOffset = Canvas - pointers[0].screen;
+			canvasOffset = Canvas - (pointers[0].screen / Scale);
 			drag = true;
 		}
 	}
@@ -308,6 +323,7 @@ button {
 
 	Vec canvasOffset = new Vec(0, 0);
 	public Vec Canvas = new Vec(0, 0);
+	public double Scale = 1.5;
 
 	protected bool drag = false;
 	protected bool held = false;

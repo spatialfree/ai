@@ -8,7 +8,7 @@ public class Pointer {
 
   public long id = -1;
   public Vec screen = new Vec();
-  public Vec canvas { get { return screen - index.Canvas; } }
+  public Vec canvas { get { return (screen / index.Scale) - index.Canvas; } }
 
   public bool dwn = false;
   public bool dbl = false;

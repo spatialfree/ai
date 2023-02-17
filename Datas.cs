@@ -9,6 +9,12 @@ public class Vec {
 		this.y = y;
 	}
 
+	public static Vec operator *(Vec a, double b) 
+		=> new Vec(a.x * b, a.y * b);
+
+	public static Vec operator /(Vec a, double b) 
+		=> new Vec(a.x / b, a.y / b);
+
 	public static Vec operator +(Vec a, Vec b) 
 		=> new Vec(a.x + b.x, a.y + b.y);
 

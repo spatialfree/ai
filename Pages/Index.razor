@@ -32,12 +32,15 @@
 <div
 	hidden="@(Page)"
 	@onpointermove="PointerMove" @onpointerdown="PointerDown" @onpointerup="PointerUp"
+	@onwheel="Wheel"
 	style="
 		position: fixed; top: 0; bottom: 0; left: 0; right: 0;
 		background-color: #808080;
 	"
 >
-	<div style="transform: translate(@(Canvas.x)px, @(Canvas.y)px);
+	<div style="
+		transform-origin: 0 0;
+		transform: scale(@Scale) translate(@(Canvas.x)px, @(Canvas.y)px);
 	">
 
 		<svg hidden="@(!drag)" style="

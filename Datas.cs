@@ -4,7 +4,7 @@ public class Vec {
 	public double x { get; set; }
 	public double y { get; set; }
 
-	public Vec(double x, double y) {
+	public Vec(double x = 0, double y = 0) {
 		this.x = x;
 		this.y = y;
 	}

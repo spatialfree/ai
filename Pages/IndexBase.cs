@@ -6,6 +6,10 @@ namespace ai;
 public class IndexBase : ComponentBase {
 	[Inject] protected Mono mono { get; set; } = default!;
 
+	protected override void OnInitialized() {
+		pointers = new Pointer[] { new Pointer(this), new Pointer(this) };
+	}
+
 	OpenAIClient API = default!;
 	protected bool ValidKey = false;
 	string apikey = "";
@@ -118,12 +122,12 @@ button {
 		},
 		new Scroll { 
 			pos = new Vec(20, 180), 
-			area = new Vec(210, 40),
+			area = new Vec(100, 40),
 			name = "read<p>",
 			text = "Say this is a {x}" 
 		},
 		new Scroll { 
-			pos = new Vec(20, 260), 
+			pos = new Vec(140, 180), 
 			area = new Vec(210, 200), 
 			name = "complete<p>", 
 			text = "" 
@@ -173,24 +177,35 @@ button {
 	}
 
 
-	DateTime lastDown = DateTime.Now;
 	protected void PointerMove(PointerEventArgs e) {
-		// Console.WriteLine($"PointerMove {e.PointerId}");
-		if (e.PointerId != pointerId) return;
-		Cursor = new Vec(e.ClientX, e.ClientY);
+		for (int i = 0; i < pointers.Length; i++) {
+			if (e.PointerId == pointers[i].id)
+				pointers[i].Move(e.ClientX, e.ClientY);
+		}
+
+
+
+
+		if (e.PointerId != pointers[0].id) return;
+
+
 
 
 		Scroll scroll = TopScroll;
 
 		if (drag) {
-			Canvas = Cursor + canvasOffset;
+			Canvas = pointers[0].screen + canvasOffset;
 			Canvas.x = (int)Canvas.x;
 			Canvas.y = (int)Canvas.y;
+
+			// pinch zoom is always more complicated than it seems
+
+
 		} else if (held) { 
-			Vec newPos = LocalCursor + offset;
+			Vec newPos = pointers[0].canvas + offset;
 			scroll.pos = newPos.Stepped();
 		} else if (pull) {
-			Vec newArea = (LocalCursor + offset) - Corners(scroll)[0];
+			Vec newArea = (pointers[0].canvas + offset) - Corners(scroll)[0];
 			newArea -= new Vec(0, 15);
 
 			cull = newArea.x < 0 && newArea.y < 0;
@@ -204,21 +219,18 @@ button {
 	}
 
 	protected void PointerDown(PointerEventArgs e) {
-		// Console.WriteLine($"PointerDown : {e.Button}");
-		if (down) return;
-		pointerId = e.PointerId;
-		down = true;
-
-		Cursor = new Vec(e.ClientX, e.ClientY);
-
-		TimeSpan time = DateTime.Now - lastDown;
-		bool doubleDown = (Cursor - oldCursor).Mag < 20 &&time.TotalMilliseconds < 500;
-		lastDown = DateTime.Now;
+		for (int i = 0; i < pointers.Length; i++) {
+			if (!pointers[i].dwn) {
+				pointers[i].Down(e.ClientX, e.ClientY, e.PointerId);
+				break;
+			}
+		}
+		if (!pointers[0].dwn) return;
 
 		for (int i = Scrolls.Count-1; i >= 0; i--) {
 			Scroll scroll = Scrolls[i];
 
-			Vec localPos = LocalCursor - scroll.pos;
+			Vec localPos = pointers[0].canvas - scroll.pos;
 			bool inXMin = localPos.x >= 0;
 			bool inXMax = localPos.x < scroll.area.x + 20;
 			int x = (inXMin ? 0 : -1) + (inXMax ? 0 : 1);
@@ -234,48 +246,47 @@ button {
 			if (inXMin && inXMax && inYMin && inYMax) {
 				if (Loading || !edit) return;
 
-
-				oldPos = scroll.pos;
-
 				// Lift
 				if (Scrolls.Count > 1) {
 					Scrolls.RemoveAt(i);
 					Scrolls.Add(scroll);
 				}
 
-				if ((LocalCursor - Corners(scroll)[2]).Mag < 30.0) {
+				if ((pointers[0].canvas - Corners(scroll)[2]).Mag < 30.0) {
 					offset = new Vec(0, 0);
 					pull = true;
 				} else {
-					offset = scroll.pos - LocalCursor;
+					offset = scroll.pos - pointers[0].canvas;
 					held = true;
 				}
-
 
 				StateHasChanged();
 				return;
 			}
 		}
 
-		if (edit && doubleDown) {
+		if (edit && pointers[0].dbl) {
 			Scroll newScroll = new Scroll();
-			newScroll.pos = LocalCursor.Stepped();
+			newScroll.pos = pointers[0].canvas.Stepped();
 			newScroll.area = new Vec(60, 20);
 			offset = new Vec(0, 0);
 			pull = true;
 			Scrolls.Add(newScroll);
 		} else {
-			canvasOffset = Canvas - Cursor;
+			canvasOffset = Canvas - pointers[0].screen;
 			drag = true;
 		}
 	}
 
 	protected void PointerUp(PointerEventArgs e) {
-		// Console.WriteLine($"PointerUp : {e.Button}");
-		if (e.PointerId != pointerId) return;
-		down = false;
-		// Console.WriteLine(e.PointerId);
-		Cursor = new Vec(e.ClientX, e.ClientY);
+		for (int i = 0; i < pointers.Length; i++) {
+			if (e.PointerId == pointers[i].id) {
+				pointers[i].Up();
+				break;
+			}
+		}
+
+		if (e.PointerId != pointers[0].id) return;
 
 		if (cull) {
 			if (Scrolls.Count <= 2) {
@@ -287,23 +298,50 @@ button {
 			// Console.WriteLine("CULL");
 		} 
 
-		oldCursor = Cursor;
 		drag = held = pull = cull = false;
 		StateHasChanged();
 	}
 
-	Vec oldCursor = new Vec(0, 0);
-	Vec Cursor 		= new Vec(0, 0);
-	Vec LocalCursor { get { return Cursor - Canvas; } }
+	Pointer[] pointers = new Pointer[2];
+	class Pointer {
+		IndexBase index;
+		public Pointer(IndexBase index) {
+			this.index = index;
+		}
+
+		public long id = -1;
+		public Vec screen = new Vec();
+		public Vec canvas { get { return screen - index.Canvas; } }
+
+		public bool dwn = false;
+		public bool dbl = false;
+		DateTime lastDown = DateTime.Now;
+		public void Down(double x, double y, long id) {
+			screen = new Vec(x, y);
+			this.id = id;
+
+			TimeSpan time = DateTime.Now - lastDown;
+			dbl = (screen - lastUp).Mag < 20 && time.TotalMilliseconds < 500;
+			lastDown = DateTime.Now;
+			dwn = true;
+		}
+
+		public void Move(double x, double y) {
+			screen = new Vec(x, y);
+		}
+
+		public Vec lastUp = new Vec();
+		public void Up() {
+			lastUp = screen;
+
+			dwn = false;
+		}
+	}
 
 	Vec offset = new Vec(0, 0);
+
 	Vec canvasOffset = new Vec(0, 0);
 	protected Vec Canvas = new Vec(0, 0);
-
-	Vec oldPos = new Vec(0, 0); // vague variable name 
-	
-	bool down = false;
-	long pointerId = -1;
 
 	protected bool drag = false;
 	protected bool held = false;

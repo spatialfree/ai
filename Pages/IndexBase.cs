@@ -177,26 +177,45 @@ button {
 	}
 
 	protected void Wheel(WheelEventArgs e) {
-		canvasOffset = Canvas - (pointers[0].screen / Scale);
-		Scale -= e.DeltaY / 1000;
+		Zoom(pointers[0].screen, Scale - (e.DeltaY / 1000));
+	}
+
+	void Zoom(Vec center, double newScale) {
+		canvasOffset = Canvas - (center / Scale);
+		Scale = newScale;
 		Scale = Math.Clamp(Scale, 0.1, 2);
 
-		// scale around pointer[0]
-		Vec newCanvas = (pointers[0].screen / Scale) + canvasOffset;
+		// scale around center
+		Vec newCanvas = (center / Scale) + canvasOffset;
 		newCanvas.x = (int)newCanvas.x;
 		newCanvas.y = (int)newCanvas.y;
 		Canvas = newCanvas;
-		// this is close, but the first time you zoom in, it zooms in on the center of the screen
+		StateHasChanged();
 	}
 
 	protected void PointerMove(PointerEventArgs e) {
 		for (int i = 0; i < pointers.Length; i++) {
-			if (e.PointerId == pointers[i].id)
+			if (e.PointerId == pointers[i].id) {
 				pointers[i].Move(e.ClientX, e.ClientY);
+				break;
+			}
 		}
 
+		if (drag) {
+			Canvas = (pointers[0].screen / Scale) + canvasOffset;
+			Canvas.x = (int)Canvas.x;
+			Canvas.y = (int)Canvas.y;
+		}
 
-
+		// pinch zoom
+		if (pointers[0].dwn && pointers[1].dwn) {
+			Vec newDelta = pointers[0].screen - pointers[1].screen;
+			double newScale = oldScale * (newDelta.Mag / pointerDelta.Mag);
+			Zoom(
+				pointers[0].screen,
+				newScale
+			);
+		}
 
 		if (e.PointerId != pointers[0].id) return;
 
@@ -206,12 +225,6 @@ button {
 		Scroll scroll = TopScroll;
 
 		if (drag) {
-			Canvas = (pointers[0].screen / Scale) + canvasOffset;
-			Canvas.x = (int)Canvas.x;
-			Canvas.y = (int)Canvas.y;
-
-			// pinch zoom is always more complicated than it seems
-
 
 		} else if (held) { 
 			Vec newPos = pointers[0].canvas + offset;
@@ -233,11 +246,20 @@ button {
 	protected void PointerDown(PointerEventArgs e) {
 		for (int i = 0; i < pointers.Length; i++) {
 			if (!pointers[i].dwn) {
-				pointers[i].Down(e.ClientX, e.ClientY, e.PointerId);
+				pointers[i].Down(e.ClientX, e.ClientY, e.PointerId);			
 				break;
 			}
 		}
-		if (!pointers[0].dwn) return;
+
+		if (pointers[0].dwn && pointers[1].dwn) {
+			pointerDelta = pointers[0].screen - pointers[1].screen;
+			oldScale = Scale;
+
+			canvasOffset = Canvas - (pointers[0].screen / Scale);
+			drag = true;
+		}
+
+		if (!pointers[0].dwn || pointers[1].dwn) return;
 		// Console.WriteLine($"screen {pointers[0].screen}\ncanvas {pointers[0].canvas}\n");
 
 		for (int i = Scrolls.Count-1; i >= 0; i--) {
@@ -301,6 +323,12 @@ button {
 			}
 		}
 
+		if (pointers[1].dwn) {
+			pointers[0] = pointers[1];
+			pointers[1] = new Pointer(this);
+			canvasOffset = Canvas - (pointers[0].screen / Scale);
+		}
+
 		if (e.PointerId != pointers[0].id) return;
 
 		if (cull) {
@@ -318,12 +346,14 @@ button {
 	}
 
 	Pointer[] pointers = new Pointer[2];
+	Vec pointerDelta = new Vec();
 
 	Vec offset = new Vec(0, 0);
 
 	Vec canvasOffset = new Vec(0, 0);
 	public Vec Canvas = new Vec(0, 0);
-	public double Scale = 1.5;
+	public double Scale = 1;
+	double oldScale = 1;
 
 	protected bool drag = false;
 	protected bool held = false;

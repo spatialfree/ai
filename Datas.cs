@@ -59,6 +59,24 @@ public class Scroll {
 
 	// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
 
+	public bool Contains(Vec pointer) {
+		Vec localPos = pointer - pos;
+		bool inXMin = localPos.x >= 0;
+		bool inXMax = localPos.x < area.x + 20;
+		int x = (inXMin ? 0 : -1) + (inXMax ? 0 : 1);
+
+		bool inYMin = localPos.y >= 0;
+		bool inYMax = localPos.y < area.y + 40;
+		int y = (inYMin ? 0 : -1) + (inYMax ? 0 : 1);
+		// print 0 for inside both and - for outside min and + for outside max
+		// if (scroll == TopScroll) {
+		// 	string xstr = x == 0 ? "0" : x < 0 ? "-" : "+";
+		// 	string ystr = y == 0 ? "0" : y < 0 ? "-" : "+";
+		// 	Console.WriteLine($"{xstr}{ystr} {(int)pointers[0].canvas.x - scroll.pos.x}");
+		// }
+		return inXMin && inXMax && inYMin && inYMax;
+	}
+
 	string RandomColor() {
 		Random random = new Random();
 		int v = 255;

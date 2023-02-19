@@ -124,20 +124,19 @@ img {
 .scroll input {
 	touch-action: pan-x;
 	overflow-x: scroll;
-	border-radius: 10px 10px 0 0;
+	/* border-radius: 10px 10px 0 0; */
+	border-radius: 0;
 	width: 100%;
-	height: calc(30px - 2px);
-	/* height: 30px; */
+	height: 30px;
 	padding: 0px 10px;
 	text-align: center;
 	font-size: 15px; line-height: 15px;
 	font-weight: 700;
-	border-bottom: 2px solid #80808080;
 	background-color: rgb(64, 64, 64);
 	color: white;
 }
 .scroll textarea {
-	border-radius: 0 0 10px 10px;
+	/* border-radius: 0 0 10px 10px; */
 
 	resize: none; 
 	overflow-y: scroll;
@@ -145,6 +144,7 @@ img {
 	padding: 5px 10px;
 
 	font-size: 12px; line-height: 15px;
+	background: none;
 }
 
 .stroke-scroll {

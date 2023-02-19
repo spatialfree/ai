@@ -42,40 +42,15 @@
 		transform-origin: 0 0;
 		transform: scale(@Scale) translate(@(Canvas.x)px, @(Canvas.y)px);
 	">
-
-		<svg hidden="@(!drag)" style="
-			pointer-events: none;
-			position: fixed;
-			top: -5000px; bottom: 0; left: -5000px; right: 0;
-			width: 10000px; height: 10000px;
-			stroke: rgb(124, 126, 128);
-			fill: none;
-		">
-		@for (int i = 0; i < 15; i++) {
-			<circle cx="5000" cy="5000" r="@((i * 200) + (i * i * 10))" stroke-width="@(100 + (i * i * 2))px" />
-		}
-		</svg>
-
 	@foreach (var (scroll, index) in Scrolls.Select((scroll, index) => (scroll, index))) {
 		<CScroll Data="@scroll" Index="@index" Top="@(index == Scrolls.Count-1)" Next="@(index == Scrolls.Count-2)" Edit="@edit" Held="@held" Pull="@pull" Cull="@cull" />
 	}
-		<svg style="
-			pointer-events: none;
-			position: fixed;
-			top: -5000px; bottom: 0; left: -5000px; right: 0;
-			width: 10000px; height: 10000px;
-			stroke: #808080;
-			stroke-width: 2px;
-			@* stroke-linecap: round; *@
+		<div class="scroll" style="
+			transform: translate(@(NextScroll.pos.x + NextScroll.area.x + 19)px, @(NextScroll.pos.y + 10)px);
+			width: 10px; height: 10px;
+			background-color: @(NextScroll.color);
 		">
-			@* line between *@
-			<g style="transform: translate(5000px, 5000px);">
-				<line stroke="rgb( 64, 128, 256)" stroke-width="10px" stroke-linecap="round" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
-				<line stroke="rgb(256, 128,  64)" stroke-width="6px" class="stroke-scroll" stroke-dasharray="2 2" x1="@(Closest[0].x)" y1="@(Closest[0].y)" x2="@(Closest[1].x)" y2="@(Closest[1].y)" />
-				<circle fill="white" stroke="none" r="3" cx="@(Closest[0].x)" cy="@(Closest[0].y)" />
-				<circle fill="black" stroke="none" r="3" cx="@(Closest[1].x)" cy="@(Closest[1].y)" />
-			</g>
-		</svg>
+		</div>
 	</div>
 </div>
 

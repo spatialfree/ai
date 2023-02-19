@@ -1,33 +1,28 @@
 <div class="scroll" style="
   transform: translate(@(Data.pos.x)px, @(Data.pos.y)px);
+  background-color: @(Top && Cull ? "red" : (Edit ? "black" : "white"));
 ">
   <input @bind="Data.name" @bind:event="oninput" type="text" class="@(Edit ? "no-select" : "")" style="
     width: @(Data.area.x)px;
 	  background-color: @(Top && Cull ? "red" : Data.color);
   " />
-  <textarea @bind="Data.text" @bind:event="oninput" class="contents @(Edit ? "no-select" : "")" style="
-    width: @(Data.area.x)px; height: @(Data.area.y)px; 
-    background-color: @(Top && Cull ? "red" : "white");
-    color: @(Top && Cull ? "white" : "black");
-  "></textarea>
-
 
   <div style="
     pointer-events: none; user-select: none;
-    position: fixed;
-    background-color: #80808040;
-    left: 33.33%; right: 33.33%; bottom: 4px;
+    position: absolute; left: 33.33%; right: 33.33%; bottom: 4px;
+    background-color: @(Edit ? "#333" : "#eee");
     height: 2px;
-    border-radius: 2px;
+    z-index: -1;
   "></div>
+  <textarea @bind="Data.text" @bind:event="oninput" class="contents @(Edit ? "no-select" : "")" style="
+    width: @(Data.area.x)px; height: @(Data.area.y)px; 
+    color: @(Top && Cull || Edit ? "white" : "black");
+  "></textarea>
+
 
   <div hidden="@(!Edit)" style="
     user-select: none; moz-user-select: none; -webkit-user-select: none;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background-color:  @(Top && Held ? "#00000010" : "#00000080");
-    outline: 2px solid @(Top && Pull ? "#ffffffff" : "#ffffff80");
-    outline-offset: -2px;
-    border-radius: 10px;
   ">
   @* each corner? *@
     <div style="
@@ -36,7 +31,6 @@
       background-color: white; 
       width:  10px; 
       height: 10px;
-      border-radius: 5px;
     "></div>
   </div>
 </div>

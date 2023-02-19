@@ -112,7 +112,7 @@ button {
 			pos = new Vec(150, 80),
 			area = new Vec(80, 20),
 			name = "x<input>",
-			text = "mario"
+			text = "mario!"
 		},
 		new Scroll { 
 			pos = new Vec(280, 80),
@@ -177,13 +177,23 @@ button {
 	}
 
 	protected void Wheel(WheelEventArgs e) {
-		Zoom(pointers[0].screen, Scale - (e.DeltaY / 1000));
+		// if not over scroll, zoom
+		bool clear = true;
+		foreach (Scroll scroll in Scrolls) {
+			if (scroll.Contains(pointers[0].canvas)) {
+				clear = false;
+				break;
+			}
+		}
+
+		if (clear)
+			Zoom(pointers[0].screen, Scale - (e.DeltaY / 1000));
 	}
 
 	void Zoom(Vec center, double newScale) {
 		canvasOffset = Canvas - (center / Scale);
 		Scale = newScale;
-		Scale = Math.Clamp(Scale, 0.1, 2);
+		Scale = Math.Clamp(Scale, 0.1, 1);
 
 		// scale around center
 		Vec newCanvas = (center / Scale) + canvasOffset;
@@ -203,8 +213,8 @@ button {
 
 		if (drag) {
 			Canvas = (pointers[0].screen / Scale) + canvasOffset;
-			Canvas.x = (int)Canvas.x;
-			Canvas.y = (int)Canvas.y;
+			// Canvas.x = (int)Canvas.x;
+			// Canvas.y = (int)Canvas.y;
 		}
 
 		// pinch zoom
@@ -265,22 +275,7 @@ button {
 		for (int i = Scrolls.Count-1; i >= 0; i--) {
 			Scroll scroll = Scrolls[i];
 
-			Vec localPos = pointers[0].canvas - scroll.pos;
-			bool inXMin = localPos.x >= 0;
-			bool inXMax = localPos.x < scroll.area.x + 20;
-			int x = (inXMin ? 0 : -1) + (inXMax ? 0 : 1);
-
-			bool inYMin = localPos.y >= 0;
-			bool inYMax = localPos.y < scroll.area.y + 40;
-			int y = (inYMin ? 0 : -1) + (inYMax ? 0 : 1);
-
-			// print 0 for inside both and - for outside min and + for outside max
-			// if (scroll == TopScroll) {
-			// 	string xstr = x == 0 ? "0" : x < 0 ? "-" : "+";
-			// 	string ystr = y == 0 ? "0" : y < 0 ? "-" : "+";
-			// 	Console.WriteLine($"{xstr}{ystr} {(int)pointers[0].canvas.x - scroll.pos.x}");
-			// }
-			if (inXMin && inXMax && inYMin && inYMax) {
+			if (scroll.Contains(pointers[0].canvas)) {
 				if (Loading || !edit) return;
 
 				// Lift
@@ -340,6 +335,9 @@ button {
 			}
 			// Console.WriteLine("CULL");
 		} 
+
+		Canvas.x = (int)Canvas.x;
+		Canvas.y = (int)Canvas.y;
 
 		drag = held = pull = cull = false;
 		StateHasChanged();

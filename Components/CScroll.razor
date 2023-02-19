@@ -23,14 +23,17 @@
   <div hidden="@(!Edit)" style="
     user-select: none; moz-user-select: none; -webkit-user-select: none;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    @(Top && Pull ? "outline: 1px solid white;": "");
+    cursor: move;
   ">
   @* each corner? *@
-    <div style="
-      position: fixed;
-      right: 10px; bottom: 10px;
+    <div class="pull" style="
+      position: absolute;
+      right: 0px; bottom: 0px;
       background-color: white; 
-      width:  10px; 
-      height: 10px;
+      width:  30px; 
+      height: 30px;
+      cursor: nwse-resize;
     "></div>
   </div>
 </div>
@@ -46,7 +49,7 @@
 <div style="
   width: 1px; height: 1px;
   position: fixed;
-  transform: translate(@(Data.pos.x + Data.area.x + 20)px, @(Data.pos.y + Data.area.y + 40)px);
+  transform: translate(@(Data.pos.x + Data.area.x + 20)px, @(Data.pos.y + Data.area.y + 50)px);
   background-color: magenta;
   display: none;
 "></div>

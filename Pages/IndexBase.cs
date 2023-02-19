@@ -151,8 +151,8 @@ button {
 		Vec[] corners = new Vec[4];
 		corners[0] = scroll.pos + new Vec(inset, inset);
 		corners[1] = scroll.pos + new Vec(scroll.area.x + 20 - inset, inset);
-		corners[2] = scroll.pos + scroll.area + new Vec(20 - inset, 40 - inset);
-		corners[3] = scroll.pos + new Vec(inset, scroll.area.y + 40 - inset);
+		corners[2] = scroll.pos + scroll.area + new Vec(20 - inset, 50 - inset);
+		corners[3] = scroll.pos + new Vec(inset, scroll.area.y + 50 - inset);
 		return corners;
 	}
 	// closest corner pair for Top and Next Scroll
@@ -229,9 +229,6 @@ button {
 
 		if (e.PointerId != pointers[0].id) return;
 
-
-
-
 		Scroll scroll = TopScroll;
 
 		if (drag) {
@@ -241,7 +238,7 @@ button {
 			scroll.pos = newPos.Stepped();
 		} else if (pull) {
 			Vec newArea = (pointers[0].canvas + offset) - Corners(scroll)[0];
-			newArea -= new Vec(0, 15);
+			newArea -= new Vec(0, 25);
 
 			cull = newArea.x < 0 && newArea.y < 0;
 			
@@ -297,17 +294,27 @@ button {
 			}
 		}
 
-		if (edit && pointers[0].dbl) {
-			Scroll newScroll = new Scroll();
-			newScroll.pos = pointers[0].canvas.Stepped();
-			newScroll.area = new Vec(60, 20);
-			offset = new Vec(0, 0);
-			pull = true;
-			Scrolls.Add(newScroll);
-		} else {
-			canvasOffset = Canvas - (pointers[0].screen / Scale);
-			drag = true;
+		if (pointers[0].dbl) {
+			edit = !edit;
 		}
+
+		canvasOffset = Canvas - (pointers[0].screen / Scale);
+		drag = true;
+	}
+
+	public void PointerLong() {
+		if (edit) {
+			// pointers[0].dwn = false;
+			drag = pull = false;
+			held = true;
+			
+			Scroll newScroll = new Scroll();
+			newScroll.area = new Vec(60, 20);
+			newScroll.pos = pointers[0].canvas.Stepped() - newScroll.area - new Vec(0, 25);
+			offset = newScroll.pos - pointers[0].canvas;
+			Scrolls.Add(newScroll);
+			StateHasChanged();
+		} 
 	}
 
 	protected void PointerUp(PointerEventArgs e) {
@@ -343,7 +350,8 @@ button {
 		StateHasChanged();
 	}
 
-	Pointer[] pointers = new Pointer[2];
+	public Pointer[] pointers = new Pointer[2];
+	public Pointer MainPointer { get => pointers[0]; }
 	Vec pointerDelta = new Vec();
 
 	Vec offset = new Vec(0, 0);

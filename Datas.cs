@@ -49,10 +49,14 @@ public class Scroll {
 		area = scroll.area;
 	}
 	
+	// cloud
 	public string name;
 	public string taglessName => Regex.Replace(name, @"<[^>]*>", ""); 
 	public string text;
 	public string color;
+
+	// local
+	public bool edit = false;
 
 	public Vec pos;
 	public Vec area;

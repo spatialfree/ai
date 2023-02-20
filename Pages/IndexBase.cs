@@ -49,7 +49,7 @@ public class IndexBase : ComponentBase {
 		get { return pattern; }
 		set { 
 			pattern = value;
-			Cloud = pattern == mono.Pattern;
+			Cloud = pattern.Trim() == mono.Pattern;
 		}
 	}
 	protected bool Cloud = false;
@@ -270,15 +270,31 @@ button {
 		if (!pointers[0].dwn || pointers[1].dwn) return;
 		// Console.WriteLine($"screen {pointers[0].screen}\ncanvas {pointers[0].canvas}\n");
 
-		for (int i = Scrolls.Count-1; i >= 0; i--) {
-			Scroll scroll = Scrolls[i];
+		if (pointers[0].index == -1) {
+			if (pointers[0].dbl) {
+				drag = pull = false;
+				held = true;
+				
+				Scroll newScroll = new Scroll();
+				newScroll.area = new Vec(60, 20);
+				newScroll.pos = pointers[0].canvas.Stepped() - newScroll.area - new Vec(0, 25);
+				offset = newScroll.pos - pointers[0].canvas;
+				Scrolls.Add(newScroll);
+				StateHasChanged();
+			} else {
+				canvasOffset = Canvas - (pointers[0].screen / Scale);
+				drag = true;
+			}
+		} else {
+			Scroll scroll = Scrolls[pointers[0].index];
+			if (pointers[0].dbl) {
+				scroll.edit = !scroll.edit;
+			}
 
-			if (scroll.Contains(pointers[0].canvas)) {
-				if (Loading || !edit) return;
-
+			if (!scroll.edit) {
 				// Lift
 				if (Scrolls.Count > 1) {
-					Scrolls.RemoveAt(i);
+					Scrolls.RemoveAt(pointers[0].index);
 					Scrolls.Add(scroll);
 				}
 
@@ -289,33 +305,16 @@ button {
 					offset = scroll.pos - pointers[0].canvas;
 					held = true;
 				}
-
-				StateHasChanged();
-				return;
 			}
+			StateHasChanged();
 		}
-
-		if (pointers[0].dbl) {
-			edit = !edit;
-		}
-
-		canvasOffset = Canvas - (pointers[0].screen / Scale);
-		drag = true;
 	}
 
 	public void PointerLong() {
-		if (edit) {
-			// pointers[0].dwn = false;
-			drag = pull = false;
-			held = true;
-			
-			Scroll newScroll = new Scroll();
-			newScroll.area = new Vec(60, 20);
-			newScroll.pos = pointers[0].canvas.Stepped() - newScroll.area - new Vec(0, 25);
-			offset = newScroll.pos - pointers[0].canvas;
-			Scrolls.Add(newScroll);
-			StateHasChanged();
-		} 
+		for (int i = Scrolls.Count-1; i >= 0; i--) {
+			Scrolls[i].edit = false;
+		}
+		StateHasChanged();
 	}
 
 	protected void PointerUp(PointerEventArgs e) {
@@ -367,8 +366,6 @@ button {
 	protected bool pull = false;
 	protected bool cull = false;
 
-	protected bool edit  = false;
-
 
 	protected bool Loading = false;
 	protected bool Error = false;
@@ -379,7 +376,6 @@ button {
 			Loading = false;
 		} else {
 			Loading = true;
-			edit = false;
 			stream = "";
 			await Read(NextScroll);
 			// Console.WriteLine(stream);

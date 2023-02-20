@@ -10,16 +10,15 @@
 * {
 	/* all: unset; */
 	font-family: 'Atkinson Hyperlegible', Helvetica, Arial, sans-serif;
+	text-rendering: optimizeLegibility;
 	-webkit-tap-highlight-color: transparent;
 	touch-action: none;
-	/* border-radius: 1px; */
 	border: none;
 	outline: none;
 	font-size: 14px;
 	margin: 0;
 	padding: 0;
 	display: block;
-	text-rendering: optimizeLegibility;
 }
 
 html, body {

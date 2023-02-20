@@ -1,8 +1,8 @@
 <div class="scroll" style="
   transform: translate(@(Data.pos.x)px, @(Data.pos.y)px);
-  background-color: @(Top && Cull ? "red" : (Edit ? "black" : "white"));
+  background-color: @(Top && Cull ? "red" : (Edit ? "white" : "black"));
 ">
-  <input @bind="Data.name" @bind:event="oninput" type="text" class="@(Edit ? "no-select" : "")" style="
+  <input @bind="Data.name" @bind:event="oninput" type="text" class="@(!Edit ? "no-select" : "")" style="
     width: @(Data.area.x)px;
 	  background-color: @(Top && Cull ? "red" : Data.color);
   " />
@@ -10,17 +10,17 @@
   <div style="
     pointer-events: none; user-select: none;
     position: absolute; left: 33.33%; right: 33.33%; bottom: 4px;
-    background-color: @(Edit ? "#333" : "#eee");
+    background-color: @(Edit ? "#eee" : "#333");
     height: 2px;
     z-index: -1;
   "></div>
-  <textarea @bind="Data.text" @bind:event="oninput" class="contents @(Edit ? "no-select" : "")" style="
+  <textarea @bind="Data.text" @bind:event="oninput" class="contents @(!Edit ? "no-select" : "")" style="
     width: @(Data.area.x)px; height: @(Data.area.y)px; 
-    color: @(Top && Cull || Edit ? "white" : "black");
+    color: @(Top && Cull || Edit ? "black" : "white");
   "></textarea>
 
 
-  <div hidden="@(!Edit)" style="
+  <div hidden="@(Edit)" style="
     user-select: none; moz-user-select: none; -webkit-user-select: none;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     @(Top && Pull ? "outline: 1px solid white;": "");
@@ -37,9 +37,11 @@
       <div style="
         position: absolute;
         right: 10px; bottom: 10px;
-        width:  10px; 
-        height: 10px;
+        width:  5px; 
+        height: 5px;
         background-color: white;
+
+        rotate: 45deg;
       "></div>
     </div>
   </div>
@@ -78,7 +80,9 @@
     return color;
   }}
 
-  [Parameter] public bool Edit { get; set; }
+  public bool Edit { 
+    get { return Data.edit; }
+  }
   [Parameter] public bool Held { get; set; }
   [Parameter] public bool Pull { get; set; }
   [Parameter] public bool Cull { get; set; }

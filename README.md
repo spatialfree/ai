@@ -12,6 +12,7 @@ to
     on demand memory
 
   Scrolls
+    cascading completions
     user created
     expandable
     inline data connections
@@ -70,6 +71,7 @@ pos = from + direction * works
     local insances (in memory)
     one cloud shared instance
   Scrolls
+    edit text/shape
     customizable
     dynamic
     inline references

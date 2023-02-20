@@ -37,7 +37,6 @@
 	@onwheel="Wheel" 
 	style="
 	 	user-select: none;
-		pointer-events: all;
 		position: fixed; top: 0; bottom: 0; left: 0; right: 0;
 		background-color: #606060;
 	"
@@ -55,7 +54,7 @@
 		"></div>
 
 	@foreach (var (scroll, index) in Scrolls.Select((scroll, index) => (scroll, index))) {
-		<CScroll Data="@scroll" Index="@index" Top="@(index == Scrolls.Count-1)" Next="@(index == Scrolls.Count-2)" Edit="@edit" Held="@held" Pull="@pull" Cull="@cull" />
+		<CScroll Data="@scroll" Index="@index" Top="@(index == Scrolls.Count-1)" Next="@(index == Scrolls.Count-2)" Held="@held" Pull="@pull" Cull="@cull" />
 	}
 	
 		<div style="
@@ -76,7 +75,7 @@
 		"></div>
 	</div>
 	@* lng-click *@
-	<div class="lng-click" hidden="@(!edit || !MainPointer.clear || !MainPointer.dwn)" style="
+	<div class="lng-click" hidden="@(MainPointer.index != -1 || !MainPointer.dwn)" style="
 		pointer-events: none;
 		user-select: none;
 		position: absolute;
@@ -163,6 +162,9 @@
 </div>
 
 @* - - - - - - - - - - - - - - - HUD - - - - - - - - - - - - - - - *@
+
+@* compass *@
+
 
 <div @onclick="() => Menu = !Menu" hidden="@(!ValidKey || Page)" disabled="@Loading" class="btn" style="
 		position: fixed;

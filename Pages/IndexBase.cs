@@ -32,9 +32,10 @@ public class IndexBase : ComponentBase {
 			await endpoint.CreateEmbeddingAsync("TryKey");
 			ValidKey = true;
 		}
-		catch {
+		catch(Exception ex) {
 			API = default!;
 			ValidKey = false;
+			Console.WriteLine($"{Prompter} apikey ex: {ex.Message}");
 		}
 
 		Loading = false;
@@ -381,7 +382,7 @@ button {
 			edit = false;
 			stream = "";
 			await Read(NextScroll);
-			Console.WriteLine(stream);
+			// Console.WriteLine(stream);
 
 			if (!Loading) return;
 			await Complete(stream);
@@ -456,7 +457,7 @@ button {
 			}
 			Console.WriteLine(tokens);
 
-			// Console.WriteLine($"{DateTime.Now.ToShortTimeString()} ++ {Prompter}");
+			// Console.WriteLine($"++ {Prompter}");
 		}
 		catch (Exception ex) {
 			Loading = true;
@@ -465,7 +466,7 @@ button {
 			await Task.Delay(2000);
 			Error = false;
 
-			Console.WriteLine($"{DateTime.Now.ToShortTimeString()} -- {Prompter} : {ex.Message}");
+			Console.WriteLine($"-- {Prompter} : {ex.Message}");
 		}
 
 		if (TopScroll.text == "") {

@@ -56,23 +56,7 @@
 	@foreach (var (scroll, index) in Scrolls.Select((scroll, index) => (scroll, index))) {
 		<CScroll Data="@scroll" Index="@this" Top="@(index == Scrolls.Count-1)" Next="@(index == Scrolls.Count-2)" Held="@held" Pull="@pull" Cull="@cull" />
 	}
-	
-		@* <div style="
-			pointer-events: none;
-			user-select: none;
-			position: absolute;
-			transform: translate(@(NextScroll.pos.x + NextScroll.area.x + 15)px, @(NextScroll.pos.y + 10)px);
-			width: 10px; height: 10px;
-			background-color: black;
-		"></div>
-		<div style="
-			pointer-events: none;
-			user-select: none;
-			position: absolute;
-			transform: translate(@(TopScroll.pos.x - 3)px, @(TopScroll.pos.y + 12)px);
-			width: 6px; height: 6px;
-			background-color: white;
-		"></div> *@
+
 	</div>
 	@* lng-click *@
 	<div class="lng-click" hidden="@(MainPointer.index != -1 || !MainPointer.dwn)" style="
@@ -127,6 +111,49 @@
 	<br>
 	<br>
 
+	<div hidden="@(!ValidKey)" style="text-align: center; color: white;">
+		<div class="row">
+			<div class="limit">&nbsp;&nbsp;16</div>
+			<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
+			<div class="limit">2048</div>
+		</div>
+		<br>
+		<img class="icon" src="svg-icons/text.svg" />
+		<br>
+
+		@* <img class="icon" src="svg-icons/pulse.svg" />
+		<br>
+		<div class="row">
+			<div class="limit">0</div>
+			<input @bind="Temperature" type="range" min="0" max="1" step="0.01" />
+			<div class="limit">1</div>
+		</div>
+		<br>
+		<br>
+
+		<img class="icon" src="svg-icons/contrast.svg" />
+		<br>
+		<div class="row">
+			<div class="limit">- 2</div>
+			<input @bind="Contrast" type="range" min="-1.9" max="1.9" step="0.1" />
+			<div class="limit">2</div>
+		</div>
+		<br>
+		<br>
+
+		<img class="icon" src="svg-icons/loop-circular.svg" />
+		<br>
+		<div class="row">
+			<div class="limit">- 2</div>
+			<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
+			<div class="limit">2</div>
+		</div> *@
+		
+	</div>
+	<br>
+	<br>
+	<br>
+
 	@* Welcome *@
 	<div hidden="@(ValidKey)">
 		<img src="res/logo.svg" style="width: 100px;" />
@@ -162,9 +189,6 @@
 </div>
 
 @* - - - - - - - - - - - - - - - HUD - - - - - - - - - - - - - - - *@
-
-@* compass *@
-
 
 <div @onclick="() => Menu = !Menu" hidden="@(!ValidKey || Page)" disabled="@Loading" class="btn" style="
 		position: fixed;
@@ -253,52 +277,5 @@ Only Shift-Enter
 		");
 	}
 }
-
-
-
-
-	Model Paramaters
-	<div hidden="@(!ValidKey)" style="text-align: center; color: white;">
-		<div class="row">
-			<div class="limit">&nbsp;&nbsp;16</div>
-			<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
-			<div class="limit">2048</div>
-		</div>
-		<br>
-		<img class="icon" src="svg-icons/text.svg" />
-		<br>
-
-		<img class="icon" src="svg-icons/pulse.svg" />
-		<br>
-		<div class="row">
-			<div class="limit">0</div>
-			<input @bind="Temperature" type="range" min="0" max="1" step="0.01" />
-			<div class="limit">1</div>
-		</div>
-		<br>
-		<br>
-
-		<img class="icon" src="svg-icons/contrast.svg" />
-		<br>
-		<div class="row">
-			<div class="limit">- 2</div>
-			<input @bind="Contrast" type="range" min="-1.9" max="1.9" step="0.1" />
-			<div class="limit">2</div>
-		</div>
-		<br>
-		<br>
-
-		<img class="icon" src="svg-icons/loop-circular.svg" />
-		<br>
-		<div class="row">
-			<div class="limit">- 2</div>
-			<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
-			<div class="limit">2</div>
-		</div>
-		
-	</div>
-	<br>
-	<br>
-	<br>
 
 *@

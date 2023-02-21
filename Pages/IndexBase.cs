@@ -74,6 +74,7 @@ p {
 }
 input {
   display: block; 
+	width: -webkit-fill-available;
   margin: 10px 0; padding: 5px;
   border-bottom: 1px solid black;
 }

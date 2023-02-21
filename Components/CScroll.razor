@@ -23,16 +23,18 @@
   <div hidden="@(Edit)" style="
     user-select: none; moz-user-select: none; -webkit-user-select: none;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    @(Top && Pull ? "outline: 1px solid white;": "");
-    @(Top && Held ? "outline: 1px solid black;": "");
+    outline-offset: -2px;
+    @(Top && Pull ? "outline: 2px solid white;": "");
+    @(Top && Held ? "outline: 2px solid #808080;": "");
+
     cursor: move;
   ">
     <div hidden="@(!Data.executable)" @onclick="(e) => Index.Run(Data)" style="
       position: absolute;
       user-select: all;
       transform: translate(0px, 0px);
-      @(Data.executable ? "outline: 1px solid white;": "");
-      outline-offset: -1px;
+      outline-offset: -2px;
+      @(Data.executable ? "outline: 2px solid white;": "");
       height: 30px; width: 100%;
     "></div>
 

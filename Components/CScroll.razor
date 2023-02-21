@@ -7,13 +7,13 @@
 	  background-color: @(Top && Cull ? "red" : Data.color);
   " />
 
-  <div style="
+  @* <div style="
     pointer-events: none; user-select: none;
     position: absolute; left: 33.33%; right: 33.33%; bottom: 4px;
     background-color: @(Edit ? "#eee" : "#333");
     height: 2px;
     z-index: -1;
-  "></div>
+  "></div> *@
   <textarea @bind="Data.text" @bind:event="oninput" class="contents @(!Edit ? "no-select" : "")" style="
     width: @(Data.area.x)px; height: @(Data.area.y)px; 
     color: @(Top && Cull || Edit ? "black" : "white");
@@ -24,50 +24,41 @@
     user-select: none; moz-user-select: none; -webkit-user-select: none;
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     @(Top && Pull ? "outline: 1px solid white;": "");
+    @(Top && Held ? "outline: 1px solid black;": "");
     cursor: move;
   ">
-  @* each corner? *@
-    <div class="pull" style="
+    <div hidden="@(!Data.executable)" @onclick="(e) => Index.Run(Data)" style="
       position: absolute;
-      right: 0px; bottom: 0px;
+      user-select: all;
+      transform: translate(0px, 0px);
+      @(Data.executable ? "outline: 1px solid white;": "");
+      outline-offset: -1px;
+      height: 30px; width: 100%;
+    "></div>
+
+    <div class="pull" style="
+      transform: translate(@(Data.area.x - 10)px, @(Data.area.y + 20)px);
       width:  30px; 
       height: 30px;
       cursor: nwse-resize;
     ">
       <div style="
-        position: absolute;
-        right: 10px; bottom: 10px;
+        transform: translate(20px, 20px);
         width:  5px; 
         height: 5px;
-        background-color: white;
-
-        rotate: 45deg;
+        background-color: #808080;
       "></div>
     </div>
   </div>
+
+
 </div>
-
-
-<div style="
-  width: 1px; height: 1px;
-  position: fixed;
-  transform: translate(@(Data.pos.x)px, @(Data.pos.y)px);
-  background-color: magenta;
-  display: none;
-"></div>
-<div style="
-  width: 1px; height: 1px;
-  position: fixed;
-  transform: translate(@(Data.pos.x + Data.area.x + 20)px, @(Data.pos.y + Data.area.y + 50)px);
-  background-color: magenta;
-  display: none;
-"></div>
 
 @code {
   [Parameter]
   public Scroll Data { get; set; } = new Scroll();
   [Parameter]
-  public int Index { get; set; }
+  public IndexBase Index { get; set; }
 
   [Parameter] public bool Top  { get; set; }
   [Parameter] public bool Next { get; set; }

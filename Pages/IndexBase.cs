@@ -104,34 +104,34 @@ button {
 
 	ObservableCollection<Scroll> scrolls { get; set; } = new() {
 		new Scroll { 
-			pos = new Vec(20, 80),
-			area = new Vec(80, 20),
 			name = "<h1>",
-			text = "Test" 
+			text = "Test",
+			pos = new Vec(20, 80),
+			area = new Vec(90, 20),
 		},
 		new Scroll { 
-			pos = new Vec(150, 80),
-			area = new Vec(80, 20),
-			name = "x<input>",
-			text = "mario!"
-		},
-		new Scroll { 
-			pos = new Vec(280, 80),
-			area = new Vec(100, 20),
-			name = "run<button>",
-			text = ""
-		},
-		new Scroll { 
-			pos = new Vec(20, 180), 
-			area = new Vec(100, 40),
 			name = "read<p>",
-			text = "Say this is a {x}" 
+			text = "Say this is a {x}",
+			pos = new Vec(20, 160), 
+			area = new Vec(210, 20),
 		},
 		new Scroll { 
-			pos = new Vec(140, 180), 
-			area = new Vec(210, 200), 
+			name = "x<input>",
+			text = "mario!",
+			pos = new Vec(20, 240),
+			area = new Vec(90, 20),
+		},
+		new Scroll { 
+			name = "say<button>",
+			text = "read><complete",
+			pos = new Vec(140, 240),
+			area = new Vec(90, 20),
+		},
+		new Scroll { 
 			name = "complete<p>", 
-			text = "" 
+			text = "",
+			pos = new Vec(20, 320), 
+			area = new Vec(210, 200), 
 		},
 	};
 	public ObservableCollection<Scroll> Scrolls {
@@ -193,14 +193,19 @@ button {
 
 	void Zoom(Vec center, double newScale) {
 		canvasOffset = Canvas - (center / Scale);
+
 		Scale = newScale;
 		Scale = Math.Clamp(Scale, 0.1, 1);
 
-		// scale around center
-		Vec newCanvas = (center / Scale) + canvasOffset;
-		newCanvas.x = (int)newCanvas.x;
-		newCanvas.y = (int)newCanvas.y;
-		Canvas = newCanvas;
+		Canvas = (center / Scale) + canvasOffset;
+		// snap to 10px grid if zoomed out
+		if (Scale == 0.1) {
+			Canvas.x = (int)(Canvas.x / 10) * 10;
+			Canvas.y = (int)(Canvas.y / 10) * 10;
+		} else {
+			Canvas.x = (int)Canvas.x;
+			Canvas.y = (int)Canvas.y;
+		}
 		StateHasChanged();
 	}
 
@@ -287,6 +292,8 @@ button {
 			}
 		} else {
 			Scroll scroll = Scrolls[pointers[0].index];
+			// print name, pos and area
+			Console.WriteLine($"{scroll.name}\npos  {scroll.pos}\narea {scroll.area}\n");
 			if (pointers[0].dbl) {
 				scroll.edit = !scroll.edit;
 			}
@@ -345,6 +352,11 @@ button {
 
 		Canvas.x = (int)Canvas.x;
 		Canvas.y = (int)Canvas.y;
+		// snap to 10px grid if zoomed out
+		if (Scale == 0.1) {
+			Canvas.x = (int)(Canvas.x / 10) * 10;
+			Canvas.y = (int)(Canvas.y / 10) * 10;
+		}
 
 		drag = held = pull = cull = false;
 		StateHasChanged();
@@ -368,20 +380,24 @@ button {
 
 
 	protected bool Loading = false;
+	// replace with scroll.running? as the important thing is that they don't overlap?
 	protected bool Error = false;
 
-	protected async Task Run() {
+	public async Task Run(Scroll scroll) {
 		if (Loading) {
 			// Cancel
 			Loading = false;
 		} else {
 			Loading = true;
+
+
+
 			stream = "";
-			await Read(NextScroll);
+			await Read(GetScroll(scroll.text.Split("><")[0]));
 			// Console.WriteLine(stream);
 
 			if (!Loading) return;
-			await Complete(stream);
+			await Complete(stream, GetScroll(scroll.text.Split("><")[1]));
 			Loading = false;
 		}
 	}
@@ -396,14 +412,14 @@ button {
 
 			scroll.text = text.Insert(i, "[").Insert(i+2, "]");
 			StateHasChanged();
-			await Task.Delay(50);
+			await Task.Delay(20);
 
 			if (text[i] == '{') { 
 				read = true; 
 				continue;
 			}
 			if (text[i] == '}') { 
-				await Read(GetScrollText(reference));
+				await Read(GetScroll(reference));
 				reference = "";
 				read = false; 
 				continue;
@@ -418,7 +434,7 @@ button {
 		StateHasChanged();
 	}
 
-	Scroll GetScrollText(string name) {
+	Scroll GetScroll(string name) {
 		foreach (Scroll scroll in Scrolls) {
 			if (scroll.taglessName.Trim().ToLower() == name.Trim().ToLower()) {
 				return scroll;
@@ -428,9 +444,9 @@ button {
 		return new Scroll();
 	}
 
-	protected async Task Complete(string prompt) {
-		string oldText = TopScroll.text;
-		TopScroll.text = "";
+	protected async Task Complete(string prompt, Scroll scroll) {
+		string oldText = scroll.text;
+		scroll.text = "";
 
 		try {
 			CompletionRequest request = new CompletionRequest();
@@ -446,8 +462,8 @@ button {
 			await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
 				if (!Loading) break;
 
-				TopScroll.text += token.Completions[0].Text;
-				TopScroll.text = TopScroll.text.TrimStart('\n');
+				scroll.text += token.Completions[0].Text;
+				scroll.text = scroll.text.TrimStart('\n');
 				tokens++;
 				StateHasChanged();
 			}
@@ -465,8 +481,8 @@ button {
 			Console.WriteLine($"-- {Prompter} : {ex.Message}");
 		}
 
-		if (TopScroll.text == "") {
-			TopScroll.text = oldText;
+		if (scroll.text == "") {
+			scroll.text = oldText;
 		}
 	}
 	protected int   MaxTokens   = 256;

@@ -67,7 +67,6 @@ works
 
 pos = from + direction * works
   Canvases
-    navigation rings
     local insances (in memory)
     one cloud shared instance
   Scrolls
@@ -76,6 +75,7 @@ pos = from + direction * works
     dynamic
     inline references
   Run
+    read><complete
     Read
       recursive reference parser
       rendered

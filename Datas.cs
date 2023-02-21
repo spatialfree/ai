@@ -55,6 +55,12 @@ public class Scroll {
 	public string text;
 	public string color;
 
+	public bool executable {
+		get {
+			return text.Contains("><"); // unoptimized
+		}
+	}
+
 	// local
 	public bool edit = false;
 

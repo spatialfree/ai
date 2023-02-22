@@ -20,7 +20,7 @@
 	white-space: pre;
 	width: -webkit-fill-available;
 	height: 200px;
-	margin-top: 100px; padding: 10px;
+	margin: 100px 0px; padding: 10px;
 	background-color: black; color: white; 
 	border-radius: 10px; outline: 2px solid black; outline-offset: 2px;
 	font-family: 'DM Mono', monospace; font-size: 12px;
@@ -38,7 +38,7 @@
 	style="
 	 	user-select: none;
 		position: fixed; top: 0; bottom: 0; left: 0; right: 0;
-		background-color: #606060;
+		background-color: #808080;
 	"
 >
 	<div style="
@@ -51,6 +51,8 @@
 			position: absolute;
 			width: @(Bounds.x)px; height: @(Bounds.y)px;
 			background-color: #808080;
+			outline: 10px solid #909090;
+			outline-offset: 0px;
 		"></div>
 
 	@foreach (var (scroll, index) in Scrolls.Select((scroll, index) => (scroll, index))) {
@@ -86,113 +88,95 @@
 	display: flex; 
 	position: fixed;
 	top: 0; bottom: 0; left: 0; right: 0;
-	background-color: #000000ee;
+	background-color: black;
+	color: white;
 	flex-flow: column; align-items: center; justify-content: center;
+	gap: 10px;
 	text-align: center;
+	overflow-y: auto;
+	height: 100vh;
 	">
 
-	@* Pattern Management *@
-	<div hidden="@(!ValidKey)">
-		<input @bind="Pattern" placeholder="Pattern" />
-		<br>
+	@* Welcome / Prompter Login *@
+	@if (!ValidKey) {
+		<img src="res/logo.svg" style="width: 100px;" />
+		<h1 style="background-color: #808080; padding: 5px 10px;">panda<span style="all: unset; display: inline; color: black;">prompt</span></h1>
+		<p style="color: white; width: 180px; margin: 0 auto;">Prompt patterning habitat.</p>
+		<footer>Developed by <a href="https://ethanmerchant.com">Ethan Merchant</a></footer>
 
+		<input @bind="Prompter" type="username" autocomplete="username" placeholder="Name" />
+		<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="Api Key" class="apikey" spellCheck=false />
+		<div @onclick="TryKey" class="btn">
+			<img class="@(TryingKey ? "spin" : "")" src="svg-icons/key.svg" />
+		</div>
+
+		<a href="https://beta.openai.com/account/api-keys" target="_blank">
+			Get OpenAI API Key
+		</a>
+	} else {
+		@* Pattern Management *@
 		<div class="btn-row">
-			<div @onclick="mono.Restore" disabled="@(!Cloud)" class="btn" style="background-color: transparent;">
+			<div @onclick="mono.Restore" disabled="@(!Cloud)" class="btn" style="background: transparent;">
 				<img src="svg-icons/cloud-download.svg" />
 				@(mono.Restored ? "Restored" : "Restore")
 			</div>
-			<div @onclick="mono.Record" disabled="@(!Cloud)" class="btn" style="background-color: transparent;">
+			<div @onclick="mono.Record" disabled="@(!Cloud)" class="btn" style="background: transparent;">
 				<img src="svg-icons/cloud-upload.svg" />
 				@(mono.Recorded ? "Recorded" : "Record")
 			</div>
 		</div>
-	</div>
-	<br>
-	<br>
-	<br>
+		<input @bind="Pattern" placeholder="Pattern" />
+		<div>&nbsp;</div>
 
-	<div hidden="@(!ValidKey)" style="text-align: center; color: white;">
-		<img class="icon" src="svg-icons/text.svg" />
-		<br>
-		<input @bind="MaxTokens" @bind:event="oninput" type="range" min="16" max="2048" step="2" />
-		<br>
-		<div style="">@MaxTokens</div>
-		<br>
-
-		@* <img class="icon" src="svg-icons/pulse.svg" />
-		<br>
 		<div class="row">
-			<div class="limit">0</div>
-			<input @bind="Temperature" type="range" min="0" max="1" step="0.01" />
-			<div class="limit">1</div>
+			<img class="icon" src="svg-icons/text.svg" />
+			<div>max tokens</div>
+			<div>@(MaxTokens.ToString("0000"))</div>
 		</div>
-		<br>
-		<br>
-
-		<img class="icon" src="svg-icons/contrast.svg" />
-		<br>
-		<div class="row">
-			<div class="limit">- 2</div>
-			<input @bind="Contrast" type="range" min="-1.9" max="1.9" step="0.1" />
-			<div class="limit">2</div>
+		<div>
+			<input @bind="MaxTokens" @bind:event="oninput" type="range" min="16" max="2048" step="2" />
 		</div>
-		<br>
-		<br>
+		<div>-</div>
 
-		<img class="icon" src="svg-icons/loop-circular.svg" />
-		<br>
 		<div class="row">
-			<div class="limit">- 2</div>
-			<input @bind="Repeat" type="range" min="-1.9" max="1.9" step="0.1" />
-			<div class="limit">2</div>
-		</div> *@
-		
-	</div>
-	<br>
-	<br>
-	<br>
+			<img class="icon" src="svg-icons/pulse.svg" />
+			<div>temperature</div>
+			<div>&nbsp;@Temperature.ToString("0.0")</div>
+		</div>
+		<div>
+			<input @bind="Temperature" @bind:event="oninput" type="range" min="0" max="1" step="0.01" />
+		</div>
+		<div>-</div>
 
-	@* Welcome *@
-	<div hidden="@(ValidKey)">
-		<img src="res/logo.svg" style="width: 100px;" />
-		<h1>prompturing</h1>
-		<p style="color: white; width: 180px; margin: 0 auto;">Your Turing-complete language model prompting environment.</p>
-	</div>
-	<br>
-	<br>
-	<br>
+		<div class="row">
+			<img class="icon" src="svg-icons/contrast.svg" />
+			<div>contrast</div>
+			<div>@Contrast.ToStringBias()</div>
+		</div>
+		<div>
+			<input @bind="Contrast" @bind:event="oninput" type="range" min="-2.0" max="2.0" step="0.1" />
+		</div>
+		<div>-</div>
 
-	@* Prompter Login *@
-	<input @bind="Prompter" type="username" autocomplete="username" placeholder="Name" />
-	<br>
-	<input @bind="ApiKey" type="password" autocomplete="current-password" placeholder="Api Key" class="apikey" spellCheck=false />
-	<br>
-	<div style="background-color: white; padding: 10px; border-radius: 20px;">
-		<img class="icon @(Loading ? "spin" : "")" src="svg-icons/key.svg" style="
-			filter: contrast(0%) sepia(30%) saturate(10000%) hue-rotate(@(ValidKey ? "110": "-30")deg);
-		" />
-	</div>
-	<br>
-	<a href="https://beta.openai.com/account/api-keys" target="_blank">
-		Get OpenAI API Key
-	</a>
-	<br>
-	<a href="https://beta.openai.com/docs/api-reference/completions/create" target="_blank">
-		Documentation
-	</a>
-	<br>
-	<br>
-	<br>
-	<footer>Developed by <a href="https://ethanmerchant.com">Ethan Merchant</a></footer>
+		<div class="row">
+			<img class="icon" src="svg-icons/loop-circular.svg" />
+			<div>cyclical</div>
+			<div>@Cyclical.ToStringBias()</div>
+		</div>
+		<div>
+			<input @bind="Cyclical" @bind:event="oninput" type="range" min="-2.0" max="2.0" step="0.1" />
+		</div>
+		<div>-</div>
+	}
 </div>
 
 @* - - - - - - - - - - - - - - - HUD - - - - - - - - - - - - - - - *@
 
-<div @onclick="() => Menu = !Menu" hidden="@(!ValidKey || Page)" disabled="@Loading" class="btn" style="
+<div @onclick="() => Menu = !Menu" hidden="@(!ValidKey || Page)" class="btn" style="
 		position: fixed;
-		top: 10px; left: 10px;
-		background-color: transparent;
-		filter: invert(@(!Menu ? 1 : 0.5));
+		bottom: 10px; left: 50%;
+		transform: translate(-50%, 0);
+		filter: invert(1);
 	">
 	<img src="svg-icons/menu.svg" />
 	<div hidden="@(!(Cloud && !mono.Synced))" style="
@@ -203,23 +187,46 @@
 	">*</div>
 </div>
 
-@* top middle *@
+<div @onclick="() => Page = !Page" hidden="@(!ValidKey || Menu)" class="btn" style="
+		position: fixed;
+		top: 10px; right: 10px;
+	">
+	<img src="svg-icons/eye.svg" style="
+		filter: invert(1);
+	"/>
+</div>
+
 <div style="
+	pointer-events: none;
+	user-select: none;
 	position: fixed;
-	bottom: 10px; left: 50%;
-	transform: translate(-50%, 0);
+	bottom: 10px; right: 10px;
 	background-color: #808080;
 	padding: 5px 10px;
 	font-family: 'DM Mono', monospace;
 ">@($"{Url}/{Prompter}")</div>
 
-<div @onclick="() => Page = !Page" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="
+
+@* docs *@
+<div hidden="@(!Compass)" style="
+	position: fixed;
+	top: 0; bottom: 0; left: 0; right: 0;
+	padding: 40px 10px;
+	background-color: white;
+	color: black;
+	tab-size: 4;
+	white-space: pre;
+	overflow-y: auto;
+	touch-action: pan-y pan-x;
+">@mono.compass</div>
+
+<div @onclick="() => Compass = !Compass" class="btn" style="
 		position: fixed;
-		top: 10px; right: 10px;
-		background-color: transparent;
+		top: 10px; left: 10px;
 	">
-	<img src="svg-icons/eye.svg" style="
-		filter: invert(@(Page ? 0.5 : 1));
+		@* point towards canvas using Vec.Direction *@
+	<img src="svg-icons/compass.svg" style="
+		transform: rotate(@(Canvas.Angle + 45)deg);
 	"/>
 </div>
 
@@ -234,9 +241,8 @@
 			<path d="M27.21,12.08c.67-2.01,.44-4.21-.63-6.04-1.61-2.8-4.85-4.24-8.01-3.57C17.16,.89,15.14-.01,13.02,0c-3.23,0-6.1,2.08-7.1,5.15-2.08,.43-3.87,1.73-4.92,3.57-1.62,2.8-1.25,6.32,.92,8.72-.67,2.01-.44,4.21,.63,6.03,1.61,2.81,4.85,4.25,8.02,3.58,1.4,1.58,3.42,2.49,5.54,2.48,3.23,0,6.1-2.08,7.1-5.15,2.08-.43,3.87-1.73,4.91-3.57,1.63-2.8,1.26-6.32-.91-8.72Zm-2.3-5.07c.64,1.12,.88,2.43,.66,3.7-.04-.03-.12-.07-.17-.1l-5.88-3.4c-.3-.17-.67-.17-.97,0l-6.89,3.98v-2.92l5.69-3.29c2.65-1.53,6.03-.62,7.56,2.03Zm-13.25,6.07l2.9-1.68,2.9,1.68v3.35l-2.9,1.68-2.9-1.68v-3.35ZM13.01,1.93c1.3,0,2.55,.45,3.55,1.28-.04,.02-.12,.07-.18,.1l-5.88,3.39c-.3,.17-.48,.49-.48,.84v7.96l-2.53-1.46V7.46c0-3.06,2.47-5.53,5.53-5.54ZM2.68,9.69h0c.65-1.12,1.66-1.98,2.88-2.43v6.99c0,.35,.18,.66,.48,.84l6.88,3.97-2.54,1.47-5.68-3.28c-2.64-1.53-3.55-4.91-2.02-7.56Zm1.55,12.83h0c-.65-1.11-.88-2.43-.66-3.7,.04,.03,.12,.07,.17,.1l5.88,3.4c.3,.17,.67,.17,.97,0l6.88-3.98v2.92l-5.69,3.28c-2.65,1.52-6.03,.62-7.56-2.02Zm11.89,5.08c-1.29,0-2.55-.45-3.54-1.28,.04-.02,.13-.07,.18-.1l5.88-3.39c.3-.17,.49-.49,.48-.84v-7.95l2.53,1.46v6.57c0,3.06-2.48,5.54-5.53,5.54Zm10.34-7.76c-.65,1.12-1.67,1.98-2.88,2.42v-6.99c0-.35-.18-.67-.48-.84h0l-6.89-3.98,2.53-1.46,5.69,3.28c2.65,1.53,3.55,4.91,2.02,7.56Z"></path>
 		</g>
 	</svg>
-</div> *@
+</div>
 
-@*  
 <div @onclick="() => edit = !edit" hidden="@(!ValidKey || Menu || Page)" disabled="@Loading" class="btn" style="
 		position: fixed;
 		bottom: 22.5px; left: calc(50vw - 22.5px);

@@ -25,6 +25,9 @@ public class Vec {
   public double Mag
 		=> Math.Sqrt(x * x + y * y);
 
+	public double Angle
+		=> Math.Atan2(y, x) * 360 / Math.Tau;
+
 	
 
   public override string ToString()

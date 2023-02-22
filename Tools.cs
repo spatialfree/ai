@@ -21,6 +21,15 @@ public static class Tools {
 		);
 	}
 
+	public static string? ToStringBias(this double value) {
+		if (value > 0)
+			return $"+{value:0.0}";
+		else if (value < 0)
+			return $" {value:0.0}";
+		else
+			return $"~0.0";
+	}
+
   public static string? Formatted(string? str, string? append) {
 		return string.IsNullOrEmpty(str) ? "" : str + append;
 	}

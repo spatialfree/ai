@@ -44,7 +44,7 @@ public class Pointer {
   }
 
   CancellationTokenSource cts = new CancellationTokenSource();
-  Task longPress;
+  Task longPress = Task.CompletedTask;
   async Task LongPress(CancellationToken token) {
     await Task.Delay(800);
     if (token.IsCancellationRequested) return;

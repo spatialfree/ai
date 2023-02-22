@@ -5,7 +5,9 @@ namespace ai;
 
 public class IndexBase : ComponentBase {
 	[Inject] protected Mono mono { get; set; } = default!;
-	[Parameter] public string Url { get; set; }
+	protected bool Compass = false;
+
+	[Parameter] public string Url { get; set; } = "";
 
 	protected override void OnInitialized() {
 		pointers = new Pointer[] { new Pointer(this), new Pointer(this) };
@@ -17,12 +19,13 @@ public class IndexBase : ComponentBase {
 	protected string Prompter = "";
 	protected string ApiKey { 
 		get { return apikey; }
-		set { apikey = value; TryKey(); }
+		set { apikey = value; }
 	}
 
 	string lastTry = "";
+	protected bool TryingKey = false;
 	protected async Task TryKey() {
-		Loading = true;
+		TryingKey = true;
 		if (ApiKey == lastTry)
 			return;
 		lastTry = ApiKey;
@@ -39,7 +42,7 @@ public class IndexBase : ComponentBase {
 			Console.WriteLine($"{Prompter} apikey ex: {ex.Message}");
 		}
 
-		Loading = false;
+		TryingKey = false;
 		StateHasChanged();
 	}
 	protected bool Menu  = true;
@@ -376,16 +379,16 @@ button {
 	protected bool cull = false;
 
 
-	protected bool Loading = false;
+	protected bool Running = false;
 	// replace with scroll.running? as the important thing is that they don't overlap?
 	protected bool Error = false;
 
 	public async Task Run(Scroll scroll) {
-		if (Loading) {
+		if (Running) {
 			// Cancel
-			Loading = false;
+			Running = false;
 		} else {
-			Loading = true;
+			Running = true;
 
 
 
@@ -393,9 +396,9 @@ button {
 			await Read(GetScroll(scroll.text.Split("><")[0]));
 			// Console.WriteLine(stream);
 
-			if (!Loading) return;
+			if (!Running) return;
 			await Complete(stream, GetScroll(scroll.text.Split("><")[1]));
-			Loading = false;
+			Running = false;
 		}
 	}
 
@@ -405,7 +408,7 @@ button {
 		string reference = "";
 		string text = scroll.text;
 		for (int i = 0; i < text.Length; i++) {
-			if (!Loading) break;
+			if (!Running) break;
 
 			scroll.text = text.Insert(i, "[").Insert(i+2, "]");
 			StateHasChanged();
@@ -450,14 +453,14 @@ button {
 			request.Model = OpenAI.Models.Model.Davinci;
 			request.Prompt = prompt;
 			request.MaxTokens = MaxTokens;
-			request.Temperature = Temperature;
-			request.PresencePenalty = Contrast;
-			request.FrequencyPenalty = -Repeat;
+			request.Temperature = Math.Clamp(Temperature, 0.0, 1.0);
+			request.PresencePenalty = Math.Clamp(Contrast, -2.0, 2.0);
+			request.FrequencyPenalty = Math.Clamp(-Cyclical, -2.0, 2.0);
 
 			var endpoint = API.CompletionsEndpoint;
 			int tokens = 0;
 			await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
-				if (!Loading) break;
+				if (!Running) break;
 
 				scroll.text += token.Completions[0].Text;
 				scroll.text = scroll.text.TrimStart('\n');
@@ -469,7 +472,7 @@ button {
 			// Console.WriteLine($"++ {Prompter}");
 		}
 		catch (Exception ex) {
-			Loading = true;
+			Running = true;
 			Error = true;
 			StateHasChanged();
 			await Task.Delay(2000);
@@ -483,9 +486,9 @@ button {
 		}
 	}
 	protected int   MaxTokens   = 256;
-	protected float Temperature = 1.0f;
-	protected float Contrast    = 0.0f;
-	protected float Repeat      = 0.0f;
+	protected double Temperature = 1.0f;
+	protected double Contrast    = 0.0f;
+	protected double Cyclical    = 0.0f;
 }
 
 /*

@@ -2,24 +2,13 @@ namespace ai;
 using System.IO;
 
 public class Mono {
-	public string compass = @"
+	public string compass { get{ return @"
 to = prompt patterning habitat
-	process/behavior
-		branchial~
-		sequenced
-		programmatic
-		modular
+	branchial~
+	sequenced
+	programmatic
+	modular
 	on demand memory
-
-	scrolls
-	cascading completions
-	user created
-	expandable
-	inline data connections
-	context/convention control flow
-		left-right top-bottom
-		chained based on contact?
-		how they are triggered?
 
 from = conversational ai
 		1 : 1 back and forth
@@ -86,7 +75,7 @@ pos = from + direction * works
 
 
 	
-	";
+	";}}
   public Mono() {
     Restore();
 		Scrolls.CollectionChanged += (sender, e) => {

@@ -53,10 +53,27 @@ public class IndexBase : ComponentBase {
 		get { return pattern; }
 		set { 
 			pattern = value;
-			Cloud = pattern.Trim() == mono.Pattern;
+			Cloud = pattern.Trim() == mono.Pattern || Url == mono.Pattern;
 		}
 	}
 	protected bool Cloud = false;
+
+	bool publicPage = false;
+	protected bool Public {
+		get { 
+			if (Url == mono.Pattern) {
+				if (!publicPage) {
+					// Temp Key
+					ApiKey = "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";
+					TryKey();
+				}
+				Cloud = publicPage = true;
+			} else {
+				publicPage = false;
+			}
+			return publicPage;
+		}
+	}
 
 	string styleHeader = 
 @".page>* {
@@ -179,7 +196,7 @@ button {
 
 	protected void Rotate() {
 		// go fullscreen and toggle between portrait and landscape
-		
+
 	}
 
 	protected void Wheel(WheelEventArgs e) {
@@ -297,12 +314,17 @@ button {
 			}
 		} else {
 			Scroll scroll = Scrolls[pointers[0].index];
-			// print name, pos and area
-			Console.WriteLine($"{scroll.name}\npos  {scroll.pos}\narea {scroll.area}\n");
+			// Console.WriteLine($"{scroll.name}\npos  {scroll.pos}\narea {scroll.area}\n");
+
+			// check if pointer is not over textarea
+			Vec localPos = pointers[0].canvas - scroll.pos;
+			if (localPos.y < 30)
+				return;
+
 			if (pointers[0].dbl) {
 				scroll.edit = !scroll.edit;
 			}
-
+			
 			if (!scroll.edit) {
 				// Lift
 				if (Scrolls.Count > 1) {
@@ -388,25 +410,27 @@ button {
 	// replace with scroll.running? as the important thing is that they don't overlap?
 	protected bool Error = false;
 
+	string runText = "";
 	public async Task Run(Scroll scroll) {
 		if (Running) {
 			// Cancel
 			Running = false;
+			scroll.text = runText;
 		} else {
 			Running = true;
 
-			string text = scroll.text;
+			runText = scroll.text;
 			scroll.text = $"{scroll.text}...";
 
 			stream = "";
-			await Read(GetScroll(text.Split("><")[0]));
+			await Read(GetScroll(runText.Split("><")[0]));
 			// Console.WriteLine(stream);
 
 			if (!Running) return;
-			await Complete(stream, GetScroll(text.Split("><")[1]));
+			await Complete(stream, GetScroll(runText.Split("><")[1]));
 			Running = false;
 
-			scroll.text = text;
+			scroll.text = runText;
 			StateHasChanged();
 		}
 	}

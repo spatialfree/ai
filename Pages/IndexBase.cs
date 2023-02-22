@@ -64,7 +64,7 @@ public class IndexBase : ComponentBase {
 			if (Url == mono.Pattern) {
 				if (!publicPage) {
 					// Temp Key
-					ApiKey = "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";
+					ApiKey = "";
 					TryKey();
 				}
 				Cloud = publicPage = true;

@@ -159,6 +159,23 @@
 
 @* - - - - - - - - - - - - - - - HUD - - - - - - - - - - - - - - - *@
 
+<div @onclick="() => Menu = !Menu" hidden="@(!ValidKey || Page)" class="btn" style="
+		position: fixed;
+		top: 10px; left: 10px;
+		filter: invert(1);
+	">
+	<img src="svg-icons/menu.svg" />
+</div>
+
+<div @onclick="() => Page = !Page" hidden="@(!ValidKey || Menu)" class="btn" style="
+		position: fixed;
+		top: 10px; right: 10px;
+	">
+	<img src="svg-icons/eye.svg" style="
+		filter: invert(1);
+	"/>
+</div>
+
 @* docs *@
 <div hidden="@(!Compass)" style="
 	position: fixed;

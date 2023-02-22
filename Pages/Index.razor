@@ -1,4 +1,4 @@
-﻿@page "/"
+﻿@page "/{*url}"
 @inherits ai.IndexBase
 @* @using ai.Data *@
 @* @inject ILocalStorageService localStorage *@
@@ -49,12 +49,12 @@
 			pointer-events: none;
 			user-select: none;
 			position: absolute;
-			width: 5432px; height: 7680px;
+			width: @(Bounds.x)px; height: @(Bounds.y)px;
 			background-color: #808080;
 		"></div>
 
 	@foreach (var (scroll, index) in Scrolls.Select((scroll, index) => (scroll, index))) {
-		<CScroll Data="@scroll" Index="@this" Top="@(index == Scrolls.Count-1)" Next="@(index == Scrolls.Count-2)" Held="@held" Pull="@pull" Cull="@cull" />
+		<CScroll Index="@this" Data="@scroll" Top="@(index == Scrolls.Count-1)" Held="@held" Pull="@pull" Cull="@cull" />
 	}
 
 	</div>
@@ -112,13 +112,11 @@
 	<br>
 
 	<div hidden="@(!ValidKey)" style="text-align: center; color: white;">
-		<div class="row">
-			<div class="limit">&nbsp;&nbsp;16</div>
-			<input @bind="MaxTokens" type="range" min="16" max="2048" step="2" />
-			<div class="limit">2048</div>
-		</div>
-		<br>
 		<img class="icon" src="svg-icons/text.svg" />
+		<br>
+		<input @bind="MaxTokens" @bind:event="oninput" type="range" min="16" max="2048" step="2" />
+		<br>
+		<div style="">@MaxTokens</div>
 		<br>
 
 		@* <img class="icon" src="svg-icons/pulse.svg" />
@@ -193,7 +191,8 @@
 <div @onclick="() => Menu = !Menu" hidden="@(!ValidKey || Page)" disabled="@Loading" class="btn" style="
 		position: fixed;
 		top: 10px; left: 10px;
-		@(!Menu ? "filter: invert(1.0);" : "background-color: transparent;")
+		background-color: transparent;
+		filter: invert(@(!Menu ? 1 : 0.5));
 	">
 	<img src="svg-icons/menu.svg" />
 	<div hidden="@(!(Cloud && !mono.Synced))" style="
@@ -204,12 +203,24 @@
 	">*</div>
 </div>
 
+@* top middle *@
+<div style="
+	position: fixed;
+	bottom: 10px; left: 50%;
+	transform: translate(-50%, 0);
+	background-color: #808080;
+	padding: 5px 10px;
+	font-family: 'DM Mono', monospace;
+">@($"{Url}/{Prompter}")</div>
+
 <div @onclick="() => Page = !Page" hidden="@(!ValidKey || Menu)" disabled="@Loading" class="btn" style="
 		position: fixed;
-		top: 10px; left: calc(50vw - 22.5px);
+		top: 10px; right: 10px;
 		background-color: transparent;
 	">
-	<img src="svg-icons/chevron-@(Page ? "top" : "bottom").svg" style="filter: invert(@(Page ? 0 : 1));" />
+	<img src="svg-icons/eye.svg" style="
+		filter: invert(@(Page ? 0.5 : 1));
+	"/>
 </div>
 
 @* <div @onclick="Run()" hidden="@(!ValidKey || Menu || Page)" class="btn" style="

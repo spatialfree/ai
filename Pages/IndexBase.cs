@@ -5,6 +5,7 @@ namespace ai;
 
 public class IndexBase : ComponentBase {
 	[Inject] protected Mono mono { get; set; } = default!;
+	[Parameter] public string Url { get; set; }
 
 	protected override void OnInitialized() {
 		pointers = new Pointer[] { new Pointer(this), new Pointer(this) };
@@ -107,31 +108,31 @@ button {
 		new Scroll { 
 			name = "<h1>",
 			text = "Test",
-			pos = new Vec(20, 80),
+			pos = new Vec(10, 10),
 			area = new Vec(90, 20),
 		},
 		new Scroll { 
 			name = "read<p>",
 			text = "Say this is a {x}",
-			pos = new Vec(20, 160), 
+			pos = new Vec(10, 90), 
 			area = new Vec(210, 20),
 		},
 		new Scroll { 
 			name = "x<input>",
 			text = "mario!",
-			pos = new Vec(20, 240),
+			pos = new Vec(10, 170),
 			area = new Vec(90, 20),
 		},
 		new Scroll { 
 			name = "say<button>",
 			text = "read><complete",
-			pos = new Vec(140, 240),
+			pos = new Vec(130, 170),
 			area = new Vec(90, 20),
 		},
 		new Scroll { 
 			name = "complete<p>", 
 			text = "",
-			pos = new Vec(20, 320), 
+			pos = new Vec(10, 250), 
 			area = new Vec(210, 200), 
 		},
 	};
@@ -157,26 +158,21 @@ button {
 		corners[3] = scroll.pos + new Vec(inset, scroll.area.y + 50 - inset);
 		return corners;
 	}
-	// closest corner pair for Top and Next Scroll
-	public Vec[] Closest {
+	// bounds of all scrolls 0,0 is top left, so the bottom right is the bounds
+	public Vec Bounds {
 		get {
-			Vec[] closest = new Vec[2];
-			Vec[] corners = Corners(TopScroll);
-			Vec[] nextCorners = Corners(NextScroll);
-			double minDist = double.MaxValue;
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
-					double dist = (corners[i] - nextCorners[j]).Mag;
-					if (dist < minDist) {
-						minDist = dist;
-						closest[0] = corners[i];
-						closest[1] = nextCorners[j];
-					}
-				}
+			Vec bounds = new Vec(0, 0);
+			foreach (Scroll scroll in Scrolls) {
+				Vec bottomRight = scroll.pos + scroll.area + new Vec(20, 50);
+				if (bottomRight.x > bounds.x)
+					bounds.x = bottomRight.x;
+				if (bottomRight.y > bounds.y)
+					bounds.y = bottomRight.y;
 			}
-			return closest;
+			return bounds + new Vec(10, 10); // padding
 		}
 	}
+
 
 	protected void Wheel(WheelEventArgs e) {
 		// if not over scroll, zoom

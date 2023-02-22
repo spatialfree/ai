@@ -58,24 +58,16 @@
 
 @code {
   [Parameter]
-  public Scroll Data { get; set; } = new Scroll();
-  [Parameter]
   public IndexBase Index { get; set; }
-
-  [Parameter] public bool Top  { get; set; }
-  [Parameter] public bool Next { get; set; }
-
-
-  string outlineColor { get {
-    string color    = "#00000022";
-    if (Top) color  = "#ffffffff";
-    if (Next) color = "#000000ff";
-    return color;
-  }}
-
+  
+  [Parameter]
+  public Scroll Data { get; set; } = new Scroll();
   public bool Edit { 
     get { return Data.edit; }
   }
+
+  [Parameter] public bool Top  { get; set; }
+
   [Parameter] public bool Held { get; set; }
   [Parameter] public bool Pull { get; set; }
   [Parameter] public bool Cull { get; set; }

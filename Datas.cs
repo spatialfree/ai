@@ -35,25 +35,15 @@ public class Scroll {
 	public Scroll() {
 		name = "";
 		text = "";
-		color = RandomColor();
 
 		pos = new Vec(0, 0);
 		area = new Vec(0, 0);
-	}
-	public Scroll(Scroll scroll) {
-		name = scroll.name;
-		text = scroll.text;
-		color = scroll.color;
-
-		pos = scroll.pos;
-		area = scroll.area;
 	}
 	
 	// cloud
 	public string name;
 	public string taglessName => Regex.Replace(name, @"<[^>]*>", ""); 
 	public string text;
-	public string color;
 
 	public bool executable {
 		get {
@@ -87,15 +77,13 @@ public class Scroll {
 		return inXMin && inXMax && inYMin && inYMax;
 	}
 
-	string RandomColor() {
-		Random random = new Random();
-		int v = 255;
-		int b = random.Next(0, v - 64);
-		v -= b;
-		int g = random.Next(0, v);
-		v -= g;
-		int r = v;
-		return $"rgb({r},{g},{b})";
+	public string color {
+		get {
+			int b = 120 + (executable ? 60 : 0);
+			int g = 80  + (name != taglessName ? 80 : 0);
+			int r = 100 + (text.Contains("{") && text.Contains("}") ? 100 : 0);
+			return $"rgb({r},{g},{b})";
+		}
 	}
 }
 

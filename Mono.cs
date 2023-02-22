@@ -53,7 +53,6 @@ public class Mono {
 				for (int j = 0; j < Scrolls.Count; j++) {
 					contents += $"\nName  {Scrolls[j].name.Trim()}";
 					contents += $"\nText  {Scrolls[j].text.Replace("\n", "\\n") }";
-					contents += $"\nColor {Scrolls[j].color}";
 					contents += $"\nPos   {Scrolls[j].pos.Stepped()}";
 					contents += $"\nArea  {Scrolls[j].area.Stepped()}";
 					contents += $"\n";
@@ -93,7 +92,6 @@ public class Mono {
 						Scroll scroll = new Scroll {
 							name  = lines[j++].Replace("Name  ", "").Trim(),
 							text  = lines[j++].Replace("Text  ", "").Replace("\\n", "\n"),
-							color = lines[j++].Replace("Color ", "").Trim(),
 							pos   = lines[j++].Replace("Pos   ", "").ToVec(),
 							area  = lines[j++].Replace("Area  ", "").ToVec()
 						};

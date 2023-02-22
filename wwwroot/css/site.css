@@ -218,7 +218,7 @@ img {
 input[type=range] {
 	-webkit-appearance: none;
 	flex-grow: 1;
-	max-width: 256px;
+	width: 180px;
 	height: 4px;
 	padding: 0;
 	background: white;

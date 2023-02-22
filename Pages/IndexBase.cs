@@ -177,6 +177,11 @@ button {
 	}
 
 
+	protected void Rotate() {
+		// go fullscreen and toggle between portrait and landscape
+		
+	}
+
 	protected void Wheel(WheelEventArgs e) {
 		// if not over scroll, zoom
 		bool clear = true;

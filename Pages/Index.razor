@@ -114,19 +114,6 @@
 			Get OpenAI API Key
 		</a>
 	} else {
-		@* Pattern Management *@
-		<div class="btn-row">
-			<div @onclick="mono.Restore" disabled="@(!Cloud)" class="btn" style="background: transparent;">
-				<img src="svg-icons/cloud-download.svg" />
-				@(mono.Restored ? "Restored" : "Restore")
-			</div>
-			<div @onclick="mono.Record" disabled="@(!Cloud)" class="btn" style="background: transparent;">
-				<img src="svg-icons/cloud-upload.svg" />
-				@(mono.Recorded ? "Recorded" : "Record")
-			</div>
-		</div>
-		<input @bind="Pattern" placeholder="Pattern" />
-		<div>&nbsp;</div>
 
 		<div class="row">
 			<img class="icon" src="svg-icons/text.svg" />
@@ -172,19 +159,54 @@
 
 @* - - - - - - - - - - - - - - - HUD - - - - - - - - - - - - - - - *@
 
+@* Pattern Management *@
+<div style="
+		position: fixed;
+		bottom: 10px; right: 10px;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	">
+	
+	<div @onclick="mono.Restore" disabled="@(!Cloud)" class="btn">
+		<img src="svg-icons/cloud-download.svg" />
+		<div hidden="@(!(Cloud && !mono.Restored))" style="
+			width: fit-content; 
+			font-size: 24px; 
+			position: fixed; 
+			transform: translate(14px, -8px);
+		">*</div>
+	</div>
+
+	<div @onclick="mono.Record" disabled="@(!Cloud)" class="btn">
+		<img src="svg-icons/cloud-upload.svg" />
+		<div hidden="@(!(Cloud && !mono.Recorded))" style="
+			width: fit-content; 
+			font-size: 24px; 
+			position: fixed; 
+			transform: translate(14px, -8px);
+		">*</div>
+	</div>
+
+	<div style="">
+		<input @bind="Pattern" placeholder="Pattern" style="
+			width: 120px;
+			outline: 5px solid #808080;
+			margin: 0 5px;
+			text-align: left;
+		"/>
+	</div>
+
+</div>
+
+<div>&nbsp;</div>
+
 <div @onclick="() => Menu = !Menu" hidden="@(!ValidKey || Page)" class="btn" style="
 		position: fixed;
-		bottom: 10px; left: 50%;
-		transform: translate(-50%, 0);
+		top: 10px; left: 10px;
 		filter: invert(1);
 	">
 	<img src="svg-icons/menu.svg" />
-	<div hidden="@(!(Cloud && !mono.Synced))" style="
-		width: fit-content; 
-		font-size: 24px; 
-		position: fixed; 
-		transform: translate(14px, -8px);
-	">*</div>
 </div>
 
 <div @onclick="() => Page = !Page" hidden="@(!ValidKey || Menu)" class="btn" style="
@@ -196,22 +218,12 @@
 	"/>
 </div>
 
-<div style="
-	pointer-events: none;
-	user-select: none;
-	position: fixed;
-	bottom: 10px; right: 10px;
-	background-color: #808080;
-	padding: 5px 10px;
-	font-family: 'DM Mono', monospace;
-">@($"{Url}/{Prompter}")</div>
-
-
 @* docs *@
 <div hidden="@(!Compass)" style="
 	position: fixed;
 	top: 0; bottom: 0; left: 0; right: 0;
-	padding: 40px 10px;
+	padding: 10px;
+	padding-bottom: 50px;
 	background-color: white;
 	color: black;
 	tab-size: 4;
@@ -222,7 +234,7 @@
 
 <div @onclick="() => Compass = !Compass" class="btn" style="
 		position: fixed;
-		top: 10px; left: 10px;
+		bottom: 10px; left: 10px;
 	">
 		@* point towards canvas using Vec.Direction *@
 	<img src="svg-icons/compass.svg" style="

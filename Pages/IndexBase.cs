@@ -118,7 +118,7 @@ button {
 			name = "read<p>",
 			text = "Say this is a {x}",
 			pos = new Vec(10, 90), 
-			area = new Vec(210, 20),
+			area = new Vec(220, 20),
 		},
 		new Scroll { 
 			name = "x<input>",
@@ -130,13 +130,13 @@ button {
 			name = "say<button>",
 			text = "read><complete",
 			pos = new Vec(130, 170),
-			area = new Vec(90, 20),
+			area = new Vec(100, 20),
 		},
 		new Scroll { 
 			name = "complete<p>", 
 			text = "",
 			pos = new Vec(10, 250), 
-			area = new Vec(210, 200), 
+			area = new Vec(220, 200), 
 		},
 	};
 	public ObservableCollection<Scroll> Scrolls {
@@ -390,15 +390,19 @@ button {
 		} else {
 			Running = true;
 
-
+			string text = scroll.text;
+			scroll.text = $"{scroll.text}...";
 
 			stream = "";
-			await Read(GetScroll(scroll.text.Split("><")[0]));
+			await Read(GetScroll(text.Split("><")[0]));
 			// Console.WriteLine(stream);
 
 			if (!Running) return;
-			await Complete(stream, GetScroll(scroll.text.Split("><")[1]));
+			await Complete(stream, GetScroll(text.Split("><")[1]));
 			Running = false;
+
+			scroll.text = text;
+			StateHasChanged();
 		}
 	}
 

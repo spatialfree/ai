@@ -28,6 +28,11 @@ public class Vec {
 	public double Angle
 		=> Math.Atan2(y, x) * 360 / Math.Tau;
 
+	public static bool operator ==(Vec a, Vec b)
+		=> a.x == b.x && a.y == b.y;
+
+	public static bool operator !=(Vec a, Vec b)
+		=> a.x != b.x || a.y != b.y;
 	
 
   public override string ToString()

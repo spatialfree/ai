@@ -8,23 +8,25 @@
 @* - - - - - - - - - - - - - - -  Page  - - - - - - - - - - - - - - - *@
 <div class="page">
 	@foreach (var scroll in SortedScrolls) {
-		@if (scroll.name.Contains("<h1>")) { <h1>@scroll.text</h1> }
-		@if (scroll.name.Contains("<p>" )) { <p>@scroll.text</p> }
-		@if (scroll.name.Contains("<input>" )) { <input @bind="scroll.text" placeholder="@scroll.taglessName"></input> }
-		@if (scroll.name.Contains("<button>" )) { <button @onclick="(e) => Run(scroll)">@scroll.taglessName</button> }
+		@if (scroll.name.Contains("<h1")) { <h1>@scroll.text</h1> } else
+		@if (scroll.name.Contains("<p" )) { <p>@scroll.text</p> } else
+		@if (scroll.name.Contains("<input" )) { <input @bind="scroll.text" placeholder="@scroll.taglessName"></input> } else
+		@if (scroll.name.Contains("<button" )) { <button @onclick="(e) => Run(scroll)">@scroll.taglessName</button> } else
+		@if (scroll.name.Contains("<img." )) { <img class="@(scroll.name.Split("<img.")[1].Split(">")[0])" src="@scroll.text" /> } else
+		@if (scroll.name.Contains("<img" )) { <img src="@scroll.text" /> } 
 	}
 
 </div>
 <style style="display: none;">@Styled</style>
-<textarea @bind="Style" @bind:event="oninput" hidden="@(Public)" spellcheck="false" style="
+<textarea @bind="Style" @bind:event="oninput" hidden="@(Public || !Styling)" spellcheck="false" style="
+	position: fixed; top: 0; left: 0; right: 0; bottom: 0;
 	white-space: pre;
-	width: -webkit-fill-available;
-	height: 200px;
-	margin: 100px 0px; padding: 10px;
-	background-color: black; color: white; 
-	border-radius: 10px; outline: 2px solid black; outline-offset: 2px;
+	margin: 0; padding: 10px;
+	padding-bottom: 60px;
+	background-color: #000000ac; color: white; 
 	font-family: 'DM Mono', monospace; font-size: 12px;
-	touch-action: pan-y;
+	overflow: auto;
+	touch-action: pan-y pan-x;
 "></textarea>
 
 @* - - - - - - - - - - - - - - - Canvas - - - - - - - - - - - - - - - *@
@@ -98,7 +100,7 @@
 	">
 
 	@* Welcome / Prompter Login *@
-	@if (!ValidKey) {
+	@* @if (!ValidKey) {
 		<img src="res/logo.svg" style="width: 100px;" />
 		<h1 style="background-color: #808080; padding: 5px 10px;">panda<span style="all: unset; display: inline; color: black;">prompt</span></h1>
 		<p style="color: white; width: 180px; margin: 0 auto;">The web's very own prompt patterning habitat.</p>
@@ -113,7 +115,7 @@
 		<div @onclick="TryKey" class="btn">
 			<img class="@(TryingKey ? "spin" : "")" src="svg-icons/key.svg" />
 		</div>
-	} else {
+	} else { *@
 
 		<div class="row">
 			<img class="icon" src="svg-icons/text.svg" />
@@ -154,12 +156,12 @@
 			<input @bind="Cyclical" @bind:event="oninput" type="range" min="-2.0" max="2.0" step="0.1" />
 		</div>
 		<div>-</div>
-	}
+	@* } *@
 </div>
 
 @* - - - - - - - - - - - - - - - HUD - - - - - - - - - - - - - - - *@
 
-<div @onclick="() => Menu = !Menu" hidden="@(!ValidKey || Page)" class="btn" style="
+<div @onclick="() => Menu = !Menu" hidden="@(Page)" class="btn" style="
 		position: fixed;
 		top: 10px; left: 10px;
 		filter: invert(1);
@@ -167,11 +169,20 @@
 	<img src="svg-icons/menu.svg" />
 </div>
 
-<div @onclick="() => Page = !Page" hidden="@(!ValidKey || Menu)" class="btn" style="
+<div @onclick="() => Page = !Page" hidden="@(Menu)" class="btn" style="
 		position: fixed;
 		top: 10px; right: 10px;
 	">
 	<img src="svg-icons/eye.svg" style="
+		filter: invert(1);
+	"/>
+</div>
+
+<div @onclick="() => Styling = !Styling" hidden="@(!Page || Menu)" class="btn" style="
+		position: fixed;
+		top: 10px; right: 60px;
+	">
+	<img src="svg-icons/brush.svg" style="
 		filter: invert(1);
 	"/>
 </div>

@@ -1,6 +1,3 @@
-using OpenAI;
-using OpenAI.Completions;
-
 namespace ai;
 
 public class IndexBase : ComponentBase {
@@ -13,40 +10,9 @@ public class IndexBase : ComponentBase {
 		pointers = new Pointer[] { new Pointer(this), new Pointer(this) };
 	}
 
-	OpenAIClient API = default!;
-	protected bool ValidKey = false;
-	string apikey = "";
 	protected string Prompter = "";
-	protected string ApiKey { 
-		get { return apikey; }
-		set { apikey = value; }
-	}
 
-	string lastTry = "";
-	protected bool TryingKey = false;
-	protected async Task TryKey() {
-		TryingKey = true;
-		if (ApiKey == lastTry)
-			return;
-		lastTry = ApiKey;
-
-		try {
-			API = new OpenAIClient(new OpenAIAuthentication(ApiKey));
-			var endpoint = API.EmbeddingsEndpoint;
-			await endpoint.CreateEmbeddingAsync("TryKey");
-			ValidKey = true;
-		}
-		catch(Exception ex) {
-			API = default!;
-			ValidKey = false;
-			Console.WriteLine($"{Prompter} apikey ex: {ex.Message}");
-		}
-
-		TryingKey = false;
-		StateHasChanged();
-	}
-	protected bool Menu  = true;
-
+	protected bool Menu  = false;
 
 	string pattern = "";
 	protected string Pattern {
@@ -63,9 +29,7 @@ public class IndexBase : ComponentBase {
 		get { 
 			if (Url == mono.Pattern) {
 				if (!publicPage) {
-					// Temp Key
-					ApiKey = "";
-					TryKey();
+					
 				}
 				Cloud = publicPage = true;
 			} else {
@@ -75,27 +39,32 @@ public class IndexBase : ComponentBase {
 		}
 	}
 
-	string styleHeader = 
-@".page>* {
-	all: unset; 
-	font-family: 'Atkinson Hyperlegible', Helvetica, sans-serif; 
-}";
+	protected bool Styling = false;
+	string styleHeader { get {
+		return @"
+		.page>* {
+			all: unset; 
+			font-family: 'Atkinson Hyperlegible', Helvetica, sans-serif; 
+			" + (Styling ? "transition: all 0.5s ease;" : "") + @"
+		}";
+	}}
 	protected string Style = 
 @".page {
   max-width: 400px;
   margin: 0 auto;
-  margin-top: 40px;
+  margin-top: 10px;
 }
 h1 { 
   display: block; 
   font-size: 40px;
 }
 p {
-  display: block; 
+  display: block;
+  padding-bottom: 10px;
 }
 input {
   display: block; 
-	width: -webkit-fill-available;
+  width: -webkit-fill-available;
   margin: 10px 0; padding: 5px;
   border-bottom: 1px solid black;
 }
@@ -106,6 +75,17 @@ button {
   box-shadow: 2px 2px;
   font-weight: 700;
   letter-spacing: 1px;
+}
+img {
+  display: block;
+  width: 100%;
+  margin: 0 auto;
+}
+.banner {
+  object-fit: cover;
+  height: 128px;
+  overflow: hidden;
+  margin-bottom: 10px;
 }";
 	protected string Styled {
 		get { 
@@ -122,38 +102,74 @@ button {
 			return styleHeader + str;
 		}
 	}
-	protected bool Page  = false;
+	protected bool Page = true;
 
 	ObservableCollection<Scroll> scrolls { get; set; } = new() {
-		new Scroll { 
+		new Scroll() {
+			name = "<img>",
+			text = "res/logo.svg",
+			pos  = new Vec(10,10),
+			area = new Vec(110,20),
+		},
+		new Scroll() {
 			name = "<h1>",
-			text = "Test",
-			pos = new Vec(10, 10),
-			area = new Vec(90, 20),
+			text = "pandaprompt",
+			pos  = new Vec(150,10),
+			area = new Vec(90,20),
 		},
-		new Scroll { 
-			name = "read<p>",
-			text = "Say this is a {x}",
-			pos = new Vec(10, 90), 
-			area = new Vec(220, 20),
+		new Scroll() {
+			name = "<p>",
+			text = "The web's very own prompt patterning habitat.",
+			pos  = new Vec(10,90),
+			area = new Vec(230,30),
 		},
-		new Scroll { 
-			name = "x<input>",
-			text = "mario!",
-			pos = new Vec(10, 170),
-			area = new Vec(90, 20),
+		new Scroll() {
+			name = "<img.banner>",
+			text = "res/bamboo.png",
+			pos  = new Vec(10,180),
+			area = new Vec(230,20),
 		},
-		new Scroll { 
-			name = "say<button>",
-			text = "read><complete",
-			pos = new Vec(130, 170),
-			area = new Vec(100, 20),
+		new Scroll() {
+			name = "<p>",
+			text = "Where are you going to? Where are you coming from?",
+			pos  = new Vec(10,260),
+			area = new Vec(230,30),
 		},
-		new Scroll { 
-			name = "complete<p>", 
+		new Scroll() {
+			name = "to<input>",
 			text = "",
-			pos = new Vec(10, 250), 
-			area = new Vec(220, 200), 
+			pos  = new Vec(10,350),
+			area = new Vec(100,40),
+		},
+		new Scroll() {
+			name = "from<input>",
+			text = "",
+			pos  = new Vec(140,350),
+			area = new Vec(100,40),
+		},
+		new Scroll() {
+			name = "read",
+			text = "(to - from).normalized = direction\n(to: {to}, from: {from}).normalized = ",
+			pos  = new Vec(10,450),
+			area = new Vec(230,50),
+		},
+		new Scroll() {
+			name = "-<button>",
+			text = "read><complete\nyoda><complete",
+			pos  = new Vec(10,560),
+			area = new Vec(230,40),
+		},
+		new Scroll() {
+			name = "yoda",
+			text = "rephrase as a parable:\n{complete}",
+			pos  = new Vec(10,660),
+			area = new Vec(230,50),
+		},
+		new Scroll() {
+			name = "complete<p>",
+			text = " simplification",
+			pos  = new Vec(10,770),
+			area = new Vec(230,210),
 		},
 	};
 	public ObservableCollection<Scroll> Scrolls {
@@ -314,11 +330,18 @@ button {
 			}
 		} else {
 			Scroll scroll = Scrolls[pointers[0].index];
-			// Console.WriteLine($"{scroll.name}\npos  {scroll.pos}\narea {scroll.area}\n");
+			// Console.WriteLine(
+			// 	$"new Scroll() {{\n" +
+			// 	$"  name = \"{scroll.name.Trim()}\",\n" +
+			// 	$"  text = \"{scroll.text.Replace("\n", "\\n")}\",\n" +
+			// 	$"  pos  = new Vec({scroll.pos}),\n" +
+			// 	$"  area = new Vec({scroll.area}),\n" +
+			// 	$"}},"
+			// );
 
 			// check if pointer is not over textarea
 			Vec localPos = pointers[0].canvas - scroll.pos;
-			if (localPos.y < 30)
+			if (localPos.y < 30 && scroll.executable)
 				return;
 
 			if (pointers[0].dbl) {
@@ -375,7 +398,19 @@ button {
 				Scrolls.RemoveAt(Scrolls.Count - 1);
 			}
 			// Console.WriteLine("CULL");
-		} 
+		} else if (held || pull) {
+			// check if matching the pos and area of another scroll
+			// if so, then copy their name and text
+			for (int i = Scrolls.Count - 2; i >= 0 ; i--) {
+				Scroll scroll = Scrolls[i];
+				if (scroll.pos == TopScroll.pos && scroll.area == TopScroll.area) {
+					Console.WriteLine("Duplicate");
+					TopScroll.name = scroll.name;
+					TopScroll.text = scroll.text;
+					break;
+				}
+			}
+		}
 
 		Canvas.x = (int)Canvas.x;
 		Canvas.y = (int)Canvas.y;
@@ -419,18 +454,23 @@ button {
 		} else {
 			Running = true;
 
-			runText = scroll.text;
-			scroll.text = $"{scroll.text}...";
+			runText = scroll.text.Trim();
+			string[] runLines = runText.Split("\n");
+			for (int i = 0; i < runLines.Length; i++) {
+				string line = runLines[i].Trim();
 
-			stream = "";
-			await Read(GetScroll(runText.Split("><")[0]));
-			// Console.WriteLine(stream);
+				scroll.text = $"{scroll.text}...";
 
-			if (!Running) return;
-			await Complete(stream, GetScroll(runText.Split("><")[1]));
-			Running = false;
+				stream = "";
+				await Read(GetScroll(line.Split("><")[0]));
+				// Console.WriteLine(stream);
 
+				if (!Running) return;
+				await Complete(stream, GetScroll(line.Split("><")[1]));
+			}
 			scroll.text = runText;
+
+			Running = false;
 			StateHasChanged();
 		}
 	}
@@ -490,7 +530,7 @@ button {
 			request.PresencePenalty = Math.Clamp(Contrast, -2.0, 2.0);
 			request.FrequencyPenalty = Math.Clamp(-Cyclical, -2.0, 2.0);
 
-			var endpoint = API.CompletionsEndpoint;
+			var endpoint = mono.API.CompletionsEndpoint;
 			int tokens = 0;
 			await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
 				if (!Running) break;
@@ -500,7 +540,7 @@ button {
 				tokens++;
 				StateHasChanged();
 			}
-			Console.WriteLine(tokens);
+			// Console.WriteLine(tokens);
 
 			// Console.WriteLine($"++ {Prompter}");
 		}

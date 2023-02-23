@@ -14,7 +14,7 @@ from = conversational ai
 		1 : 1 back and forth
 		limited memory
 
-	Blocks
+	blocks
 		pre determined
 		physically connecting systems
 		resembles text based code
@@ -23,7 +23,7 @@ from = conversational ai
 		auto expand and shrink
 		strong silhoeuttes
 
-	Nodes
+	nodes
 		pre determined
 		physically connecting data
 		branchial
@@ -34,49 +34,55 @@ direction = delta / delta.length
 
 
 constraints
-	Mobile 1st
+	mobile 1st
 		target userbase mobile preference >50%
-	Text 1st
+	text 1st
 		meet the language model where it's at
 
 
 works
-	Token usage
-		auto Limit by textarea area *2x the visible area
+	scroll style classes
+	long press on canvas starts box select
+	token usage
+		auto limit by textarea area *2x the visible area
 		estimates
 		history
 		totals
-	Reference.details
-	Arrays~
-	Generic encapsulation
-	Libraries~
-	Boards/Patterns~
+	reference.details
+	arrays~
+	generic encapsulation
+	libraries~
+	boards/patterns~
 
 
 pos = from + direction * works
-	Canvases
+	canvases
 		local insances (in memory)
 		one cloud shared instance
-	Scrolls
+	scrolls
 		edit text/shape
 		customizable
 		dynamic
 		inline references
-	Run
+	run
 		read><complete
-		Read
+		completion sequences
+		read
 			recursive reference parser
 			rendered
-		Complete
+		complete
 			stream ai output
-	Page
+	page
 		surface scrolls
 		live style editing
 
 
 	
 	";}}
-  public Mono() {
+
+	public OpenAIClient API = default!;
+  public Mono(string? apikey) {
+		API = new OpenAIClient(new OpenAIAuthentication(apikey));
     Restore();
 		Scrolls.CollectionChanged += (sender, e) => {
 			Recorded = Restored = false;

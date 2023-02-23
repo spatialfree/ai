@@ -7,15 +7,18 @@ global using Microsoft.AspNetCore.Components.Web;
 
 global using Microsoft.JSInterop;
 
+global using OpenAI;
+global using OpenAI.Completions;
 using ai;
 
 var builder = WebApplication.CreateBuilder(args);
 	builder.Services.AddRazorPages();
 	builder.Services.AddServerSideBlazor();
-	builder.Services.AddSingleton<Mono>();
+	builder.Services.AddSingleton<Mono>(new Mono(builder.Configuration["OpenAI:ApiKey"]));
 	// builder.Services.AddScoped<IJSRuntime, JSRuntime>();
 
 var app = builder.Build();
+	
 	app.UseForwardedHeaders(new ForwardedHeadersOptions {
 		ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 	});

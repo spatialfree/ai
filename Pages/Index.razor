@@ -7,18 +7,20 @@
 
 @* - - - - - - - - - - - - - - -  Page  - - - - - - - - - - - - - - - *@
 <div class="page">
-	@foreach (var scroll in SortedScrolls) {
+	@foreach (var scroll in pattern.sorted) {
 		@if (scroll.name.Contains("<h1")) { <h1>@scroll.text</h1> } else
 		@if (scroll.name.Contains("<p" )) { <p>@scroll.text</p> } else
+		@if (scroll.name.Contains("<label" )) { <label>@scroll.text</label> } else
 		@if (scroll.name.Contains("<input" )) { <input @bind="scroll.text" placeholder="@scroll.taglessName"></input> } else
 		@if (scroll.name.Contains("<button" )) { <button @onclick="(e) => Run(scroll)">@scroll.taglessName</button> } else
 		@if (scroll.name.Contains("<img." )) { <img class="@(scroll.name.Split("<img.")[1].Split(">")[0])" src="@scroll.text" /> } else
-		@if (scroll.name.Contains("<img" )) { <img src="@scroll.text" /> } 
+		@if (scroll.name.Contains("<img" )) { <img src="@scroll.text" /> } else
+		@if (scroll.name.Contains("<footer")) { <footer>@scroll.text</footer> }
 	}
 
 </div>
-<style style="display: none;">@Styled</style>
-<textarea @bind="Style" @bind:event="oninput" hidden="@(Public || !Styling)" spellcheck="false" style="
+<style style="display: none;">@(pattern.styleRender(styling))</style>
+<textarea @bind="pattern.style" @bind:event="oninput" hidden="@(Public || !styling)" spellcheck="false" style="
 	position: fixed; top: 0; left: 0; right: 0; bottom: 0;
 	white-space: pre;
 	margin: 0; padding: 10px;
@@ -32,7 +34,7 @@
 @* - - - - - - - - - - - - - - - Canvas - - - - - - - - - - - - - - - *@
 
 <div
-	hidden="@(Page || Public)"
+	hidden="@(page || Public)"
 	@onpointermove="PointerMove" 
 	@onpointerdown="PointerDown" 
 	@onpointerup="PointerUp" @onpointerleave="PointerUp" 
@@ -57,8 +59,91 @@
 			outline-offset: 0px;
 		"></div>
 
-	@foreach (var (scroll, index) in Scrolls.Select((scroll, index) => (scroll, index))) {
-		<CScroll Index="@this" Data="@scroll" Top="@(index == Scrolls.Count-1)" Held="@held" Pull="@pull" Cull="@cull" />
+	@code { protected bool top = false; }
+	@foreach (var (scroll, index) in pattern.scrolls.Select((scroll, index) => (scroll, index))) {
+		<div class="scroll" top="@(top = index == pattern.scrolls.Count - 1)" style="
+			transform: translate(@(scroll.pos.x)px, @(scroll.pos.y)px);
+			background-color: @(top && cull ? "red" : (scroll.edit ? "white" : "black"));
+		">
+			<input @bind="scroll.name" @bind:event="oninput" type="text" class="@(!scroll.edit ? "no-select" : "")" style="
+				width: @(scroll.area.x)px;
+				background-color: @(top && cull ? "red" : scroll.color);
+			" />
+
+			@* <div style="
+				pointer-events: none; user-select: none;
+				position: absolute; left: 33.33%; right: 33.33%; bottom: 4px;
+				background-color: @(Data.edit ? "#eee" : "#333");
+				height: 2px;
+				z-index: -1;
+			"></div> *@
+			<textarea @bind="scroll.text" @bind:event="oninput" class="contents @(!scroll.edit ? "no-select" : "")" style="
+				width: @(scroll.area.x)px; height: @(scroll.area.y)px; 
+				color: @(top && cull || scroll.edit ? "black" : "white");
+			"></textarea>
+
+
+			<div hidden="@(scroll.edit)" style="
+				user-select: none; moz-user-select: none; -webkit-user-select: none;
+				position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+				outline-offset: -2px;
+				@(top && pull ? "outline: 2px solid white;": "");
+				@(top && held ? "outline: 2px solid #808080;": "");
+
+				cursor: move;
+			">
+				<div hidden="@(!scroll.executable)" @onclick="(e) => Run(scroll)" style="
+					position: absolute;
+					user-select: all;
+					transform: translate(0px, 0px);
+					outline-offset: -2px;
+					@(scroll.executable ? "outline: 2px solid white;": "");
+					height: 30px; width: 100%;
+				"></div>
+
+				<div class="pull" style="
+					transform: translate(@(scroll.area.x - 10)px, @(scroll.area.y + 20)px);
+					width:  30px; 
+					height: 30px;
+					cursor: nwse-resize;
+				">
+					<div style="
+						transform: translate(20px, 20px);
+						width:  5px; 
+						height: 5px;
+						background-color: #808080;
+					"></div>
+				</div>
+			</div>
+
+			<div @onclick="() => scroll.temp = !scroll.temp" style="
+				cursor: pointer;
+				position: absolute;
+				top: 0; right: 0;
+				height: 20px;
+				width: 20px;
+				color: white;
+				background: transparent;
+				text-align: center;
+				font-family: 'DM Mono', monospace;
+				line-height: 20px;
+				font-size: 10px;
+			">@(scroll.temp ? "*" : " ")</div>
+
+			<div style="
+				pointer-events: none;
+				user-select: none;
+				position: absolute;
+				top: 5px; left: 0;
+				height: 10px;
+				padding: 0 5px;
+				color: white;
+				text-align: center;
+				font-family: 'DM Mono', monospace;
+				line-height: 10px;
+				font-size: 10px;
+			">@scroll.tokens</div>
+		</div>
 	}
 
 	</div>
@@ -86,7 +171,7 @@
 
 @* - - - - - - - - - - - - - - - Menu - - - - - - - - - - - - - - - *@
 
-<div hidden="@(!Menu || Public)" style="
+<div hidden="@(!menu || Public)" style="
 	display: flex; 
 	position: fixed;
 	top: 0; bottom: 0; left: 0; right: 0;
@@ -161,15 +246,15 @@
 
 @* - - - - - - - - - - - - - - - HUD - - - - - - - - - - - - - - - *@
 
-<div @onclick="() => Menu = !Menu" hidden="@(Page)" class="btn" style="
+<div @onclick="() => menu = !menu" hidden="@(page)" class="btn" style="
 		position: fixed;
 		top: 10px; left: 10px;
 		filter: invert(1);
 	">
-	<img src="svg-icons/menu.svg" />
+	<img src="svg-icons/cog.svg" />
 </div>
 
-<div @onclick="() => Page = !Page" hidden="@(Menu)" class="btn" style="
+<div @onclick="() => page = !page" hidden="@(menu)" class="btn" style="
 		position: fixed;
 		top: 10px; right: 10px;
 	">
@@ -178,7 +263,7 @@
 	"/>
 </div>
 
-<div @onclick="() => Styling = !Styling" hidden="@(!Page || Menu)" class="btn" style="
+<div @onclick="() => styling = !styling" hidden="@(!page || menu)" class="btn" style="
 		position: fixed;
 		top: 10px; right: 60px;
 	">
@@ -188,7 +273,7 @@
 </div>
 
 @* docs *@
-<div hidden="@(!Compass)" style="
+<div hidden="@(!compass)" style="
 	position: fixed;
 	top: 0; bottom: 0; left: 0; right: 0;
 	padding: 10px;
@@ -201,7 +286,7 @@
 	touch-action: pan-y pan-x;
 ">@mono.compass</div>
 
-<div @onclick="() => Compass = !Compass" hidden="@(Public)" class="btn" style="
+<div @onclick="() => compass = !compass" hidden="@(Public)" class="btn" style="
 		position: fixed;
 		bottom: 10px; left: 10px;
 	">
@@ -220,19 +305,13 @@
 		gap: 10px;
 	">
 
-	<div @onclick="mono.Restore" disabled="@(!Cloud)" class="btn">
+	<div @onclick="@(() => pattern.restored = Records.Restore(pattern))" disabled="@(!pattern.cloud || pattern.restored)" class="btn">
 		<img src="svg-icons/cloud-download.svg" />
-		<div hidden="@(!(Cloud && !mono.Restored))" style="
-			width: fit-content; 
-			font-size: 24px; 
-			position: fixed; 
-			transform: translate(14px, -8px);
-		">*</div>
 	</div>
 
-	<div @onclick="mono.Record" disabled="@(!Cloud)" class="btn">
+	<div @onclick="@(() => pattern.recorded = Records.Record(pattern))" disabled="@(!pattern.cloud || pattern.recorded)" class="btn">
 		<img src="svg-icons/cloud-upload.svg" />
-		<div hidden="@(!(Cloud && !mono.Recorded))" style="
+		<div hidden="@(!(pattern.cloud && !pattern.synced))" style="
 			width: fit-content; 
 			font-size: 24px; 
 			position: fixed; 
@@ -241,13 +320,40 @@
 	</div>
 
 	<div style="">
-		<input @bind="Pattern" placeholder="Pattern" style="
+		<input @bind="patternBar" placeholder="Pattern" style="
 			width: 120px;
 			outline: 5px solid #808080;
 			margin: 0 5px;
 			text-align: left;
 		"/>
 	</div>
+</div>
+
+
+@* Token Tracker *@
+<div style="
+	pointer-events: none;
+	user-select: none;
+	display: flex; flex-direction: column; align-items: center;
+	position: fixed;
+	top: 5px; left: 50%;
+	transform: translate(-50%, 0);
+	mix-blend-mode: difference;
+">
+	<div style="
+		font-family: 'DM Mono', monospace;
+		font-size: 10px;
+		color: #808080;
+	">
+		@(mono.tokens.ToString("000000"))
+	</div>
+
+	@* state has changed *@
+	<div style="
+		margin-top: 5px;
+		height: 2px; width: 2px; 
+		background-color: @(Tools.RandomColor());
+	"></div>
 </div>
 
 @* <div @onclick="Run()" hidden="@(!ValidKey || Menu || Page)" class="btn" style="

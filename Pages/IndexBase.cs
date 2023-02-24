@@ -1,190 +1,42 @@
-namespace ai;
+using Scroll = ai.Pattern.Scroll;
 
+namespace ai;
 public class IndexBase : ComponentBase {
 	[Inject] protected Mono mono { get; set; } = default!;
-	protected bool Compass = false;
-
 	[Parameter] public string Url { get; set; } = "";
+
+	// move these to the razor page
+	protected bool compass = false;
+	protected bool menu    = false; // -> settings
+	protected bool page    = true;  // ->
+	protected bool styling = false;
+
 
 	protected override void OnInitialized() {
 		pointers = new Pointer[] { new Pointer(this), new Pointer(this) };
 	}
 
-	protected string Prompter = "";
+	protected Pattern pattern = new Pattern();
+	protected string patternBar = "";
 
-	protected bool Menu  = false;
-
-	string pattern = "";
-	protected string Pattern {
-		get { return pattern; }
-		set { 
-			pattern = value;
-			Cloud = pattern.Trim() == mono.Pattern || Url == mono.Pattern;
-		}
-	}
-	protected bool Cloud = false;
+	
+	// Cloud = patternName.Trim() == mono.Pattern || Url == mono.Pattern;
 
 	bool publicPage = false;
 	protected bool Public {
 		get { 
-			if (Url == mono.Pattern) {
+			if (Url == "Pattern") {
 				if (!publicPage) {
 					
 				}
-				Cloud = publicPage = true;
+				pattern.cloud = publicPage = true;
 			} else {
 				publicPage = false;
 			}
 			return publicPage;
 		}
-	}
-
-	protected bool Styling = false;
-	string styleHeader { get {
-		return @"
-		.page>* {
-			all: unset; 
-			font-family: 'Atkinson Hyperlegible', Helvetica, sans-serif; 
-			" + (Styling ? "transition: all 0.5s ease;" : "") + @"
-		}";
-	}}
-	protected string Style = 
-@".page {
-  max-width: 400px;
-  margin: 0 auto;
-  margin-top: 10px;
-}
-h1 { 
-  display: block; 
-  font-size: 40px;
-}
-p {
-  display: block;
-  padding-bottom: 10px;
-}
-input {
-  display: block; 
-  width: -webkit-fill-available;
-  margin: 10px 0; padding: 5px;
-  border-bottom: 1px solid black;
-}
-button {
-  display: block;
-  margin: 10px 0; padding: 10px 15px;
-  border: 1px solid black;
-  box-shadow: 2px 2px;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-img {
-  display: block;
-  width: 100%;
-  margin: 0 auto;
-}
-.banner {
-  object-fit: cover;
-  height: 128px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}";
-	protected string Styled {
-		get { 
-			// split into lines
-			// and each line with an opening bracket {
-			// gets .page added to the start of the line
-			string[] lines = Style.Split('\n');
-			for (int i = 0; i < lines.Length; i++) {
-				if (lines[i].Contains("{") && !lines[i].Contains(".page")) {
-					lines[i] = ".page>" + lines[i];
-				}
-			}
-			string str = string.Join("\n", lines);
-			return styleHeader + str;
-		}
-	}
-	protected bool Page = true;
-
-	ObservableCollection<Scroll> scrolls { get; set; } = new() {
-		new Scroll() {
-			name = "<img>",
-			text = "res/logo.svg",
-			pos  = new Vec(10,10),
-			area = new Vec(110,20),
-		},
-		new Scroll() {
-			name = "<h1>",
-			text = "pandaprompt",
-			pos  = new Vec(150,10),
-			area = new Vec(90,20),
-		},
-		new Scroll() {
-			name = "<p>",
-			text = "The web's very own prompt patterning habitat.",
-			pos  = new Vec(10,90),
-			area = new Vec(230,30),
-		},
-		new Scroll() {
-			name = "<img.banner>",
-			text = "res/bamboo.png",
-			pos  = new Vec(10,180),
-			area = new Vec(230,20),
-		},
-		new Scroll() {
-			name = "<p>",
-			text = "Where are you going to? Where are you coming from?",
-			pos  = new Vec(10,260),
-			area = new Vec(230,30),
-		},
-		new Scroll() {
-			name = "to<input>",
-			text = "",
-			pos  = new Vec(10,350),
-			area = new Vec(100,40),
-		},
-		new Scroll() {
-			name = "from<input>",
-			text = "",
-			pos  = new Vec(140,350),
-			area = new Vec(100,40),
-		},
-		new Scroll() {
-			name = "read",
-			text = "(to - from).normalized = direction\n(to: {to}, from: {from}).normalized = ",
-			pos  = new Vec(10,450),
-			area = new Vec(230,50),
-		},
-		new Scroll() {
-			name = "-<button>",
-			text = "read><complete\nyoda><complete",
-			pos  = new Vec(10,560),
-			area = new Vec(230,40),
-		},
-		new Scroll() {
-			name = "yoda",
-			text = "rephrase as a parable:\n{complete}",
-			pos  = new Vec(10,660),
-			area = new Vec(230,50),
-		},
-		new Scroll() {
-			name = "complete<p>",
-			text = " simplification",
-			pos  = new Vec(10,770),
-			area = new Vec(230,210),
-		},
-	};
-	public ObservableCollection<Scroll> Scrolls {
-		get { return Cloud ? mono.Scrolls : scrolls; }
-	}
-	public ObservableCollection<Scroll> SortedScrolls {
-		// sort top to bottom and left to right using scroll.pos
-		get { return new(Scrolls.OrderBy(s => s.pos.y).ThenBy(s => s.pos.x)); }
-	}
-	public Scroll TopScroll {
-		get { return Scrolls[Scrolls.Count - 1]; }
-	}
-	public Scroll NextScroll {
-		get { return Scrolls[Scrolls.Count - 2]; }
-	}
+	}	
+	
 	public Vec[] Corners(Scroll scroll) {
 		int inset = 5;
 		Vec[] corners = new Vec[4];
@@ -194,11 +46,11 @@ img {
 		corners[3] = scroll.pos + new Vec(inset, scroll.area.y + 50 - inset);
 		return corners;
 	}
-	// bounds of all scrolls 0,0 is top left, so the bottom right is the bounds
+	// bounds of all pattern.scrolls 0,0 is top left, so the bottom right is the bounds
 	public Vec Bounds {
 		get {
 			Vec bounds = new Vec(0, 0);
-			foreach (Scroll scroll in Scrolls) {
+			foreach (Scroll scroll in pattern.scrolls) {
 				Vec bottomRight = scroll.pos + scroll.area + new Vec(20, 50);
 				if (bottomRight.x > bounds.x)
 					bounds.x = bottomRight.x;
@@ -218,7 +70,7 @@ img {
 	protected void Wheel(WheelEventArgs e) {
 		// if not over scroll, zoom
 		bool clear = true;
-		foreach (Scroll scroll in Scrolls) {
+		foreach (Scroll scroll in pattern.scrolls) {
 			if (scroll.Contains(pointers[0].canvas)) {
 				clear = false;
 				break;
@@ -273,7 +125,7 @@ img {
 
 		if (e.PointerId != pointers[0].id) return;
 
-		Scroll scroll = TopScroll;
+		Scroll scroll = pattern.top;
 
 		if (drag) {
 
@@ -297,7 +149,7 @@ img {
 	protected void PointerDown(PointerEventArgs e) {
 		for (int i = 0; i < pointers.Length; i++) {
 			if (!pointers[i].dwn) {
-				pointers[i].Down(e.ClientX, e.ClientY, e.PointerId);			
+				pointers[i].Down(e.ClientX, e.ClientY, e.PointerId, pattern);			
 				break;
 			}
 		}
@@ -314,22 +166,22 @@ img {
 		// Console.WriteLine($"screen {pointers[0].screen}\ncanvas {pointers[0].canvas}\n");
 
 		if (pointers[0].index == -1) {
-			if (pointers[0].dbl) {
+			if (pointers[0].dbl && pattern.scrolls.Count < MAX_SCROLLS) {
 				drag = pull = false;
 				held = true;
 				
-				Scroll newScroll = new Scroll();
+				Scroll newScroll = new Scroll(pattern);
 				newScroll.area = new Vec(60, 20);
 				newScroll.pos = pointers[0].canvas.Stepped() - newScroll.area - new Vec(0, 25);
 				offset = newScroll.pos - pointers[0].canvas;
-				Scrolls.Add(newScroll);
+				pattern.scrolls.Add(newScroll);
 				StateHasChanged();
 			} else {
 				canvasOffset = Canvas - (pointers[0].screen / Scale);
 				drag = true;
 			}
 		} else {
-			Scroll scroll = Scrolls[pointers[0].index];
+			Scroll scroll = pattern.scrolls[pointers[0].index];
 			// Console.WriteLine(
 			// 	$"new Scroll() {{\n" +
 			// 	$"  name = \"{scroll.name.Trim()}\",\n" +
@@ -350,9 +202,9 @@ img {
 			
 			if (!scroll.edit) {
 				// Lift
-				if (Scrolls.Count > 1) {
-					Scrolls.RemoveAt(pointers[0].index);
-					Scrolls.Add(scroll);
+				if (pattern.scrolls.Count > 1) {
+					pattern.scrolls.RemoveAt(pointers[0].index);
+					pattern.scrolls.Add(scroll);
 				}
 
 				if ((pointers[0].canvas - Corners(scroll)[2]).Mag < 30.0) {
@@ -368,8 +220,8 @@ img {
 	}
 
 	public void PointerLong() {
-		for (int i = Scrolls.Count-1; i >= 0; i--) {
-			Scrolls[i].edit = false;
+		for (int i = pattern.scrolls.Count-1; i >= 0; i--) {
+			pattern.scrolls[i].edit = false;
 		}
 		StateHasChanged();
 	}
@@ -391,22 +243,22 @@ img {
 		if (e.PointerId != pointers[0].id) return;
 
 		if (cull) {
-			if (Scrolls.Count <= 2) {
-				TopScroll.name = "";
-				TopScroll.text = "";
+			if (pattern.scrolls.Count <= 2) {
+				pattern.top.name = "";
+				pattern.top.text = "";
 			} else {
-				Scrolls.RemoveAt(Scrolls.Count - 1);
+				pattern.scrolls.RemoveAt(pattern.scrolls.Count - 1);
 			}
 			// Console.WriteLine("CULL");
 		} else if (held || pull) {
 			// check if matching the pos and area of another scroll
 			// if so, then copy their name and text
-			for (int i = Scrolls.Count - 2; i >= 0 ; i--) {
-				Scroll scroll = Scrolls[i];
-				if (scroll.pos == TopScroll.pos && scroll.area == TopScroll.area) {
+			for (int i = pattern.scrolls.Count - 2; i >= 0 ; i--) {
+				Scroll scroll = pattern.scrolls[i];
+				if (scroll.pos == pattern.top.pos && scroll.area == pattern.top.area) {
 					Console.WriteLine("Duplicate");
-					TopScroll.name = scroll.name;
-					TopScroll.text = scroll.text;
+					pattern.top.name = scroll.name;
+					pattern.top.text = scroll.text;
 					break;
 				}
 			}
@@ -447,6 +299,9 @@ img {
 
 	string runText = "";
 	public async Task Run(Scroll scroll) {
+		if (mono.tokens <= 0)
+			return;
+
 		if (Running) {
 			// Cancel
 			Running = false;
@@ -462,11 +317,10 @@ img {
 				scroll.text = $"{scroll.text}...";
 
 				stream = "";
-				await Read(GetScroll(line.Split("><")[0]));
-				// Console.WriteLine(stream);
+				await Read(pattern.GetScroll(line.Split("><")[0]));
 
 				if (!Running) return;
-				await Complete(stream, GetScroll(line.Split("><")[1]));
+				await Complete(stream, pattern.GetScroll(line.Split("><")[1]));
 			}
 			scroll.text = runText;
 
@@ -492,7 +346,7 @@ img {
 				continue;
 			}
 			if (text[i] == '}') { 
-				await Read(GetScroll(reference));
+				await Read(pattern.GetScroll(reference));
 				reference = "";
 				read = false; 
 				continue;
@@ -505,16 +359,6 @@ img {
 		}
 		scroll.text = text;
 		StateHasChanged();
-	}
-
-	Scroll GetScroll(string name) {
-		foreach (Scroll scroll in Scrolls) {
-			if (scroll.taglessName.Trim().ToLower() == name.Trim().ToLower()) {
-				return scroll;
-			}
-		}
-		Console.WriteLine($"Scroll {name} not found");
-		return new Scroll();
 	}
 
 	protected async Task Complete(string prompt, Scroll scroll) {
@@ -530,19 +374,17 @@ img {
 			request.PresencePenalty = Math.Clamp(Contrast, -2.0, 2.0);
 			request.FrequencyPenalty = Math.Clamp(-Cyclical, -2.0, 2.0);
 
-			var endpoint = mono.API.CompletionsEndpoint;
+			var endpoint = mono.api.CompletionsEndpoint;
 			int tokens = 0;
 			await foreach (var token in endpoint.StreamCompletionEnumerableAsync(request)) {
 				if (!Running) break;
 
 				scroll.text += token.Completions[0].Text;
 				scroll.text = scroll.text.TrimStart('\n');
-				tokens++;
+				tokens ++;
 				StateHasChanged();
 			}
-			// Console.WriteLine(tokens);
-
-			// Console.WriteLine($"++ {Prompter}");
+			mono.tokens -= tokens;
 		}
 		catch (Exception ex) {
 			Running = true;
@@ -551,17 +393,19 @@ img {
 			await Task.Delay(2000);
 			Error = false;
 
-			Console.WriteLine($"-- {Prompter} : {ex.Message}");
+			Console.WriteLine($"-- {ex.Message}");
 		}
 
 		if (scroll.text == "") {
 			scroll.text = oldText;
 		}
 	}
-	protected int   MaxTokens   = 256;
+	protected int    MaxTokens   = 256;
 	protected double Temperature = 1.0f;
 	protected double Contrast    = 0.0f;
 	protected double Cyclical    = 0.0f;
+
+	const int MAX_SCROLLS = 32;
 }
 
 /*

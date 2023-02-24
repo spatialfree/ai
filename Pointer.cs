@@ -1,14 +1,14 @@
 namespace ai;
 
 public class Pointer {
-  IndexBase hack;
+  IndexBase indexBase;
   public Pointer(IndexBase indexBase) {
-    this.hack = indexBase;
+    this.indexBase = indexBase;
   }
 
   public long id = -1;
   public Vec screen = new Vec();
-  public Vec canvas { get { return (screen / hack.Scale) - hack.Canvas; } }
+  public Vec canvas { get { return (screen / indexBase.Scale) - indexBase.Canvas; } }
 
   public int index = -1;
 
@@ -16,7 +16,7 @@ public class Pointer {
   public bool dbl = false;
   public Vec lastDown = new Vec();
   DateTime downTime = DateTime.Now;
-  public void Down(double x, double y, long id) {
+  public void Down(double x, double y, long id, Pattern pattern) {
     lastDown = screen = new Vec(x, y);
     this.id = id;
 
@@ -27,9 +27,9 @@ public class Pointer {
 
     // if clear of the scrolls then try for a long press
 		index = -1;
-    for (int i = hack.Scrolls.Count - 1; i >= 0 ; i--) {
-      Scroll scroll = hack.Scrolls[i];
-			if (scroll.Contains(hack.pointers[0].canvas)) {
+    for (int i = pattern.scrolls.Count - 1; i >= 0 ; i--) {
+      Pattern.Scroll scroll = pattern.scrolls[i];
+			if (scroll.Contains(indexBase.pointers[0].canvas)) {
 				index = i;
 				break;
 			}
@@ -48,7 +48,7 @@ public class Pointer {
   async Task LongPress(CancellationToken token) {
     await Task.Delay(800);
     if (token.IsCancellationRequested) return;
-    hack.PointerLong();
+    indexBase.PointerLong();
   }
 
   public void Move(double x, double y) {

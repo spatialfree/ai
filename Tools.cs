@@ -1,3 +1,5 @@
+namespace ai;
+
 public static class Tools {
 
 	public static int RollOver(int index, int roll, int length) {
@@ -9,6 +11,12 @@ public static class Tools {
 			return 0;
 
 		return rolled;
+	}
+
+	public static string RandomColor() {
+		Random random = new Random();
+		// rgb(255,255,255)
+		return $"rgb({random.Next(0, 255)},{random.Next(0, 255)},{random.Next(0, 255)})";
 	}
 
 	public static int Stepped(this double value) {

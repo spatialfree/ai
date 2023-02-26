@@ -39,6 +39,26 @@ constraints
 
 
 works
+	deeply integrate the stragegy pattern
+		abstraction
+		encapsulation
+		interface
+	
+	the same way we make terms
+		we make patterns
+
+	not sure what to call the thing as a whole
+		site, app, program, tool, service, platform, etc
+
+	but that is the core piece that needs to be done well
+		to build at scale
+
+	recycling decoder using c# reflection 
+
+	entirely separate directory with it's own git
+	
+	1 file foreach pattern->habit->
+
 	scroll style classes
 	long press on canvas starts box select
 	token usage

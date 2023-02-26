@@ -11,13 +11,31 @@ public class IndexBase : ComponentBase {
 	protected bool page    = true;  // ->
 	protected bool styling = false;
 
-
-	protected override void OnInitialized() {
+	protected override void OnInitialized() {	
+		// twice
 		pointers = new Pointer[] { new Pointer(this), new Pointer(this) };
 	}
 
-	protected Pattern pattern = new Pattern();
+	protected override async Task OnAfterRenderAsync(bool firstRender) {
+		if (firstRender) { 
+			// once
+			pattern = new(true);
+			StateHasChanged();
+		}
+		await Task.CompletedTask;
+	}
+
+	protected Pattern pattern = new(false);
 	protected string patternBar = "";
+
+	protected void Restore() {
+		if (pattern.name == patternBar && pattern.restored)
+			return;
+
+		pattern.name = patternBar;
+		pattern.restored = Records.Restore(pattern);
+		StateHasChanged();
+	}
 
 	
 	// Cloud = patternName.Trim() == mono.Pattern || Url == mono.Pattern;

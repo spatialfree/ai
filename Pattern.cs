@@ -9,9 +9,11 @@ public class Pattern { // Data focused class
 	public bool synced
 		=> recorded || restored;
 
-	public Pattern() {
-		recorded = restored = Records.Restore(this);
-
+	public Pattern(bool restore) {
+		if (restore)
+			recorded = restored = Records.Restore(this);
+		else
+			scrolls.Add(new(this));
 
 		cloud = true; // temp for testing
 
@@ -54,16 +56,20 @@ public class Pattern { // Data focused class
 			pos = new Vec(0, 0);
 			area = new Vec(0, 0);
 		}
+
+		// stored
+		public bool temp   { get; set; }
+		public string name { get; set; }
+		public string text { get; set; }
+		public Vec pos     { get; set; }
+		public Vec area    { get; set; }
 		
 		public bool executable 
 			=> text.Contains("><"); // unoptimized
 
-
-		public string name;
 		public string taglessName
 			=> Regex.Replace(name, @"<[^>]*>", ""); 
 
-		public string text;
 
 		string stream = "";
 		public string fulltext {
@@ -117,10 +123,9 @@ public class Pattern { // Data focused class
 		}
 
 		public bool edit = false;
-		public bool temp = false;
 
-		public Vec pos;
-		public Vec area;
+
+		
 
 		// public string Full => $"{Tools.Formatted(Label,"\n")}{Tools.Formatted(Text,"\n\n")}";
 
@@ -158,56 +163,7 @@ public class Pattern { // Data focused class
 		.page { overflow-y: auto; touch-action: pan-y; }
 	";
 
-	public string style = @"
-.page {
-  max-width: 400px;
-  margin: 0 auto;
-}
-h1 { 
-  display: block; 
-  font-size: 40px;
-}
-p {
-  display: block;
-  padding-bottom: 10px;
-}
-label {
-  display: block;
-  padding-top: 20px;
-}
-input {
-  display: block; 
-  width: -webkit-fill-available;
-  margin: 5px 0 10px 0; padding: 5px 10px;
-  border-bottom: 1px solid black;
-}
-button {
-  display: block;
-  margin: 20px auto; padding: 10px 15px;
-  border: 1px solid black;
-  box-shadow: 2px 2px;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-img {
-  display: block;
-  width: 100%;
-  margin: 0 auto;
-}
-.banner {
-  object-fit: cover;
-  height: 128px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-footer {
-	display: block;
-	margin: 20px auto;
-	margin-top: 100px;
-	font-size: 10px;
-	text-align: center;
-	color: #808080;
-}";
+	public string style = "";
 
 	public string styleRender(bool styling) {
 		// split into lines

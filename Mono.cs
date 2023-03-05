@@ -95,6 +95,34 @@ pos = from + direction * works
 		live style editing
 
 
+built in operations
+	largely handled by LLM
+variables
+	ref scroll text by name
+branching
+	conditional (if else)
+	handled by LLM?
+looping
+functions
+	run scroll text by name
+input/output
+	html
+
+Records:
+idea-assist
+assesment-tool
+samantha
+blank
+
+paul and simon can help
+
+promptcraft
+
+promptforge
+
+docs 
+  color coded
+
 	
 	";}}
 

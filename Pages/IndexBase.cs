@@ -2,6 +2,7 @@ using Scroll = ai.Pattern.Scroll;
 
 namespace ai;
 public class IndexBase : ComponentBase {
+	[Inject] protected IMetaMaskService MetaMask { get; set; } = default!;
 	[Inject] protected Mono mono { get; set; } = default!;
 	[Parameter] public string Url { get; set; } = "";
 
@@ -21,6 +22,15 @@ public class IndexBase : ComponentBase {
 			// once
 			pattern = new(true);
 			StateHasChanged();
+
+
+			bool hasMetaMask = await MetaMask.HasMetaMask();
+			if (hasMetaMask) {
+				bool isSiteConnected = await MetaMask.IsSiteConnected();
+				if (!isSiteConnected) {
+					await MetaMask.ConnectMetaMask();
+				}
+			}
 		}
 		await Task.CompletedTask;
 	}

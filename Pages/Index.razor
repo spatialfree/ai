@@ -301,7 +301,7 @@
 		bottom: 10px; right: 10px;
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 5px;
 	">
 	<div @onclick="@(() => pattern.recorded = Records.Record(pattern))" disabled="@(!pattern.cloud || pattern.recorded)" class="btn">
 		<img src="svg-icons/cloud-upload.svg" />
@@ -319,6 +319,7 @@
 			outline: 5px solid #808080;
 			margin: 0 5px;
 			text-align: left;
+			border-radius: 20px;
 		"/>
 	</div>
 

@@ -5,15 +5,17 @@ global using Microsoft.AspNetCore.HttpOverrides;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Web;
 
-global using Microsoft.JSInterop;
+global using MetaMask.Blazor;
 
 global using OpenAI;
 global using OpenAI.Completions;
+global using Microsoft.JSInterop;
 using ai;
 
 var builder = WebApplication.CreateBuilder(args);
 	builder.Services.AddRazorPages();
 	builder.Services.AddServerSideBlazor();
+	builder.Services.AddMetaMaskBlazor();
 	builder.Services.AddSingleton<Mono>(new Mono(builder.Configuration["OpenAI:ApiKey"]));
 	// builder.Services.AddScoped<IJSRuntime, JSRuntime>();
 

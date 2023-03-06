@@ -127,8 +127,11 @@ docs
 	";}}
 
 	public OpenAIClient api = default!;
-  public Mono(string? apikey) {
-		api = new OpenAIClient(new OpenAIAuthentication(apikey));
+  public Mono(string? secretkey, string? envKey) {
+		Console.WriteLine($"envKey: {envKey}");
+		api = new OpenAIClient(
+			new OpenAIAuthentication(envKey != null ? envKey : secretkey)
+		);
   }
 	
 	public int tokens = 100_000; // ~2$ per 100k tokens

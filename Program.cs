@@ -16,7 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 	builder.Services.AddRazorPages();
 	builder.Services.AddServerSideBlazor();
 	builder.Services.AddMetaMaskBlazor();
-	builder.Services.AddSingleton<Mono>(new Mono(builder.Configuration["OpenAI:ApiKey"]));
+	// get environment variable
+	builder.Services.AddSingleton<Mono>(
+		new Mono(builder.Configuration["OpenAI:ApiKey"], Environment.GetEnvironmentVariable("OpenAIApiKey"))
+	);
 	// builder.Services.AddScoped<IJSRuntime, JSRuntime>();
 
 var app = builder.Build();

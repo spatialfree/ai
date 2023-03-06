@@ -3,21 +3,16 @@ using System.IO;
 
 namespace ai;
 public class Pattern { // Data focused class
-	public bool cloud    = false;
 	public bool recorded = false;
 	public bool restored = false;
-	public bool synced
-		=> recorded || restored;
 
-	public Pattern(bool restore) {
-		if (restore)
-			recorded = restored = Records.Restore(this);
-		else
-			scrolls.Add(new(this));
-
-		cloud = true; // temp for testing
-
-
+	public Pattern(bool restore, string name = "") {
+		this.name = name;
+		if (restore) {
+			Records.Restore(this);
+			recorded = restored;
+		}
+		
 		scrolls.CollectionChanged += (sender, e) => {
 			recorded = restored = false;
 			// warning

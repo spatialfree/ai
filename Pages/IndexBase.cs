@@ -12,58 +12,37 @@ public class IndexBase : ComponentBase {
 	protected bool page    = true;  // ->
 	protected bool styling = false;
 
-	protected override void OnInitialized() {	
-		// twice
+	protected override void OnInitialized() {	 // twice
 		pointers = new Pointer[] { new Pointer(this), new Pointer(this) };
 	}
 
+	protected bool onchain = false;
 	protected override async Task OnAfterRenderAsync(bool firstRender) {
-		if (firstRender) { 
-			// once
-			pattern = new(true);
-			StateHasChanged();
-
+		if (firstRender) {  // once
+			pattern = new(true, Url);
 
 			bool hasMetaMask = await MetaMask.HasMetaMask();
 			if (hasMetaMask) {
-				bool isSiteConnected = await MetaMask.IsSiteConnected();
-				if (!isSiteConnected) {
-					await MetaMask.ConnectMetaMask();
+				onchain = await MetaMask.IsSiteConnected();
+				if (!onchain) {
+					try {
+						await MetaMask.ConnectMetaMask();
+					} 
+					catch {
+						Console.WriteLine("MetaMask not connected");
+					}
+
+					onchain = await MetaMask.IsSiteConnected();
 				}
 			}
+			Console.WriteLine($"MetaMask connected: {onchain}");
+			StateHasChanged();
 		}
 		await Task.CompletedTask;
 	}
 
 	protected Pattern pattern = new(false);
-	protected string patternBar = "";
 
-	protected void Restore() {
-		if (pattern.name == patternBar && pattern.restored)
-			return;
-
-		pattern.name = patternBar;
-		pattern.restored = Records.Restore(pattern);
-		StateHasChanged();
-	}
-
-	
-	// Cloud = patternName.Trim() == mono.Pattern || Url == mono.Pattern;
-
-	bool publicPage = false;
-	protected bool Public {
-		get { 
-			if (Url == "Pattern") {
-				if (!publicPage) {
-					
-				}
-				pattern.cloud = publicPage = true;
-			} else {
-				publicPage = false;
-			}
-			return publicPage;
-		}
-	}	
 	
 	public Vec[] Corners(Scroll scroll) {
 		int inset = 5;

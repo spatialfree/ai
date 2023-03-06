@@ -6,8 +6,13 @@ public static class Records {
   static string cd  => Directory.GetCurrentDirectory();
   static string dir => $"{cd}/Records/";
 
-	public static bool Record(this Pattern pattern) {
+	public static void Record(this Pattern pattern) {
 		Console.WriteLine($"Recording {pattern.name}");
+		pattern.recorded = false; 
+
+		if (!File.Exists($"{dir}{pattern.name}.txt"))
+			return; // update only
+
 		List<string> lines = new List<string>();
 		lines.Add(TimeStamp);
 		lines.Add("___");
@@ -31,23 +36,48 @@ public static class Records {
 		// File.WriteAllLinesAsync() ???
 		File.WriteAllLines($"{dir}{pattern.name}.txt", lines); // (!)catch exceptions
 
-		return true; 
+		Console.WriteLine($"Recorded {pattern.name}");
+		pattern.recorded = pattern.restored = true; 
+		return;
 	}
 
-	public static bool Restore(this Pattern pattern) {
+	public static void Restore(this Pattern pattern) {
 		Console.WriteLine($"Restoring {pattern.name}");
+		pattern.restored = false;
+
 		string[] lines = new string[0];
 		try {
 			lines = File.ReadAllLines($"{dir}{pattern.name}.txt");
 		} catch (Exception e) {
 			Console.WriteLine($"Restore failed: {e.Message}");
-			return false;
+
+			pattern.style = @"
+.page {
+  margin: 20px auto;
+  max-width: 400px;
+}
+
+h1 {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 40px;
+}";
+			pattern.scrolls.Clear();
+			Pattern.Scroll defaultScroll = new(pattern) {
+				name = "<h1>",
+				text = "404",
+				area = new(100, 40),
+			};
+			pattern.scrolls.Add(defaultScroll);
+
+			return;
 		}
 
-		int section = 0;
 		pattern.style = "";
 		pattern.scrolls.Clear();
 		
+		int section = 0;
 		Pattern.Scroll scroll = new Pattern.Scroll(pattern);
 		System.Reflection.PropertyInfo[] properties = typeof(Pattern.Scroll).GetProperties();
 		int count = 0;
@@ -94,7 +124,9 @@ public static class Records {
 		}
 		// Console.WriteLine($"lines {lines.Length} | count {pattern.scrolls.Count}/{count}");
 		
-		return true;
+		Console.WriteLine($"Restored {pattern.name}");
+		pattern.restored = pattern.recorded = true;
+		return;
 	}
   
 	public static string TimeStamp

@@ -128,7 +128,6 @@ docs
 
 	public OpenAIClient api = default!;
   public Mono(string? secretkey, string? envKey) {
-		Console.WriteLine($"envKey: {envKey}");
 		api = new OpenAIClient(
 			new OpenAIAuthentication(envKey != null ? envKey : secretkey)
 		);

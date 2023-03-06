@@ -22,7 +22,7 @@
 <style style="display: none;">@(pattern.styleRender(styling))</style>
 
 @* - - - - - - - - - - - - - - - Dev - - - - - - - - - - - - - - - *@
-@if (onchain) { return; }
+@if (!onchain) { return; }
 
 <textarea @bind="pattern.style" @bind:event="oninput" hidden="@(!styling)" spellcheck="false" style="
 	position: fixed; top: 0; left: 0; right: 0; bottom: 0;

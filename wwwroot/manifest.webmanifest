@@ -1,7 +1,7 @@
 {
 	"background_color": "#808080",
 	"description": "Your Turing-complete language model prompting environment.",
-	"display": "minimal-ui",
+	"display": "browser",
 	"orientation": "portrait landscape",
 	"icons": [
 		{

@@ -1,8 +1,10 @@
 namespace ai;
 public class Mono {
 	public string compass { get{ return @"
-to = prompt patterning habitat
-	branchial~
+to = apt(aptitude) platform
+	prompt composition
+	html expositions
+	css 
 	sequenced
 	programmatic
 	modular
@@ -116,12 +118,14 @@ blank
 
 paul and simon can help
 
-promptcraft
-
-promptforge
-
-docs 
-  color coded
+nested text docs
+	*what we are doing now/here
+vvv
+in context docs
+	long press?
+	by embedding doc info into the elements themselves?
+vvv
+docs apt
 
 	
 	";}}

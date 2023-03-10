@@ -3,18 +3,16 @@ using System.IO;
 
 namespace ai;
 public class Pattern { // Data focused class
-	public bool recorded = false;
-	public bool restored = false;
+	public bool synced = false;
 
 	public Pattern(bool restore, string name = "") {
 		this.name = name;
 		if (restore) {
 			Records.Restore(this);
-			recorded = restored;
 		}
 		
 		scrolls.CollectionChanged += (sender, e) => {
-			recorded = restored = false;
+			synced = false;
 			// warning
 			// this only gets called when the collection is changed
 			// not when other persistent properties are changed
@@ -160,12 +158,19 @@ public class Pattern { // Data focused class
 
 	public string style = "";
 
+	string lastStyle = "";
 	public string styleRender(bool styling) {
 		// split into lines
 		// and each line with an opening bracket {
 		// gets .page added to the start of the line
 		string[] lines = style.Split('\n');
 		for (int i = 0; i < lines.Length; i++) {
+			if (lines[i].Contains(":") && !lines[i].Contains(";"))
+				return lastStyle;
+
+			if (lines[i].Trim().Length > 0 && !lines[i].Contains(":") && !lines[i].Contains("{") && !lines[i].Contains("}"))
+				return lastStyle;
+
 			if (lines[i].Contains("@") || lines[i].Contains(";"))	
 				continue;
 
@@ -173,7 +178,9 @@ public class Pattern { // Data focused class
 				lines[i] = ".page>" + lines[i];
 			}
 		}
-		string str = string.Join("\n", lines);
-		return styleHeader + (styling ? ".page>*{ transition: all 0.5s ease; }" : "") + str;
+
+		return lastStyle = styleHeader
+			+ (styling ? ".page>*{ transition: all 0.5s ease; }" : "")
+			+ string.Join("\n", lines);;
 	}
 }

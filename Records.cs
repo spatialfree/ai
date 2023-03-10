@@ -8,7 +8,7 @@ public static class Records {
 
 	public static void Record(this Pattern pattern) {
 		Console.WriteLine($"Recording {pattern.name}");
-		pattern.recorded = false; 
+		pattern.synced = false; 
 
 		if (!File.Exists($"{dir}{pattern.name}.txt"))
 			return; // update only
@@ -37,13 +37,13 @@ public static class Records {
 		File.WriteAllLines($"{dir}{pattern.name}.txt", lines); // (!)catch exceptions
 
 		Console.WriteLine($"Recorded {pattern.name}");
-		pattern.recorded = pattern.restored = true; 
+		pattern.synced = true; 
 		return;
 	}
 
 	public static void Restore(this Pattern pattern) {
 		Console.WriteLine($"Restoring {pattern.name}");
-		pattern.restored = false;
+		pattern.synced = false;
 
 		string[] lines = new string[0];
 		try {
@@ -125,7 +125,7 @@ h1 {
 		// Console.WriteLine($"lines {lines.Length} | count {pattern.scrolls.Count}/{count}");
 		
 		Console.WriteLine($"Restored {pattern.name}");
-		pattern.restored = pattern.recorded = true;
+		pattern.synced = true;
 		return;
 	}
   

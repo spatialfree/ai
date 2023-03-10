@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="MetaMask.Blazor" Version="1.8.1" />
     <PackageReference Include="OpenAI-DotNet" Version="4.4.4" />
+    <PackageReference Include="WalletConnect.Sign" Version="2.0.3" />
   </ItemGroup>
 
 </Project>

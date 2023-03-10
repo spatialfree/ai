@@ -279,18 +279,14 @@
 		align-items: center;
 		gap: 5px;
 	">
-	<div @onclick="pattern.Record" disabled="@(pattern.recorded)" class="btn">
+	<div @onclick="pattern.Record" disabled="@(pattern.synced)" class="btn">
 		<img src="svg-icons/cloud-upload.svg" />
-		<div hidden="true" style="
+		<div hidden="@(pattern.synced)" style="
 			width: fit-content; 
 			font-size: 24px; 
 			position: fixed; 
 			transform: translate(14px, -8px);
 		">*</div>
-	</div>
-
-	<div @onclick="pattern.Restore" disabled="@(pattern.restored)" class="btn">
-		<img src="svg-icons/cloud-download.svg" />
 	</div>
 </div>
 

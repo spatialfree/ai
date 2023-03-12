@@ -20,6 +20,7 @@ public class Pattern { // Data focused class
 	}
 
 	public string name = "";
+	public string raw = "";
 	public ObservableCollection<Scroll> scrolls = new();
 	public ObservableCollection<Scroll> sorted {
 		// sort top to bottom and left to right using scroll.pos

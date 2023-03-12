@@ -19,9 +19,9 @@
 </div>
 <style style="display: none;">@(pattern.styleRender(styling))</style>
 
-@* - - - - - - - - - - - - - - - Dev - - - - - - - - - - - - - - - *@
 @if (!onchain) { return; }
 
+@* - - - - - - - - - - - - - - - Style - - - - - - - - - - - - - - - *@
 <textarea @bind="pattern.style" @bind:event="oninput" hidden="@(!styling)" spellcheck="false" style="
 	position: fixed; top: 0; left: 0; right: 0; bottom: 0;
 	white-space: pre;
@@ -31,6 +31,7 @@
 	overflow: auto;
 	touch-action: pan-y pan-x;
 "></textarea>
+
 
 @* - - - - - - - - - - - - - - - Canvas - - - - - - - - - - - - - - - *@
 <div
@@ -217,8 +218,19 @@
 	<div>-</div>
 </div>
 
-@* - - - - - - - - - - - - - - - HUD - - - - - - - - - - - - - - - *@
+@* - - - - - - - - - - - - - - - Raw - - - - - - - - - - - - - - - *@
+<textarea @bind="pattern.raw" @bind:event="oninput" hidden="@(false)" spellcheck="false" style="
+	position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+	white-space: pre;
+	margin: 0; padding: 60px 0 60px 10px;
+	background-color: #000000ac; color: white; 
+	font-family: 'DM Mono', monospace; font-size: 12px;
+	overflow: auto;
+	touch-action: pan-y pan-x;
+"></textarea>
 
+
+@* - - - - - - - - - - - - - - - HUD - - - - - - - - - - - - - - - *@
 <div @onclick="() => menu = !menu" hidden="@(page)" class="btn" style="
 		position: fixed;
 		top: 10px; left: 10px;
@@ -270,7 +282,7 @@
 </div>
 
 @* Pattern Management *@
-<div style="
+@* <div style="
 		position: fixed;
 		bottom: 10px; right: 10px;
 		display: flex;
@@ -286,7 +298,7 @@
 			transform: translate(14px, -8px);
 		">*</div>
 	</div>
-</div>
+</div> *@
 
 
 @* Token Tracker *@

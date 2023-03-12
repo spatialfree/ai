@@ -20,24 +20,26 @@ public class IndexBase : ComponentBase {
 	protected override async Task OnAfterRenderAsync(bool firstRender) {
 		if (firstRender) {  // once
 			pattern = new(true, Url);
+			onchain = Url == null || Url.Trim() == "";
 
-			bool hasMetaMask = await MetaMask.HasMetaMask();
-			if (hasMetaMask) {
-				onchain = await MetaMask.IsSiteConnected();
-				if (!onchain) {
-					try {
-						await MetaMask.ConnectMetaMask();
-					} 
-					catch {
-						Console.WriteLine("MetaMask not connected");
-					}
+			// bool hasMetaMask = await MetaMask.HasMetaMask();
+			// if (hasMetaMask) {
+			// 	onchain = await MetaMask.IsSiteConnected();
+			// 	if (!onchain) {
+			// 		try {
+			// 			await MetaMask.ConnectMetaMask();
+			// 		} 
+			// 		catch {
+			// 			Console.WriteLine("MetaMask not connected");
+			// 		}
 
-					onchain = await MetaMask.IsSiteConnected();
-				}
-			}
-			Console.WriteLine($"MetaMask connected: {onchain}");
+			// 		onchain = await MetaMask.IsSiteConnected();
+			// 	}
+			// }
+			// Console.WriteLine($"MetaMask connected: {onchain}");
 			StateHasChanged();
 		}
+
 		await Task.CompletedTask;
 	}
 

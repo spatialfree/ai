@@ -127,6 +127,9 @@ in context docs
 vvv
 docs apt
 
+
+
+
 web free
 	waste not want not
 	take not give not
@@ -135,7 +138,11 @@ reputation based
 	access
 
 I want to be able to export a pattern
+so implement pattern.raw
 
+conditionals
+	branching
+		name|name
 	
 	";}}
 

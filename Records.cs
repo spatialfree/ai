@@ -4,7 +4,13 @@ using System.Reflection;
 namespace ai;
 public static class Records {  
   static string cd  => Directory.GetCurrentDirectory();
-  static string dir => $"{cd}/Records/";
+  static string dir => $"{cd}/Aptitudes/";
+
+
+
+	// refactor as
+	// visualize
+	// inscribe
 
 	public static void Record(this Pattern pattern) {
 		Console.WriteLine($"Recording {pattern.name}");
@@ -74,6 +80,7 @@ h1 {
 			return;
 		}
 
+		pattern.raw = File.ReadAllText($"{dir}{pattern.name}.txt");
 		pattern.style = "";
 		pattern.scrolls.Clear();
 		

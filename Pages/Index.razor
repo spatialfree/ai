@@ -13,7 +13,7 @@
 		@if (scroll.name.Contains("<button" )) { <button @onclick="(e) => Run(scroll)">@scroll.taglessName</button> } else
 		@if (scroll.name.Contains("<img." )) { <img class="@(scroll.name.Split("<img.")[1].Split(">")[0])" src="@scroll.text" /> } else
 		@if (scroll.name.Contains("<img" )) { <img src="@scroll.text" /> } else
-		@if (scroll.name.Contains("<footer")) { <footer>@scroll.text</footer> }
+		@if (scroll.name.Contains("<footer")) { <footer>@((MarkupString)scroll.text)</footer> }
 	}
 
 </div>

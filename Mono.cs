@@ -127,6 +127,9 @@ in context docs
 vvv
 docs apt
 
+
+I want to be able to export a pattern
+
 	
 	";}}
 
